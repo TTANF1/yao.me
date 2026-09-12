@@ -12,19 +12,22 @@ const isClient = () => true
 const isServer = () => false
 
 /**
- * 主题切换交互动效参数（可调节）：
- * - baseDiameter  中间回缩前的基准圆直径（px）
- * - shrinkRatio   回缩比例（相对基准直径，0.1 = 回缩 10%）
- * - durations     三段时长：pop 加速弹出 / shrink 减速回缩 / expand 加速扩散全屏
- * - eases         三段缓动：加速 / 减速 / 加速（cubic-bezier）
+ * 主题切换交互动效参数（可调节）——弹簧/橡皮筋模型：
+ * - baseDiameter   基准圆直径（px）
+ * - overshootRatio 惯性溢出量（相对基准直径，0.4 = 越过基准 40%）
+ * - recoilTarget   回弹落点（0.97 = 回落到基准直径的 97%）
+ * - durations      四段时长：pop 加速弹出 / overshoot 减速溢出 / recoil 惯性回缩 / expand 加速扩散全屏
+ * - eases          四段缓动：加速 / 减速 / 减速（柔）/ 加速（cubic-bezier）
  */
 export const THEME_TRANSITION = {
-  baseDiameter: 200,
-  shrinkRatio: 0.1,
-  durations: { pop: 0.18, shrink: 0.16, expand: 0.45 },
+  baseDiameter: 150,
+  overshootRatio: 0.4,
+  recoilTarget: 0.97,
+  durations: { pop: 0.14, overshoot: 0.18, recoil: 0.33, expand: 0.45 },
   eases: {
     pop: 'cubic-bezier(0.5, 0, 0.75, 0.4)',
-    shrink: 'cubic-bezier(0.16, 1, 0.3, 1)',
+    overshoot: 'cubic-bezier(0.2, 0.1, 0.3, 1)',
+    recoil: 'cubic-bezier(0.3, 0.05, 0.2, 1)',
     expand: 'cubic-bezier(0.5, 0, 0.75, 0.4)',
   },
 }
@@ -33,7 +36,8 @@ export const THEME_TRANSITION = {
  * 圆形扩散切换动效（反相擦拭版）：
  * 点击后从按钮中心扩散出一个小圆，圆用 mix-blend-mode: difference + 白色填充，
  * 把圆内的页面像素取反——内容可见且呈现目标主题的配色（近似反相）；
- * 三段节奏（弹出 → 减速回缩 → 加速扩散全屏）不变，圆覆盖全屏的瞬间同步翻转主题。
+ * 四段节奏（加速弹出 → 惯性溢出 → 回弹到基准 → 加速扩散全屏），弹簧/橡皮筋手感；
+ * 圆覆盖全屏的瞬间同步翻转主题。
  *
  * 实现要点：
  * - 遮罩圆用 Portal 挂到 <body>，定位为真·fixed（视口坐标），不受 header 的
@@ -72,9 +76,9 @@ export function ThemeToggle({ label }: { label: string }) {
     const x = rect.left + rect.width / 2
     const y = rect.top + rect.height / 2
 
-    const { baseDiameter, shrinkRatio, durations, eases } = THEME_TRANSITION
-    const shrinkScale = 1 - shrinkRatio
-    const total = durations.pop + durations.shrink + durations.expand
+    const { baseDiameter, overshootRatio, recoilTarget, durations, eases } = THEME_TRANSITION
+    const overshootPeak = 1 + overshootRatio
+    const total = durations.pop + durations.overshoot + durations.recoil + durations.expand
 
     // 覆盖全屏所需 scale：从按钮中心到最远视口角
     const farCorner = Math.hypot(
@@ -106,7 +110,8 @@ export function ThemeToggle({ label }: { label: string }) {
     completedRef.current = false
 
     const t1 = durations.pop / total
-    const t2 = (durations.pop + durations.shrink) / total
+    const t2 = (durations.pop + durations.overshoot) / total
+    const t3 = (durations.pop + durations.overshoot + durations.recoil) / total
 
     let anim: Animation
     try {
@@ -120,11 +125,16 @@ export function ThemeToggle({ label }: { label: string }) {
           {
             transform: `translate(-50%, -50%) scale(1)`,
             offset: t1,
-            easing: eases.shrink,
+            easing: eases.overshoot,
           },
           {
-            transform: `translate(-50%, -50%) scale(${shrinkScale})`,
+            transform: `translate(-50%, -50%) scale(${overshootPeak})`,
             offset: t2,
+            easing: eases.recoil,
+          },
+          {
+            transform: `translate(-50%, -50%) scale(${recoilTarget})`,
+            offset: t3,
             easing: eases.expand,
           },
           {
