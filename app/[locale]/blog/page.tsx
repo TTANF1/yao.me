@@ -42,7 +42,6 @@ export default async function BlogPage({
 
       {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
       <div style={{ viewTransitionName: 'page-content' }}>
-        <p className="mt-2 text-muted">{t.blog.description}</p>
 
         {posts.length > 0 ? (
           <ul className="mt-10 space-y-8">

@@ -72,6 +72,12 @@ export default async function PostPage({
               <span>{post.tags.join(' / ')}</span>
             </>
           ) : null}
+          {post.ai ? (
+            <>
+              <span aria-hidden>·</span>
+              <span className="rounded-full border border-line px-2 py-0.5 text-xs">{locale === 'zh' ? 'AI 辅助' : 'AI-assisted'}</span>
+            </>
+          ) : null}
         </div>
 
         <div

@@ -23,6 +23,8 @@ export interface PostMeta {
   date: string
   summary: string
   tags: string[]
+  /** 是否使用了 AI 辅助（生成/润色/翻译） */
+  ai?: boolean
   draft?: boolean
 }
 
@@ -69,6 +71,7 @@ export function getAllPosts(locale: Locale): PostMeta[] {
         date: normalizeDate(data.date),
         summary: String(data.summary ?? ''),
         tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+        ai: data.ai === true,
         draft: Boolean(data.draft),
       } satisfies PostMeta
     })
@@ -100,6 +103,7 @@ export async function getPost(locale: Locale, slug: string): Promise<Post | null
     date: normalizeDate(data.date),
     summary: String(data.summary ?? ''),
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
+    ai: data.ai === true,
     contentHtml: String(html),
     readingMinutes: Math.max(1, Math.round(content.length / 500)),
   }

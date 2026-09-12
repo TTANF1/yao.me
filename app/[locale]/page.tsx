@@ -14,11 +14,11 @@ export default async function HomePage({
   return (
     // 首页不做块级滚动（B 方案承担视觉），page-home 只锚定不参与滚动，掩蔽 RSC 换帧闪烁
     <div
-      className="mx-auto w-full max-w-2xl px-6"
+      className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center px-6"
       style={{ viewTransitionName: 'page-home' }}
     >
       {/* Hero：无动画，首帧可读；语言切换时文字做洗牌动效（B 方案） */}
-      <section className="py-24 sm:py-32">
+      <section className="py-16 sm:py-20">
         <ScrambleText
           id="hero-greeting"
           as="p"

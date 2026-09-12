@@ -85,7 +85,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
         <ThemeProvider>
           <Header locale={locale} />
-          <main className="flex-1">{children}</main>
+          <main className="flex flex-1 flex-col">{children}</main>
           <Footer locale={locale} />
         </ThemeProvider>
         <Analytics />

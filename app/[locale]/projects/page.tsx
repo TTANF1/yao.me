@@ -40,7 +40,6 @@ export default async function ProjectsPage({
 
       {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
       <div style={{ viewTransitionName: 'page-content' }}>
-        <p className="mt-2 text-muted">{t.projects.description}</p>
 
         <Reveal>
           <div className="mt-10 border-t border-line py-12 text-center">
