@@ -1,26 +1,102 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
+/* 显式声明扫描目录：避免文件监视器在慢文件系统上漏扫新增文件 */
+@source "../components";
+@source "../app";
+@source "../lib";
+
+/* 类名驱动的暗色模式（ThemeProvider 在 <html> 上切换 .dark） */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   主题配置入口 —— 修改下面的 CSS 变量即可整体换肤：
+   --color-accent    强调色（链接 hover、选区、焦点环等）
+   --background      页面背景
+   --foreground      正文颜色
+   --line            分割线 / 边框
+   --muted           次级文字
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #18181b;
+  --line: #e4e4e7;
+  --muted: #71717a;
+  --accent: oklch(0.52 0.09 196); /* 克制的青蓝色 */
+}
+
+.dark {
+  --background: #0a0a0b;
+  --foreground: #f4f4f5;
+  --line: #27272a;
+  --muted: #a1a1aa;
+  --accent: oklch(0.74 0.1 196);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  /* 拉丁用 Geist（next/font 自托管），中文回退到系统字体栈，避免加载重型中文字体 */
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC",
+    sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    Consolas, "PingFang SC", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 链接：默认同正文色，hover 显示强调色下划线（antfu 式克制交互） */
+.link {
+  color: var(--foreground);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
+}
+.link:hover {
+  text-decoration-color: var(--accent);
+}
+
+/* 博客长文排版：跟随主题 token，深浅色通用 */
+.prose-y {
+  --tw-prose-body: var(--foreground);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-links: var(--accent);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-hr: var(--line);
+  --tw-prose-th-borders: var(--line);
+  --tw-prose-td-borders: var(--line);
+}
+.prose-y code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
 }
