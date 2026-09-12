@@ -5,6 +5,7 @@ import { isLocale, locales, formatDate, localizedAlternates, type Locale } from 
 import { getMessages } from '@/lib/i18n'
 import { getPost, getPostSlugs } from '@/lib/posts'
 import { ArrowLeftIcon } from '@/components/icons'
+import { ScrambleText } from '@/components/scramble-text'
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -49,28 +50,36 @@ export default async function PostPage({
         {t.posts.back}
       </Link>
 
-      <h1 className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl">
-        {post.title}
-      </h1>
-      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
-        <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
-        <span aria-hidden>·</span>
-        <span>
-          {t.posts.readingTime} {post.readingMinutes} min
-        </span>
-        {post.tags.length > 0 ? (
-          <>
-            <span aria-hidden>·</span>
-            <span>{post.tags.join(' / ')}</span>
-          </>
-        ) : null}
-      </div>
-
-      <div
-        className="prose prose-y mt-10 max-w-none"
-        // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
-        dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+      {/* 标题：语言切换时文字洗牌（B 方案；两语言标题一致时自动跳过） */}
+      <ScrambleText
+        id={`post-title-${slug}`}
+        as="h1"
+        className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl"
+        text={post.title}
       />
+
+      {/* 正文：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
+      <div style={{ viewTransitionName: 'page-content' }}>
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+          <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
+          <span aria-hidden>·</span>
+          <span>
+            {t.posts.readingTime} {post.readingMinutes} min
+          </span>
+          {post.tags.length > 0 ? (
+            <>
+              <span aria-hidden>·</span>
+              <span>{post.tags.join(' / ')}</span>
+            </>
+          ) : null}
+        </div>
+
+        <div
+          className="prose prose-y mt-10 max-w-none"
+          // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
+          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+        />
+      </div>
     </article>
   )
 }

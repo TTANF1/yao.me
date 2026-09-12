@@ -100,3 +100,70 @@ body {
   font-family: var(--font-mono);
   font-size: 0.875em;
 }
+
+/* ============================================================
+   语言切换过渡（原生 View Transition，A 方案）：
+   - 其他路由页内容块（view-transition-name: page-content）：旧内容上滚淡出，
+     新内容自下方上滚淡入
+   - header（site-header）与首页内容（page-home）：锚定不滚动，仅做原子换帧，
+     掩蔽 RSC 内容换帧时的暗色闪烁
+   ============================================================ */
+::view-transition-old(*) {
+  animation: page-out 150ms ease-in both;
+}
+::view-transition-new(*) {
+  animation: page-in 220ms ease-out 120ms both;
+}
+@keyframes page-out {
+  from {
+    translate: 0 0;
+    opacity: 1;
+  }
+  to {
+    translate: 0 -16px;
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    translate: 0 16px;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+/* 锚定元素：不参与滚动动画（含防双 header 闪现） */
+::view-transition-group(root),
+::view-transition-group(site-header),
+::view-transition-group(page-home) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(root),
+::view-transition-old(site-header),
+::view-transition-old(page-home) {
+  display: none;
+}
+::view-transition-new(root),
+::view-transition-new(site-header),
+::view-transition-new(page-home) {
+  animation: none;
+}
+
+/* 过渡期间保持页面可交互（点击不丢失） */
+::view-transition {
+  pointer-events: none;
+}
+
+/* 尊重系统减弱动效设置：切换直接完成，不播放过渡 */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
