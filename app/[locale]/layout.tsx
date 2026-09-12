@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import '../globals.css'
 import { defaultLocale, isLocale, locales, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
@@ -86,6 +88,8 @@ export default async function LocaleLayout({
           <main className="flex-1">{children}</main>
           <Footer locale={locale} />
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
