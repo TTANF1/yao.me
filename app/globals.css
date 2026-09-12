@@ -99,6 +99,26 @@ body {
 .prose-y code {
   font-family: var(--font-mono);
   font-size: 0.875em;
+}.prose-y img {
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  margin-bottom: 0.75rem;
+}
+.prose-y img + em {
+  display: block;
+  font-size: 0.85em;
+  line-height: 1.6;
+  color: var(--muted);
+  text-align: center;
+  font-style: normal;
+  margin-top: 0;
+  margin-bottom: 2.25rem;
+}
+.prose-y table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ============================================================

@@ -8,6 +8,14 @@ import remarkRehype from 'remark-rehype'
 import rehypeStringify from 'rehype-stringify'
 import type { Locale } from './locale'
 
+function normalizeDate(value: unknown): string {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+  return String(value ?? '').trim()
+}
+
+
 export interface PostMeta {
   slug: string
   title: string
@@ -58,7 +66,7 @@ export function getAllPosts(locale: Locale): PostMeta[] {
       return {
         slug,
         title: String(data.title ?? slug),
-        date: String(data.date ?? ''),
+        date: normalizeDate(data.date),
         summary: String(data.summary ?? ''),
         tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
         draft: Boolean(data.draft),
@@ -89,7 +97,7 @@ export async function getPost(locale: Locale, slug: string): Promise<Post | null
   return {
     slug,
     title: String(data.title ?? slug),
-    date: String(data.date ?? ''),
+    date: normalizeDate(data.date),
     summary: String(data.summary ?? ''),
     tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
     contentHtml: String(html),
