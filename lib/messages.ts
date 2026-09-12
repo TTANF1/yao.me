@@ -5,7 +5,7 @@ import type { Locale } from './locale'
  * 类型以 zh 为准（en 必须与 zh 结构一致）。
  */
 export const zh = {
-  nav: { home: '首页', blog: '文章', projects: '作品', about: '关于' },
+  nav: { home: '首页', blog: '文章', notes: '随记', projects: '作品', about: '关于' },
   hero: {
     greeting: '你好，我是',
     name: 'Yao',
@@ -47,6 +47,12 @@ export const zh = {
     description: '关于家居、轻动画与前端工程的一些记录。',
     empty: '还没有文章，敬请期待。',
   },
+  notes: {
+    title: '随记',
+    description: '随手记下的一些想法与碎片。',
+    empty: '还没有随记，敬请期待。',
+    back: '返回随记',
+  },
   projects: {
     title: '作品',
     description: '轻动画 IP 与家居内容的作品集。（内容整理中）',
@@ -81,7 +87,7 @@ export const zh = {
 export type Messages = typeof zh
 
 export const en: Messages = {
-  nav: { home: 'Home', blog: 'Blog', projects: 'Works', about: 'About' },
+  nav: { home: 'Home', blog: 'Blog', notes: 'Notes', projects: 'Works', about: 'About' },
   hero: {
     greeting: "Hey, I'm",
     name: 'Yao',
@@ -122,6 +128,12 @@ export const en: Messages = {
     title: 'Blog',
     description: 'Notes on home decor, light animation and frontend engineering.',
     empty: 'No posts yet. Stay tuned.',
+  },
+  notes: {
+    title: 'Notes',
+    description: 'Random thoughts and fragments.',
+    empty: 'No notes yet. Stay tuned.',
+    back: 'Back to notes',
   },
   projects: {
     title: 'Works',

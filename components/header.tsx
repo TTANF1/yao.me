@@ -11,6 +11,7 @@ export function Header({ locale }: { locale: Locale }) {
   const nav = [
     { key: 'home', href: `/${locale}`, label: t.nav.home },
     { key: 'blog', href: `/${locale}/blog`, label: t.nav.blog },
+    { key: 'notes', href: `/${locale}/notes`, label: t.nav.notes },
     { key: 'projects', href: `/${locale}/projects`, label: t.nav.projects },
     { key: 'about', href: `/${locale}/about`, label: t.nav.about },
   ]

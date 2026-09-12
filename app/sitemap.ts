@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { defaultLocale, locales, type Locale } from '@/lib/locale'
-import { getPostSlugs } from '@/lib/posts'
+import { getNoteSlugs, getPostSlugs } from '@/lib/posts'
 import { site } from '@/lib/site'
 
-const STATIC_PATHS = ['', '/blog', '/projects', '/about'] as const
+const STATIC_PATHS = ['', '/blog', '/notes', '/projects', '/about'] as const
 
 function languageAlternates(path: string): Record<string, string> {
   const languages: Record<string, string> = {
@@ -26,6 +26,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: p === '' ? 'weekly' : 'monthly',
         priority: p === '' ? 1 : 0.8,
         alternates: { languages: languageAlternates(p) },
+      })
+    }
+    for (const slug of getNoteSlugs(locale)) {
+      const path = `/notes/${slug}`
+      entries.push({
+        url: `${site.url}/${locale}${path}`,
+        lastModified: new Date(),
+        changeFrequency: 'yearly',
+        priority: 0.6,
+        alternates: { languages: languageAlternates(path) },
       })
     }
     for (const slug of getPostSlugs(locale)) {

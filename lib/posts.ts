@@ -40,14 +40,19 @@ export interface Post extends PostMeta {
  *   title / date / summary / tags / draft
  * 之后可扩展为从 Obsidian 知识库（D:\obsidian\YaosKnowledge）同步。
  */
-const contentRoot = path.join(process.cwd(), 'content', 'posts')
+export type ContentKind = 'posts' | 'notes'
 
-function postsDir(locale: Locale) {
-  return path.join(contentRoot, locale)
+const contentRoots: Record<ContentKind, string> = {
+  posts: path.join(process.cwd(), 'content', 'posts'),
+  notes: path.join(process.cwd(), 'content', 'notes'),
 }
 
-export function getPostSlugs(locale: Locale): string[] {
-  const dir = postsDir(locale)
+function contentDir(kind: ContentKind, locale: Locale) {
+  return path.join(contentRoots[kind], locale)
+}
+
+function getContentSlugs(kind: ContentKind, locale: Locale): string[] {
+  const dir = contentDir(kind, locale)
   if (!fs.existsSync(dir)) return []
   return fs
     .readdirSync(dir)
@@ -55,10 +60,26 @@ export function getPostSlugs(locale: Locale): string[] {
     .map((f) => f.replace(/\.mdx?$/, ''))
 }
 
+export function getPostSlugs(locale: Locale): string[] {
+  return getContentSlugs('posts', locale)
+}
+
+export function getNoteSlugs(locale: Locale): string[] {
+  return getContentSlugs('notes', locale)
+}
+
 export function getAllPosts(locale: Locale): PostMeta[] {
-  const dir = postsDir(locale)
+  return getAllContent('posts', locale)
+}
+
+export function getAllNotes(locale: Locale): PostMeta[] {
+  return getAllContent('notes', locale)
+}
+
+function getAllContent(kind: ContentKind, locale: Locale): PostMeta[] {
+  const dir = contentDir(kind, locale)
   if (!fs.existsSync(dir)) return []
-  return getPostSlugs(locale)
+  return getContentSlugs(kind, locale)
     .map((slug) => {
       const file = fs
         .readdirSync(dir)
@@ -80,7 +101,15 @@ export function getAllPosts(locale: Locale): PostMeta[] {
 }
 
 export async function getPost(locale: Locale, slug: string): Promise<Post | null> {
-  const dir = postsDir(locale)
+  return getContent('posts', locale, slug)
+}
+
+export async function getNote(locale: Locale, slug: string): Promise<Post | null> {
+  return getContent('notes', locale, slug)
+}
+
+async function getContent(kind: ContentKind, locale: Locale, slug: string): Promise<Post | null> {
+  const dir = contentDir(kind, locale)
   const mdPath = path.join(dir, `${slug}.md`)
   const mdxPath = path.join(dir, `${slug}.mdx`)
   const filePath = fs.existsSync(mdPath) ? mdPath : fs.existsSync(mdxPath) ? mdxPath : null
