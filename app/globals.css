@@ -23,6 +23,7 @@
   --line: #e4e4e7;
   --muted: #71717a;
   --accent: oklch(0.52 0.09 196); /* 克制的青蓝色 */
+  --selection: rgba(0, 0, 0, 0.09); /* 文本选区：浅灰 */
 }
 
 .dark {
@@ -31,6 +32,7 @@
   --line: #27272a;
   --muted: #a1a1aa;
   --accent: oklch(0.74 0.1 196);
+  --selection: rgba(255, 255, 255, 0.14); /* 文本选区：浅灰白 */
 }
 
 @theme inline {
@@ -63,8 +65,8 @@ body {
 }
 
 ::selection {
-  background: var(--accent);
-  color: #fff;
+  background: var(--selection);
+  color: inherit;
 }
 
 :focus-visible {
@@ -72,16 +74,13 @@ body {
   outline-offset: 2px;
 }
 
-/* 链接：默认同正文色，hover 显示强调色下划线（antfu 式克制交互） */
+/* 链接：默认低明度（灰），hover 颜色逐渐变实，不用下划线 */
 .link {
-  color: var(--foreground);
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-underline-offset: 4px;
-  transition: text-decoration-color 0.2s ease;
+  color: var(--muted);
+  transition: color 0.25s ease;
 }
 .link:hover {
-  text-decoration-color: var(--accent);
+  color: var(--foreground);
 }
 
 /* 博客长文排版：跟随主题 token，深浅色通用 */
@@ -95,6 +94,13 @@ body {
   --tw-prose-hr: var(--line);
   --tw-prose-th-borders: var(--line);
   --tw-prose-td-borders: var(--line);
+}
+.prose-y a {
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.prose-y a:hover {
+  color: var(--foreground);
 }
 .prose-y code {
   font-family: var(--font-mono);
