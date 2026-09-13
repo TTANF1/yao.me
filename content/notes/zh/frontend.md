@@ -1,8 +1,6 @@
 ---
-title: AI 时代的前端：把时间花在体验和自测上
+title: 前端
 date: '2026-09-10'
-summary: AI 缩短了实现调研的路径，前端可以把更多时间放在用户体验与自测沉淀上。
-tags: [前端, 体验, 随想]
 ai: false
 draft: false
 ---

@@ -1,8 +1,6 @@
 ---
-title: 与 AI 对话，像在训练怎么做个好领导
+title: AI
 date: '2026-09-07'
-summary: 与 AI 对话的过程，像是在训练自己如何做一个好的领导——想清楚目标，准确表达，认清边界。
-tags: [AI, 随想]
 ai: false
 draft: false
 ---
