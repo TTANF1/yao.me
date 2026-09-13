@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 import { ScrambleText } from './scramble-text'
 
 export interface NavItem {
@@ -38,7 +38,7 @@ export function NavBar({ items }: { items: NavItem[] }) {
   }, [])
 
   return (
-    <div className="relative min-w-0">
+    <div className="relative min-w-0 flex-1 sm:flex-none">
       <nav
         ref={scroller}
         aria-label="Main"
@@ -58,14 +58,14 @@ export function NavBar({ items }: { items: NavItem[] }) {
       {/* 左端渐隐遮罩：滚到起点隐藏 */}
       <div
         aria-hidden
-        className={`nav-fade-left pointer-events-none absolute inset-y-0 left-0 w-8 transition-opacity duration-200 ${
+        className={`nav-fade-left pointer-events-none absolute inset-y-0 -left-px w-8 transition-opacity duration-200 ${
           atStart ? 'opacity-0' : 'opacity-100'
         }`}
       />
       {/* 右端渐隐遮罩：滚到终点隐藏 */}
       <div
         aria-hidden
-        className={`nav-fade-right pointer-events-none absolute inset-y-0 right-0 w-8 transition-opacity duration-200 ${
+        className={`nav-fade-right pointer-events-none absolute inset-y-0 -right-px w-8 transition-opacity duration-200 ${
           atEnd ? 'opacity-0' : 'opacity-100'
         }`}
       />
