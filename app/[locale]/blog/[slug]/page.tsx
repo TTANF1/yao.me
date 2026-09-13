@@ -6,6 +6,7 @@ import { getMessages } from '@/lib/i18n'
 import { getPost, getPostSlugs } from '@/lib/posts'
 import { ArrowLeftIcon } from '@/components/icons'
 import { ScrambleText } from '@/components/scramble-text'
+import { Reveal } from '@/components/reveal'
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -80,11 +81,13 @@ export default async function PostPage({
           ) : null}
         </div>
 
-        <div
-          className="prose prose-y mt-10 max-w-none"
-          // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-        />
+        <Reveal>
+          <div
+            className="prose prose-y mt-10 max-w-none"
+            // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
+            dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+          />
+        </Reveal>
       </div>
     </article>
   )

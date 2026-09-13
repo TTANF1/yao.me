@@ -6,6 +6,7 @@ import { getMessages } from '@/lib/i18n'
 import { getNote, getNoteSlugs } from '@/lib/posts'
 import { ArrowLeftIcon } from '@/components/icons'
 import { ScrambleText } from '@/components/scramble-text'
+import { Reveal } from '@/components/reveal'
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -50,6 +51,7 @@ export default async function NotePage({
         {t.notes.back}
       </Link>
 
+
       {/* 标题：语言切换时文字洗牌（B 方案；两语言标题一致时自动跳过） */}
       <ScrambleText
         id={`note-title-${slug}`}
@@ -80,11 +82,13 @@ export default async function NotePage({
           ) : null}
         </div>
 
-        <div
-          className="prose prose-y mt-10 max-w-none"
-          // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
-          dangerouslySetInnerHTML={{ __html: note.contentHtml }}
-        />
+        <Reveal>
+          <div
+            className="prose prose-y mt-10 max-w-none"
+            // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
+            dangerouslySetInnerHTML={{ __html: note.contentHtml }}
+          />
+        </Reveal>
       </div>
     </article>
   )

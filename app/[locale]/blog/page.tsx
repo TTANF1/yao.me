@@ -4,6 +4,7 @@ import { isLocale, formatDate, localizedAlternates, type Locale } from '@/lib/lo
 import { getMessages } from '@/lib/i18n'
 import { getAllPosts } from '@/lib/posts'
 import { ScrambleText } from '@/components/scramble-text'
+import { Reveal } from '@/components/reveal'
 
 export async function generateMetadata({
   params,
@@ -43,36 +44,38 @@ export default async function BlogPage({
       {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
       <div style={{ viewTransitionName: 'page-content' }}>
 
-        {posts.length > 0 ? (
-          <ul className="mt-10 space-y-8">
-            {posts.map((post) => (
-              <li key={post.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
-                <Link href={`/${locale}/blog/${post.slug}`} className="group block">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h2 className="link text-lg font-medium">{post.title}</h2>
-                    <time className="shrink-0 text-sm text-muted">
-                      {formatDate(post.date, locale)}
-                    </time>
-                  </div>
-                  {post.summary ? (
-                    <p className="mt-1.5 text-sm text-muted">{post.summary}</p>
-                  ) : null}
-                  {post.tags.length > 0 ? (
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted">
-                      {post.tags.map((tag) => (
-                        <span key={tag} className="rounded-full border border-line px-2 py-0.5">
-                          {tag}
-                        </span>
-                      ))}
+        <Reveal>
+          {posts.length > 0 ? (
+            <ul className="mt-10 space-y-8">
+              {posts.map((post) => (
+                <li key={post.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
+                  <Link href={`/${locale}/blog/${post.slug}`} className="group block">
+                    <div className="flex items-baseline justify-between gap-4">
+                      <h2 className="link text-lg font-medium">{post.title}</h2>
+                      <time className="shrink-0 text-sm text-muted">
+                        {formatDate(post.date, locale)}
+                      </time>
                     </div>
-                  ) : null}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-10 text-muted">{t.blog.empty}</p>
-        )}
+                    {post.summary ? (
+                      <p className="mt-1.5 text-sm text-muted">{post.summary}</p>
+                    ) : null}
+                    {post.tags.length > 0 ? (
+                      <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted">
+                        {post.tags.map((tag) => (
+                          <span key={tag} className="rounded-full border border-line px-2 py-0.5">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-10 text-muted">{t.blog.empty}</p>
+          )}
+        </Reveal>
       </div>
     </div>
   )

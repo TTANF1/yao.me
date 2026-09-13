@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
 
 /**
- * 滚动入场动画：位移 20px + 淡入，0.5s ease-out。
+ * 滚动入场动画：位移 24px + 淡入，0.9s 柔和缓动（easeOutCubic，不紧不慢的出场）。
  * - 尊重 prefers-reduced-motion（系统减弱动效时直接静态渲染）
  * - 只用于次级区块，首屏 hero 不做动画，保证核心内容始终可读
  */
@@ -24,10 +24,10 @@ export function Reveal({
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.9, delay, ease: [0.33, 1, 0.68, 1] }}
     >
       {children}
     </motion.div>

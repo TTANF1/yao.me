@@ -1,6 +1,7 @@
 import { isLocale, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
 import { ScrambleText } from '@/components/scramble-text'
+import { Reveal } from '@/components/reveal'
 
 export default async function HomePage({
   params,
@@ -19,30 +20,32 @@ export default async function HomePage({
     >
       {/* Hero：无动画，首帧可读；语言切换时文字做洗牌动效（B 方案） */}
       <section className="py-16 sm:py-20">
-        <ScrambleText
-          id="hero-greeting"
-          as="p"
-          className="text-muted"
-          text={t.hero.greeting}
-        />
-        <ScrambleText
-          id="hero-name"
-          as="h1"
-          className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl"
-          text={t.hero.name}
-        />
-        <ScrambleText
-          id="hero-tagline"
-          as="p"
-          className="mt-4 text-lg text-foreground/90"
-          text={t.hero.tagline}
-        />
-        <ScrambleText
-          id="hero-intro"
-          as="p"
-          className="mt-3 max-w-xl text-muted"
-          text={t.hero.intro}
-        />
+        <Reveal>
+          <ScrambleText
+            id="hero-greeting"
+            as="p"
+            className="text-muted"
+            text={t.hero.greeting}
+          />
+          <ScrambleText
+            id="hero-name"
+            as="h1"
+            className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl"
+            text={t.hero.name}
+          />
+          <ScrambleText
+            id="hero-tagline"
+            as="p"
+            className="mt-4 text-lg text-foreground/90"
+            text={t.hero.tagline}
+          />
+          <ScrambleText
+            id="hero-intro"
+            as="p"
+            className="mt-3 max-w-xl text-muted"
+            text={t.hero.intro}
+          />
+        </Reveal>
       </section>
     </div>
   )

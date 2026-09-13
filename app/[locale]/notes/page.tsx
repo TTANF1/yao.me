@@ -4,6 +4,7 @@ import { isLocale, formatDate, localizedAlternates, type Locale } from '@/lib/lo
 import { getMessages } from '@/lib/i18n'
 import { getAllNotes } from '@/lib/posts'
 import { ScrambleText } from '@/components/scramble-text'
+import { Reveal } from '@/components/reveal'
 
 export async function generateMetadata({
   params,
@@ -43,7 +44,8 @@ export default async function NotesPage({
       {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
       <div style={{ viewTransitionName: 'page-content' }}>
 
-        {notes.length > 0 ? (
+        <Reveal>
+          {notes.length > 0 ? (
           <ul className="mt-10 space-y-8">
             {notes.map((note) => (
               <li key={note.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
@@ -72,7 +74,8 @@ export default async function NotesPage({
           </ul>
         ) : (
           <p className="mt-10 text-muted">{t.notes.empty}</p>
-        )}
+          )}
+        </Reveal>
       </div>
     </div>
   )
