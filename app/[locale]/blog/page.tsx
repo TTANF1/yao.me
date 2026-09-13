@@ -16,7 +16,7 @@ export async function generateMetadata({
   const t = getMessages(locale)
   return {
     title: t.blog.title,
-    description: t.blog.description,
+    description: t.seo.description,
     alternates: localizedAlternates(locale, '/blog'),
   }
 }
