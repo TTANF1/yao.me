@@ -3,11 +3,11 @@
  */
 export const site = {
   name: 'Yao',
-  domain: 'yao.me',
+  domain: 'fyao.me',
   /** 正式部署前请把域名替换为真实地址（Vercel 分配域名或自定义域名）；
    *  也可通过环境变量 SITE_URL 覆盖（仅服务端使用，如 sitemap/robots/feed/metadata；
    *  客户端组件不需要该值，故不带 NEXT_PUBLIC_ 前缀以免注入浏览器）。 */
-  url: process.env.SITE_URL ?? 'https://yao.me',
+  url: process.env.SITE_URL ?? 'https://fyao.me',
   defaultLocale: 'zh',
   locales: ['zh', 'en'] as const,
   social: {
