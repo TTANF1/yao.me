@@ -1,6 +1,7 @@
 import { getMessages } from '@/lib/i18n'
 import type { Locale } from '@/lib/locale'
 import { site } from '@/lib/site'
+import Image from 'next/image'
 import Link from 'next/link'
 import { LocaleSwitcher } from './locale-switcher'
 import { NavBar } from './nav-bar'
@@ -22,8 +23,18 @@ export function Header({ locale }: { locale: Locale }) {
       style={{ viewTransitionName: 'site-header' }}
     >
       <div className="mx-auto flex min-h-14 w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 px-6 py-2">
-        <Link href={`/${locale}`} className="shrink-0 font-semibold tracking-tight">
-          {site.name}
+        <Link href={`/${locale}`} className="shrink-0" aria-label={site.name}>
+          <span className="relative block h-8 w-8 overflow-hidden rounded-full">
+            <Image
+              src="/favicon-logo.png"
+              alt={site.name}
+              width={32}
+              height={32}
+              quality={100}
+              sizes="48px"
+              className="h-full w-full object-cover"
+            />
+          </span>
         </Link>
         <NavBar items={nav} />
         <div className="flex shrink-0 items-center gap-1">

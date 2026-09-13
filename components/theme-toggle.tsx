@@ -58,6 +58,25 @@ export function ThemeToggle({ label }: { label: string }) {
   const unlockTimerRef = useRef<number | null>(null)
   const mounted = useSyncExternalStore(emptySubscribe, isClient, isServer)
 
+  const ghostRef = useRef<HTMLImageElement | null>(null)
+
+  /** 动画期间在 logo 位置盖一个浮层：z-index 高于反相遮罩圆，logo 保持白底不被反相 */
+  const showGhostLogo = () => {
+    const img = document.querySelector<HTMLImageElement>('header a img')
+    if (!img) return
+    const r = img.getBoundingClientRect()
+    const g = document.createElement('img')
+    g.src = img.currentSrc || '/favicon-logo.png'
+    g.alt = ''
+    g.style.cssText = `position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;border-radius:50%;object-fit:cover;z-index:10000;pointer-events:none;`
+    document.body.appendChild(g)
+    ghostRef.current = g
+  }
+  const hideGhostLogo = () => {
+    ghostRef.current?.remove()
+    ghostRef.current = null
+  }
+
   const handleClick = () => {
     if (busyRef.current) return
     const btn = btnRef.current
@@ -69,6 +88,9 @@ export function ThemeToggle({ label }: { label: string }) {
       toggle()
       return
     }
+
+    // 动画期间盖浮层，让 logo 不参与反相（保持白底）
+    showGhostLogo()
 
     const next = theme === 'dark' ? 'light' : 'dark'
     // 按钮中心 = 圆扩散的起点（视口坐标，Portal 后与 fixed 定位同一坐标系）
@@ -146,6 +168,7 @@ export function ThemeToggle({ label }: { label: string }) {
       )
     } catch {
       // 动画不可用时回退为瞬时切换，保证主题切换永不失效
+      hideGhostLogo()
       el.style.display = 'none'
       busyRef.current = false
       toggle()
@@ -159,6 +182,7 @@ export function ThemeToggle({ label }: { label: string }) {
       }
       // 此刻圆已覆盖全屏：同步翻转主题（DOM 即时生效），并同帧隐藏遮罩——无闪烁
       setTheme(next)
+      hideGhostLogo()
       el.style.display = 'none'
       busyRef.current = false
     }
@@ -172,6 +196,7 @@ export function ThemeToggle({ label }: { label: string }) {
         window.clearTimeout(unlockTimerRef.current)
         unlockTimerRef.current = null
       }
+      hideGhostLogo()
       el.style.display = 'none'
       busyRef.current = false
     }
@@ -181,6 +206,7 @@ export function ThemeToggle({ label }: { label: string }) {
       unlockTimerRef.current = null
       if (!completedRef.current) {
         el.getAnimations().forEach((a) => a.cancel())
+        hideGhostLogo()
         el.style.display = 'none'
         busyRef.current = false
         toggle()
