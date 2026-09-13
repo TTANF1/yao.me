@@ -187,3 +187,32 @@ body {
     animation-delay: 0s !important;
   }
 }
+
+/* ============================================================
+   header 导航横向滚动
+   ============================================================ */
+
+/* 隐藏滚动条（Firefox / WebKit / Chromium） */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 滚动尽头渐隐遮罩：80% 透明度与 header 毛玻璃背景（bg-background/80）一致，随明暗主题自动适配 */
+.nav-fade-left {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--background) 80%, transparent),
+    transparent
+  );
+}
+.nav-fade-right {
+  background: linear-gradient(
+    to left,
+    color-mix(in srgb, var(--background) 80%, transparent),
+    transparent
+  );
+}

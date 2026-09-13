@@ -3,7 +3,7 @@ import type { Locale } from '@/lib/locale'
 import { site } from '@/lib/site'
 import Link from 'next/link'
 import { LocaleSwitcher } from './locale-switcher'
-import { ScrambleText } from './scramble-text'
+import { NavBar } from './nav-bar'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header({ locale }: { locale: Locale }) {
@@ -25,14 +25,7 @@ export function Header({ locale }: { locale: Locale }) {
         <Link href={`/${locale}`} className="shrink-0 font-semibold tracking-tight">
           {site.name}
         </Link>
-        <nav className="flex items-center gap-3 text-base sm:gap-5" aria-label="Main">
-          {nav.map((item) => (
-            <Link key={item.key} href={item.href} className="link">
-              {/* 语言切换时导航文字做洗牌动效（B 方案，header 固定使用） */}
-              <ScrambleText id={`nav-${item.key}`} text={item.label} />
-            </Link>
-          ))}
-        </nav>
+        <NavBar items={nav} />
         <div className="flex shrink-0 items-center gap-1">
           <LocaleSwitcher current={locale} label={t.locale.switchTo} />
           <ThemeToggle label={t.theme.toggle} />
