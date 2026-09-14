@@ -279,3 +279,16 @@ body {
 .list-title:hover::after {
   transform: scaleX(1);
 }
+
+/* 签名水印定位：右下角背景装饰（Tailwind 未生成的类，手写确保生效） */
+.sig-watermark {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: 9rem;
+  z-index: -10;
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .sig-watermark { width: 11rem; }
+}

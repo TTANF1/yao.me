@@ -2,6 +2,7 @@ import { isLocale, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
 import { ScrambleText } from '@/components/scramble-text'
 import { Reveal } from '@/components/reveal'
+import { SignatureWatermark } from '@/components/signature-watermark'
 
 export default async function HomePage({
   params,
@@ -47,6 +48,8 @@ export default async function HomePage({
           />
         </Reveal>
       </section>
+      {/* 签名水印：右下角背景装饰，按笔画顺序描边画出（循环） */}
+      <SignatureWatermark className="sig-watermark" />
     </div>
   )
 }
