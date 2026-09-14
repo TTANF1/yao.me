@@ -292,3 +292,13 @@ body {
 @media (min-width: 640px) {
   .sig-watermark { width: 11rem; }
 }
+/* Tailwind v4 JIT 未自动生成的 snap 工具类（手写保证生效） */
+.snap-x {
+  scroll-snap-type: x var(--tw-scroll-snap-strictness, mandatory);
+}
+.snap-mandatory {
+  --tw-scroll-snap-strictness: mandatory;
+}
+.snap-start {
+  scroll-snap-align: start;
+}
