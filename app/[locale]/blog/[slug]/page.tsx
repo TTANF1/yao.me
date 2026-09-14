@@ -64,15 +64,7 @@ export default async function PostPage({
         <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
           <time dateTime={post.date}>{formatDate(post.date, locale)}</time>
           <span aria-hidden>·</span>
-          <span>
-            {t.posts.readingTime} {post.readingMinutes} min
-          </span>
-          {post.tags.length > 0 ? (
-            <>
-              <span aria-hidden>·</span>
-              <span>{post.tags.join(' / ')}</span>
-            </>
-          ) : null}
+          <span>{post.readingMinutes} min</span>
           {post.ai ? (
             <>
               <span aria-hidden>·</span>

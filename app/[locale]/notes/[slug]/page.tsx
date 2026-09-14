@@ -65,15 +65,7 @@ export default async function NotePage({
         <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
           <time dateTime={note.date}>{formatDate(note.date, locale)}</time>
           <span aria-hidden>·</span>
-          <span>
-            {t.posts.readingTime} {note.readingMinutes} min
-          </span>
-          {note.tags.length > 0 ? (
-            <>
-              <span aria-hidden>·</span>
-              <span>{note.tags.join(' / ')}</span>
-            </>
-          ) : null}
+          <span>{note.readingMinutes} min</span>
           {note.ai ? (
             <>
               <span aria-hidden>·</span>

@@ -22,7 +22,6 @@ export interface PostMeta {
   /** ISO 日期字符串，格式 YYYY-MM-DD */
   date: string
   summary: string
-  tags: string[]
   /** 是否使用了 AI 辅助（生成/润色/翻译） */
   ai?: boolean
   draft?: boolean
@@ -37,7 +36,7 @@ export interface Post extends PostMeta {
 /**
  * 内容管线：从 content/posts/<locale>/ 下的 Markdown 文件构建文章。
  * 添加文章 = 在对应语言目录放一个 .md 文件即可，frontmatter 约定：
- *   title / date / summary / tags / draft
+ *   title / date / summary / draft
  * 之后可扩展为从 Obsidian 知识库（D:\obsidian\YaosKnowledge）同步。
  */
 export type ContentKind = 'posts' | 'notes'
@@ -91,7 +90,6 @@ function getAllContent(kind: ContentKind, locale: Locale): PostMeta[] {
         title: String(data.title ?? slug),
         date: normalizeDate(data.date),
         summary: String(data.summary ?? ''),
-        tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
         ai: data.ai === true,
         draft: Boolean(data.draft),
       } satisfies PostMeta
@@ -131,7 +129,6 @@ async function getContent(kind: ContentKind, locale: Locale, slug: string): Prom
     title: String(data.title ?? slug),
     date: normalizeDate(data.date),
     summary: String(data.summary ?? ''),
-    tags: Array.isArray(data.tags) ? data.tags.map(String) : [],
     ai: data.ai === true,
     contentHtml: String(html),
     readingMinutes: Math.max(1, Math.round(content.length / 500)),

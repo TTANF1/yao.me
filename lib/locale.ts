@@ -32,7 +32,7 @@ export function formatDate(date: string, locale: Locale): string {
   if (!date) return ''
   return new Intl.DateTimeFormat(locale === 'zh' ? 'zh-CN' : 'en-US', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
   }).format(new Date(`${date}T00:00:00`))
 }

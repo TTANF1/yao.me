@@ -51,22 +51,13 @@ export default async function BlogPage({
                 <li key={post.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
                   <Link href={`/${locale}/blog/${post.slug}`} className="group block">
                     <div className="flex items-baseline justify-between gap-4">
-                      <h2 className="link text-lg font-medium">{post.title}</h2>
+                      <h2 className="list-title text-lg font-medium text-foreground/85 hover:text-foreground">{post.title}</h2>
                       <time className="shrink-0 text-sm text-muted">
                         {formatDate(post.date, locale)}
                       </time>
                     </div>
                     {post.summary ? (
                       <p className="mt-1.5 text-sm text-muted">{post.summary}</p>
-                    ) : null}
-                    {post.tags.length > 0 ? (
-                      <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted">
-                        {post.tags.map((tag) => (
-                          <span key={tag} className="rounded-full border border-line px-2 py-0.5">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
                     ) : null}
                   </Link>
                 </li>

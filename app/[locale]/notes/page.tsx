@@ -51,22 +51,13 @@ export default async function NotesPage({
               <li key={note.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
                 <Link href={`/${locale}/notes/${note.slug}`} className="group block">
                   <div className="flex items-baseline justify-between gap-4">
-                    <h2 className="link text-lg font-medium">{note.title}</h2>
+                    <h2 className="list-title text-lg font-medium text-foreground/85 hover:text-foreground">{note.title}</h2>
                     <time className="shrink-0 text-sm text-muted">
                       {formatDate(note.date, locale)}
                     </time>
                   </div>
                   {note.summary ? (
                     <p className="mt-1.5 text-sm text-muted">{note.summary}</p>
-                  ) : null}
-                  {note.tags.length > 0 ? (
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted">
-                      {note.tags.map((tag) => (
-                        <span key={tag} className="rounded-full border border-line px-2 py-0.5">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
                   ) : null}
                 </Link>
               </li>
