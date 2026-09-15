@@ -149,7 +149,7 @@ async play(): Promise<void> {
 
 ---
 
-## 四、动画工厂:让业务不用碰 DOM 样式
+## 四、动画工厂：让业务不用碰 DOM 样式
 
 Scheduler 只负责"编排"，真正把动画作用到 DOM 上的是 `AnimationFactory`。我提供了三种基础动画:
 
