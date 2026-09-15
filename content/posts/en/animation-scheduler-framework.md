@@ -1,7 +1,7 @@
 ---
-title: "From setTimeout Hell to Declarative Orchestration: An Animation Scheduling Framework I Wrote for an IP Main Stage"
+title: "The Rookie Game Developer's First H5 Animation Scheduler Framework"
 date: '2025-04-01'
-summary: "This framework eventually drove three independent storyline sequences in parallel on the same main stage, proving the reuse value of the abstraction itself. This post documents the four concepts I abstracted, the core execution model (serial nodes + parallel within a node), four categories of real pitfalls, and six judgments I distilled from this abstraction."
+summary: "Making games is awesome!"
 ai: true
 draft: false
 ---

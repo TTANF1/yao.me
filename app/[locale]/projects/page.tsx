@@ -1,4 +1,3 @@
-import PhoneFrame from '@/components/phone-frame'
 import ProjectCard from '@/components/project-card'
 import { Reveal } from '@/components/reveal'
 import { ScrambleText } from '@/components/scramble-text'
@@ -47,7 +46,7 @@ export default async function ProjectsPage({
         </Reveal>
       </div>
 
-      {/* 公司卡片流：PhoneFrame 独立渲染在卡片外，有 demo 的公司与卡片同排 */}
+      {/* 公司卡片流 */}
       <div className="mx-auto w-full max-w-2xl px-6 pb-32 pt-10">
         <div style={{ viewTransitionName: 'page-content' }} className="relative z-10">
           <div className="space-y-24">
@@ -57,11 +56,6 @@ export default async function ProjectsPage({
                 className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-center"
               >
                 <ProjectCard company={company} />
-                {company.demo ? (
-                  <>
-                    <PhoneFrame videos={company.demo.videos} />
-                  </>
-                ) : null}
               </div>
             ))}
           </div>

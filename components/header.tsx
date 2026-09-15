@@ -19,7 +19,8 @@ export function Header({ locale }: { locale: Locale }) {
 
   return (
     <header
-      className="sticky top-0 z-40 border-b border-line bg-background/80 backdrop-blur"
+      data-site-header
+      className="sticky top-0 z-40 border-b border-line bg-background/80 backdrop-blur transition-transform duration-300"
       style={{ viewTransitionName: 'site-header' }}
     >
       <div className="mx-auto flex min-h-14 w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 px-6 py-2">

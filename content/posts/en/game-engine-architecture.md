@@ -1,7 +1,7 @@
 ---
 title: "From Requirements to a Game Engine: An Architecture Evolution Retrospective on a Frontend Gamified Gameplay"
 date: '2025-06-16'
-summary: "How to break down requirements and design mockups into a 'level-based game engine', splitting complexity into four independently evolvable lines. This post records my full journey in a game-IP H5 project — from architecture planning, MVP, virtual-list refactor, seamless multi-map transitions, to finally crystallizing the gameplay into a frontend engine. The focus is on the pitfalls I hit at layer boundaries, and the five judgments I distilled from them."
+summary: "On how a single developer, owning the entire game zone under a reversed deadline, went from crash-and-burn to redemption."
 ai: true
 draft: false
 ---

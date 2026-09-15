@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import type { Company } from '@/lib/projects-data'
+import { useEffect, useRef, useState } from 'react'
 
 interface ProjectCardProps {
   company: Company

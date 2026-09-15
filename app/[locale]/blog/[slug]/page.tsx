@@ -7,6 +7,8 @@ import { getPost, getPostSlugs } from '@/lib/posts'
 import { ArrowLeftIcon } from '@/components/icons'
 import { ScrambleText } from '@/components/scramble-text'
 import { Reveal } from '@/components/reveal'
+import MermaidRenderer from '@/components/mermaid-renderer'
+import PostToc from '@/components/post-toc'
 
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
@@ -42,15 +44,9 @@ export default async function PostPage({
   if (!post) return notFound()
 
   return (
-    <article className="mx-auto w-full max-w-2xl px-6 py-16 sm:py-24">
-      <Link
-        href={`/${locale}/blog`}
-        className="link inline-flex items-center gap-1 text-sm"
-      >
-        <ArrowLeftIcon className="h-3.5 w-3.5" />
-        {t.posts.back}
-      </Link>
-
+    <article className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+      <PostToc locale={locale}>
+        <div className="mx-auto max-w-2xl">
       {/* 标题：语言切换时文字洗牌（B 方案；两语言标题一致时自动跳过） */}
       <ScrambleText
         id={`post-title-${slug}`}
@@ -74,13 +70,18 @@ export default async function PostPage({
         </div>
 
         <Reveal>
-          <div
-            className="prose prose-y mt-10 max-w-none"
-            // 内容来自本站 content/ 目录下自己维护的 Markdown，视为可信输入
-            dangerouslySetInnerHTML={{ __html: post.contentHtml }}
-          />
+          <MermaidRenderer html={post.contentHtml} />
         </Reveal>
       </div>
+          <Link
+            href={`/${locale}/blog`}
+            className="link mt-14 inline-flex items-center gap-1 border-t border-line pt-8 text-sm"
+          >
+            <ArrowLeftIcon className="h-3.5 w-3.5" />
+            {t.posts.back}
+          </Link>
+        </div>
+      </PostToc>
     </article>
   )
 }

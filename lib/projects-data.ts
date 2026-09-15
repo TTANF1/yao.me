@@ -1,10 +1,5 @@
 import type { Locale } from './locale';
 
-export interface CompanyDemo {
-  /** public/ 下的视频资源路径 */
-  videos: { src: string; label: string }[]
-}
-
 export interface Company {
   id: string
   name: string
@@ -12,24 +7,16 @@ export interface Company {
   period: string
   /** 公司维度的工作总结 */
   summary: string
-  /** 可选：演示视频（手机框架轮播） */
-  demo?: CompanyDemo
 }
 
 export const companiesZh: Company[] = [
   {
     id: 'alibaba-interactive',
     name: '阿里互动开放团队',
-    role: '高级前端开发工程师 / 核心前端开发',
+    role: '高级前端开发工程师',
     period: '2024.01 - 至今',
     summary:
-      '负责淘宝主端多游戏 IP 联合运营互动 H5（覆盖王者荣耀、蛋仔派对、种地吧、和平精英、如鸢等 IP，单个头部 IP 上线支撑百万级 DAU）与淘宝生态开发者控制台平台（面向小游戏 / 轻应用开发者的一体化控制台）。',
-    demo: {
-      videos: [
-        { src: '/daizai-demo.mp4', label: '蛋仔派对 · 跳格子' },
-        { src: '/ruyuan-demo.mp4', label: '如鸢 · 主舞台' },
-      ],
-    },
+      '负责淘宝主端多款头部游戏 IP 联合运营互动 H5（单个头部 IP 上线支撑百万级 DAU）与淘宝生态开发者控制台平台（面向小游戏 / 轻应用开发者的一体化控制台）。',
   },
   {
     id: 'xingshen',
@@ -53,16 +40,10 @@ export const companiesEn: Company[] = [
   {
     id: 'alibaba-interactive',
     name: 'Alibaba Interactive',
-    role: 'Senior / Core Frontend Engineer',
+    role: 'Senior Frontend Engineer',
     period: '2024.01 - Present',
     summary:
-      'Built Taobao main-app interactive H5 for co-operated game IPs (Honor of Kings, Eggy Party, Zhongdi Ba, Peace Elite, Ruyuan — single top IP sustains millions of DAU), and the Taobao ecosystem developer console for mini-game / mini-app developers.',
-    demo: {
-      videos: [
-        { src: '/daizai-demo.mp4', label: 'Eggy Party · Hopscotch' },
-        { src: '/ruyuan-demo.mp4', label: 'Ruyuan · Main Stage' },
-      ],
-    },
+      'Built Taobao main-app interactive H5 for co-operated game IPs (single top IP sustains millions of DAU), and the Taobao ecosystem developer console for mini-game / mini-app developers.',
   },
   {
     id: 'xingshen',

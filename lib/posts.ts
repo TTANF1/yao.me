@@ -5,7 +5,9 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
+import rehypeSlug from 'rehype-slug'
 import rehypeStringify from 'rehype-stringify'
+import { rehypeShiki } from './rehype-shiki'
 import type { Locale } from './locale'
 
 function normalizeDate(value: unknown): string {
@@ -121,6 +123,8 @@ async function getContent(kind: ContentKind, locale: Locale, slug: string): Prom
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype)
+    .use(rehypeSlug)
+    .use(rehypeShiki)
     .use(rehypeStringify)
     .process(content)
 

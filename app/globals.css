@@ -105,7 +105,84 @@ body {
 .prose-y code {
   font-family: var(--font-mono);
   font-size: 0.875em;
-}.prose-y img {
+}
+/* 行内代码：浅色底 + 圆角，明暗主题通用 */
+.prose-y :not(pre) > code {
+  background: color-mix(in srgb, var(--muted) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 5px;
+  padding: 0.15em 0.4em;
+  font-weight: 450;
+}
+/* 代码块：深色卡片，明暗主题通用 */
+.prose-y pre {
+  position: relative;
+  background: #0d1526;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+.prose-y pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.7;
+  color: #dbe4f0;
+  display: block;
+  min-width: max-content;
+}
+
+/* shiki 语法高亮：双主题输出（github-light 浅色默认 / github-dark 暗色），跟随网站主题 */
+.prose-y .shiki {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-radius: 10px;
+  padding: 1.1rem 1.2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.prose-y .shiki code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.7;
+  color: inherit;
+  display: block;
+  min-width: max-content;
+}
+/* 暗色主题：token 与背景切换到 shiki 的 dark 变量 */
+.dark .prose-y .shiki,
+.dark .prose-y .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+/* 代码块右上角语言标签 */
+.prose-y pre[data-lang]::after {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0.55rem;
+  right: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgb(148 163 184 / 0.65);
+  user-select: none;
+  pointer-events: none;
+}
+/* 标题锚点：滚动定位时避开 sticky header */
+.prose-y h2,
+.prose-y h3,
+.prose-y h4 {
+  scroll-margin-top: 6rem;
+}
+.prose-y img {
   border-radius: 10px;
   border: 1px solid var(--line);
   margin-bottom: 0.75rem;
@@ -292,13 +369,20 @@ body {
 @media (min-width: 640px) {
   .sig-watermark { width: 11rem; }
 }
-/* Tailwind v4 JIT 未自动生成的 snap 工具类（手写保证生效） */
-.snap-x {
-  scroll-snap-type: x var(--tw-scroll-snap-strictness, mandatory);
+
+/* Mermaid 流程图渲染容器：居中展示，宽图允许横向滚动，SVG 自适应容器宽度 */
+.mermaid-render {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+  -webkit-overflow-scrolling: touch;
 }
-.snap-mandatory {
-  --tw-scroll-snap-strictness: mandatory;
+.mermaid-render svg {
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  background: transparent !important;
 }
-.snap-start {
-  scroll-snap-align: start;
+.mermaid-render svg text {
+  font-family: inherit;
 }

@@ -8,6 +8,7 @@ import { defaultLocale, isLocale, locales, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
 import { site } from '@/lib/site'
 import { Header } from '@/components/header'
+import { ScrollHeader } from '@/components/scroll-header'
 import { Footer } from '@/components/footer'
 import { ThemeProvider } from '@/components/theme-provider'
 
@@ -85,6 +86,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
         <ThemeProvider>
           <Header locale={locale} />
+          <ScrollHeader />
           <main className="flex flex-1 flex-col">{children}</main>
           <Footer locale={locale} />
         </ThemeProvider>
