@@ -65,11 +65,21 @@ export default function PostToc({
 
   const label = locale === 'zh' ? '目录' : 'Contents'
 
+// 目录（aside）固定宽度：正文左缘到视口左缘不足该宽度时放不下目录，不显示
+const TOC_MIN_LEFT_SPACE = 230
+
+/** 正文（article 标签）左缘与视口左缘的距离是否放得下目录 */
+const canFitToc = () => {
+  const article = document.querySelector('article')
+  return article ? article.getBoundingClientRect().left >= TOC_MIN_LEFT_SPACE : false
+}
+
   return (
     <div
       className="relative"
       onMouseEnter={() => {
-        if (!locked) setVisible(true)
+        // 过渡在途或正文左侧空间不足时，不显示目录
+        if (!locked && canFitToc()) setVisible(true)
       }}
       onMouseLeave={() => setVisible(false)}
     >
