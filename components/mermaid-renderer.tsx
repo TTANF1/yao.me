@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { NAV_TRANSITION_END_EVENT, isNavTransitionInFlight } from '@/lib/nav-transition'
 
 interface MermaidRendererProps {
   html: string
@@ -96,7 +97,27 @@ export default function MermaidRenderer({ html }: MermaidRendererProps) {
       }
     }
 
-    void renderAll()
+    // 导航过渡在途（列表→详情）时延迟渲染：动态 import mermaid + 解析 SVG 会阻塞主线程，
+    // 与过渡动画重叠会造成明显掉帧（多 mermaid 图的长文尤为明显）
+    const runRender = () => {
+      if (isNavTransitionInFlight()) {
+        let done = false
+        let timer = 0
+        const unlock = () => {
+          if (done) return
+          done = true
+          window.clearTimeout(timer)
+          window.removeEventListener(NAV_TRANSITION_END_EVENT, unlock)
+          void renderAll()
+        }
+        // 兜底：事件异常丢失时强制渲染，避免流程图永不显示
+        timer = window.setTimeout(unlock, 2000)
+        window.addEventListener(NAV_TRANSITION_END_EVENT, unlock)
+        return
+      }
+      void renderAll()
+    }
+    runRender()
 
     // 主题切换（html.dark class 变化）时重新渲染所有流程图
     observer = new MutationObserver(() => {

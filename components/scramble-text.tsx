@@ -1,6 +1,7 @@
 'use client'
 
 import { useReducedMotion } from 'motion/react'
+import { isNavTransitionInFlight } from '@/lib/nav-transition'
 import { useEffect, useRef, useState, type ElementType } from 'react'
 
 /**
@@ -41,18 +42,25 @@ export function ScrambleText({
   id,
   as: Tag = 'span',
   className,
+  style,
 }: {
   text: string
   /** 全局稳定标识：用于跨重挂载还原上次文字，同一位置必须保持不变 */
   id: string
   as?: ElementType
   className?: string
+  /** 透传到渲染标签（详情页标题用它挂 view-transition-name，参与导航 morph） */
+  style?: React.CSSProperties
 }) {
   const [display, setDisplay] = useState(() => {
     // 语言切换场景（上次落定文字存在且与新文字不同）：首帧直接乱码，
     // 洗牌与 ViewTransition 过渡同步播放；其余场景（首访/同文字）直接显示目标文字
     const prev = lastTexts.get(id)
-    return prev !== undefined && prev !== text ? randomScramble(text.length) : text
+    // 导航过渡在途（列表→详情）时不洗牌：lastTexts 可能残留另一语言的标题，
+    // 误判为语言切换会导致过渡期间文字洗牌，与 morph 叠加造成重影/掉帧
+    return prev !== undefined && prev !== text && !isNavTransitionInFlight()
+      ? randomScramble(text.length)
+      : text
   })
   const displayRef = useRef(text)
   const timerRef = useRef<number | null>(null)
@@ -60,7 +68,9 @@ export function ScrambleText({
 
   useEffect(() => {
     const prev = lastTexts.get(id)
-    const animate = displayRef.current !== text || (prev !== undefined && prev !== text)
+    const animate =
+      !isNavTransitionInFlight() &&
+      (displayRef.current !== text || (prev !== undefined && prev !== text))
 
     if (!animate) {
       lastTexts.set(id, text)
@@ -123,5 +133,5 @@ export function ScrambleText({
     }
   }, [id, text, reduce])
 
-  return <Tag className={className}>{display}</Tag>
+  return <Tag className={className} style={style}>{display}</Tag>
 }

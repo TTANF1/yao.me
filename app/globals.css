@@ -272,6 +272,69 @@ body {
 }
 
 /* ============================================================
+   详情页导航过渡（跨文档式 View Transition 的同文档等价物）：
+   - 列表 → 详情（nav-forward）：旧内容左滑淡出，新内容右滑淡入
+   - 详情 → 列表（nav-back）：反向
+   - 标题共享元素（detail-title）：只做 morph，不叠加位移淡入淡出
+   - header 锚定不动（沿用上方 site-header 规则）
+   ============================================================ */
+/* 旧 root 快照默认 display:none（语言切换用）；导航时恢复可见，参与滑出 */
+html:active-view-transition-type(nav-forward)::view-transition-old(root),
+html:active-view-transition-type(nav-back)::view-transition-old(root) {
+  display: block;
+}
+html:active-view-transition-type(nav-forward)::view-transition-old(root) {
+  animation: nav-out-left 200ms ease-in both;
+}
+html:active-view-transition-type(nav-forward)::view-transition-new(root) {
+  animation: nav-in-right 300ms ease-out 140ms both;
+}
+html:active-view-transition-type(nav-back)::view-transition-old(root) {
+  animation: nav-out-right 200ms ease-in both;
+}
+html:active-view-transition-type(nav-back)::view-transition-new(root) {
+  animation: nav-in-left 300ms ease-out 140ms both;
+}
+@keyframes nav-out-left {
+  to {
+    translate: -44px;
+    opacity: 0;
+  }
+}
+@keyframes nav-in-right {
+  from {
+    translate: 56px;
+    opacity: 0;
+  }
+}
+@keyframes nav-out-right {
+  to {
+    translate: 44px;
+    opacity: 0;
+  }
+}
+@keyframes nav-in-left {
+  from {
+    translate: -56px;
+    opacity: 0;
+  }
+}
+
+/* 共享标题：morph 期间不叠加全局 page-out/page-in（旧/新帧都静止，由 group 完成形变） */
+html:active-view-transition-type(nav-forward)::view-transition-old(detail-title),
+html:active-view-transition-type(nav-forward)::view-transition-new(detail-title),
+html:active-view-transition-type(nav-back)::view-transition-old(detail-title),
+html:active-view-transition-type(nav-back)::view-transition-new(detail-title) {
+  animation: none;
+}
+/* 标题 morph 略快于内容滑动，先落定 */
+html:active-view-transition-type(nav-forward)::view-transition-group(detail-title),
+html:active-view-transition-type(nav-back)::view-transition-group(detail-title) {
+  animation-duration: var(--vt-morph-duration, 240ms);
+  z-index: 10;
+}
+
+/* ============================================================
    header 导航横向滚动
    ============================================================ */
 
@@ -355,6 +418,10 @@ body {
 }
 .list-title:hover::after {
   transform: scaleX(1);
+}
+/* 参与导航过渡的标题（快照拍摄期间）：临时禁掉 hover 下划线，避免被渲染进过渡帧 */
+.vt-transition-title::after {
+  display: none;
 }
 
 /* 签名水印定位：右下角背景装饰（Tailwind 未生成的类，手写确保生效） */

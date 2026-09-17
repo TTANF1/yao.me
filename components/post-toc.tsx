@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { Locale } from '@/lib/locale'
-import { ScrollToTop } from '@/components/scroll-to-top'
+import { isNavTransitionInFlight, NAV_TRANSITION_END_EVENT } from '@/lib/nav-transition'
 
 interface TocItem {
   id: string
@@ -28,6 +28,8 @@ export default function PostToc({
   const contentRef = useRef<HTMLDivElement>(null)
   const [items, setItems] = useState<TocItem[]>([])
   const [visible, setVisible] = useState(false)
+  // 页面切换过渡在途时锁定：目录不响应 hover，等过渡落定（nav-transition-end）后再显示
+  const [locked, setLocked] = useState(() => isNavTransitionInFlight())
 
   useEffect(() => {
     const root = contentRef.current
@@ -43,6 +45,18 @@ export default function PostToc({
     setItems(headings)
   }, [])
 
+  useEffect(() => {
+    if (!locked) return
+    const unlock = () => setLocked(false)
+    window.addEventListener(NAV_TRANSITION_END_EVENT, unlock)
+    // 兜底：过渡事件丢失（如过渡被跳过）时超时强制解锁，避免目录永久不可见
+    const t = window.setTimeout(unlock, 1600)
+    return () => {
+      window.removeEventListener(NAV_TRANSITION_END_EVENT, unlock)
+      window.clearTimeout(t)
+    }
+  }, [locked])
+
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
     if (!el) return
@@ -54,7 +68,9 @@ export default function PostToc({
   return (
     <div
       className="relative"
-      onMouseEnter={() => setVisible(true)}
+      onMouseEnter={() => {
+        if (!locked) setVisible(true)
+      }}
       onMouseLeave={() => setVisible(false)}
     >
       {/* 目录：fixed 固定在 header 下方，滚动文章时始终跟随视口；hover 渐显渐隐。
@@ -101,8 +117,6 @@ export default function PostToc({
         {children}
       </div>
 
-      {/* 文章详情页右下角回顶按钮（fixed 定位，不占布局） */}
-      <ScrollToTop />
     </div>
   )
 }

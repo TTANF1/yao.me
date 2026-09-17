@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react'
 import type { ReactNode } from 'react'
+import { isNavTransitionInFlight } from '@/lib/nav-transition'
 
 /**
  * 滚动入场动画：位移 24px + 淡入，0.9s 柔和缓动（easeOutCubic，不紧不慢的出场）。
@@ -18,7 +19,7 @@ export function Reveal({
   delay?: number
 }) {
   const reduce = useReducedMotion()
-  if (reduce) {
+  if (reduce || isNavTransitionInFlight()) {
     return <div className={className}>{children}</div>
   }
   return (

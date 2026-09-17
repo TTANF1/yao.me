@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { isLocale, formatDate, localizedAlternates, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
 import { getAllPosts } from '@/lib/posts'
 import { ScrambleText } from '@/components/scramble-text'
 import { Reveal } from '@/components/reveal'
+import { PostListLink } from '@/components/post-list-link'
 
 export async function generateMetadata({
   params,
@@ -42,14 +42,14 @@ export default async function BlogPage({
       />
 
       {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
-      <div style={{ viewTransitionName: 'page-content' }}>
+      <div style={{ viewTransitionName: 'page-content' }} data-vt-content>
 
         <Reveal>
           {posts.length > 0 ? (
             <ul className="mt-10 space-y-8">
               {posts.map((post) => (
                 <li key={post.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
-                  <Link href={`/${locale}/blog/${post.slug}`} className="group block">
+                  <PostListLink href={`/${locale}/blog/${post.slug}`} kind="post" slug={post.slug} className="group block">
                     <div className="flex items-baseline justify-between gap-4">
                       <h2 className="list-title text-lg font-medium text-foreground/85 hover:text-foreground">{post.title}</h2>
                       <time className="shrink-0 text-sm text-muted">
@@ -59,7 +59,7 @@ export default async function BlogPage({
                     {post.summary ? (
                       <p className="mt-1.5 text-sm text-muted">{post.summary}</p>
                     ) : null}
-                  </Link>
+                  </PostListLink>
                 </li>
               ))}
             </ul>
