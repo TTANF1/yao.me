@@ -162,20 +162,7 @@ body {
   background-color: var(--shiki-dark-bg) !important;
 }
 
-/* 代码块右上角语言标签 */
-.prose-y pre[data-lang]::after {
-  content: attr(data-lang);
-  position: absolute;
-  top: 0.55rem;
-  right: 0.75rem;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgb(148 163 184 / 0.65);
-  user-select: none;
-  pointer-events: none;
-}
+
 /* 标题锚点：滚动定位时避开 sticky header */
 .prose-y h2,
 .prose-y h3,
