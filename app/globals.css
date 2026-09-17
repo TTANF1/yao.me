@@ -320,17 +320,26 @@ html:active-view-transition-type(nav-back)::view-transition-new(root) {
   }
 }
 
-/* 共享标题：morph 期间不叠加全局 page-out/page-in（旧/新帧都静止，由 group 完成形变） */
+/* 共享标题：旧帧先快速淡出、新帧随后淡入（避免两帧全程叠加造成重影；
+   过渡收尾时 new 已完全显现且 group 停在终点（fill-mode both），
+   伪元素移除切回真实元素时无缝，不会出现"到位后又刷新一遍"） */
 html:active-view-transition-type(nav-forward)::view-transition-old(detail-title),
+html:active-view-transition-type(nav-back)::view-transition-old(detail-title) {
+  animation-duration: 150ms;
+  animation-timing-function: ease-in;
+}
 html:active-view-transition-type(nav-forward)::view-transition-new(detail-title),
-html:active-view-transition-type(nav-back)::view-transition-old(detail-title),
 html:active-view-transition-type(nav-back)::view-transition-new(detail-title) {
-  animation: none;
+  /* 淡入与 group morph 同步结束（时长 = morph 剩余段），避免短 morph 时标题到位后还在淡入 */
+  animation-duration: calc(var(--vt-morph-duration, 240ms) - 150ms);
+  animation-delay: 150ms;
+  animation-timing-function: ease-out;
 }
 /* 标题 morph 略快于内容滑动，先落定 */
 html:active-view-transition-type(nav-forward)::view-transition-group(detail-title),
 html:active-view-transition-type(nav-back)::view-transition-group(detail-title) {
   animation-duration: var(--vt-morph-duration, 240ms);
+  animation-fill-mode: both;
   z-index: 10;
 }
 
