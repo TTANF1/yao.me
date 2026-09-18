@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* ============================================================
+   Fusion Pixel Font（缝合像素字体）子集：10px 比例模式 zh-Hans
+   仅保留首页 / header / footer 实际用到的字符（173 字符，4.3KB）
+   ============================================================ */
+@font-face {
+  font-family: "Fusion Pixel";
+  src: url("/fonts/fusion-pixel-10px-zh-hans.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* 首页 hero、header、footer 使用像素字体（其他区域沿用 sans） */
+[data-site-header],
+footer,
+.font-pixel {
+  font-family: "Fusion Pixel", var(--font-sans);
+}
+
 /* 显式声明扫描目录：避免文件监视器在慢文件系统上漏扫新增文件 */
 @source "../components";
 @source "../app";
@@ -455,22 +473,24 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
 .nav-card {
   display: inline-flex;
   align-items: center;
-  padding: 0.32rem 0.75rem;
+  padding: 0.5rem 0.95rem;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--background) 72%, transparent);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--background) 92%, var(--foreground));
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.06), 0 3px 8px rgb(0 0 0 / 0.08);
   will-change: transform;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+/* 选中卡片边框：浅色主题偏暗的黑色、暗色主题偏亮的白色（前景色淡化版） */
 .nav-card[data-active='true'] {
   color: var(--foreground);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.08);
+  border-color: color-mix(in srgb, var(--foreground) 62%, transparent);
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.1), 0 4px 10px rgb(0 0 0 / 0.12);
 }
 .nav-card:hover {
-  box-shadow: 0 3px 14px rgb(0 0 0 / 0.1);
+  color: var(--foreground);
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.1), 0 4px 10px rgb(0 0 0 / 0.12);
 }
 
 /* ============================================================

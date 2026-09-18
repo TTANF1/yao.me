@@ -1,10 +1,10 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useReducedMotion } from 'motion/react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { ScrambleText } from './scramble-text'
 
@@ -34,11 +34,11 @@ const POSES = [
   { rotation: -3, y: 4 },
 ]
 /** 收起（非当前路由）姿态 */
-const REST = { scale: 0.82, opacity: 0.72 }
-/** 伸出（当前路由）姿态 */
-const ACTIVE = { scale: 1.12, opacity: 1, z: 4 }
+const REST = { scale: 0.85, opacity: 0.72 }
+/** 伸出（当前路由）姿态：明显放大，视觉上遮盖两侧相邻卡片 */
+const ACTIVE = { scale: 1.32, opacity: 1, z: 4 }
 /** hover 展示姿态（任意卡片摆正放大） */
-const HOVER = { scale: 1.14, opacity: 1, z: 5 }
+const HOVER = { scale: 1.28, opacity: 1, z: 5 }
 
 export function NavBar({ items }: { items: NavItem[] }) {
   const scroller = useRef<HTMLElement>(null)
@@ -138,7 +138,7 @@ export function NavBar({ items }: { items: NavItem[] }) {
       <nav
         ref={scroller}
         aria-label="Main"
-        className="no-scrollbar flex items-center gap-2.5 overflow-x-auto py-2 sm:gap-3"
+        className="no-scrollbar flex items-center gap-1 overflow-x-auto px-5 pt-2 pb-6 sm:gap-2 sm:px-5"
       >
         {items.map((item, i) => {
           const active = isActive(item.href)

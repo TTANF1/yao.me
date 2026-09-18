@@ -19,7 +19,7 @@ export default async function HomePage({
       style={{ viewTransitionName: 'page-home' }}
     >
       {/* Hero：GSAP 打字机逐行输出 + 闪烁光标（SSR 首帧输出完整文本，保证无 JS 可读与 SEO） */}
-      <section className="py-16 sm:py-20">
+      <section className="font-pixel py-16 sm:py-20">
         <HeroTypewriter
           lines={[
             {
