@@ -1,7 +1,7 @@
 ---
 title: "From a Handwritten Signature to an SVG Video Watermark: A Full Walkthrough of the Pitfalls"
 date: '2026-09-06'
-summary: "Turning a paper handwritten signature into an infinitely scalable SVG video watermark. A complete record of background removal, vectorization, parameter tuning, and export validation — including 4 real pitfalls and a tool comparison."
+summary: "The Freebie Guru — From Design to Vector Files, Not a Penny Spent."
 ai: true
 draft: false
 ---

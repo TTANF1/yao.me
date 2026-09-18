@@ -11,7 +11,7 @@ export const zh = {
     name: 'Yao',
     tagline: '前端工程师 · 内容创作者',
     intro:
-      '准备在小屋里折腾家居与视频，写写代码做些感兴趣的产品、努力学习动画（画点脑袋里的故事）。把从空屋到理想家的过程，慢慢记录下来。',
+      '让我们创造一点有趣的东西吧~',
   },
   posts: {
     title: '最新文章',
@@ -67,9 +67,9 @@ export const en: Messages = {
   hero: {
     greeting: "Hey, I'm",
     name: 'Yao',
-    tagline: 'Content Creator · Frontend Engineer',
+    tagline: 'Frontend Engineer · Content Creator',
     intro:
-      "Getting ready to tinker with home decor and videos in my lil house, writing code for products I care about, and keeping up with animation (drawing the stories in my head). Slowly documenting the journey from empty space to a home.",
+      "Let's make some shiiiiiiiiiiit~",
   },
   posts: {
     title: 'Latest Posts',

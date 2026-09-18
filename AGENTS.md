@@ -20,20 +20,21 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格，中英双语，免费路线部署（Vercel + 自有域名）。
 
 ## 技术栈
-- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion
+- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，首页打字机与导航卡片动画）
 - 内容为 Markdown（`content/`），构建时解析（`lib/posts.ts`），无 CMS
 
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、nav-bar、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card、post-toc、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
+- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card、post-toc、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
-3. **首页**：hero（你好我是 Yao）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
+3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
+4. **导航卡片**：header nav 每项是错落倾斜的小卡片（GSAP 确定性姿态表），当前路由的卡片伸出（摆正放大）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；移动端保留横向滚动与遮罩、语言切换洗牌
 4. **文章/随记**：列表 + 详情（MD 渲染、shiki 高亮、TOC、mermaid）；列表 title 用 `.list-title` 下划线 hover，date muted 色，只显示 "23 min" 不显示"阅读时长"文案；**列表→详情导航视图过渡**（复刻 Chrome MPA 演示：被点击行标题⇄详情页标题 morph + 按方向滑动，仅前进方向 nav-forward；**返回按钮在长文底部、不做过渡**，走普通导航；标题 morph 时长随位移距离自适应，避免远距离高速位移掉帧）
 5. **项目页**：按公司维度的极简卡片流（ProjectCard + Reveal），无 tags/highlights
 6. **SEO**：sitemap、robots、RSS feed、opengraph-image
@@ -88,6 +89,12 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - ② 入场动画播放期间容器 `pointer-events: none` 禁点内部链接（等动画结束才能点击跳转）：`onAnimationComplete` 置 settled + `useEffect` 1.2s 兜底超时强制放行（防 IO 未触发/动画中断导致永久锁死）
    - **注意**：render 期间调 `Date.now()` 会触发 React 19 react-hooks/purity 报错，时间窗口判断必须用事件驱动标志 + useState 快照
 
+11. **GSAP（gsap + @gsap/react，首页打字机 / 导航卡片）**（改动前必读）
+   - 必须用 useGSAP + scope，动画只在客户端（useLayoutEffect 时机，绘制前执行）；不要在 useGSAP 回调里再嵌套 gsap.context（嵌套 context 不在其清理范围内，unmount/revert 时旧动画残留）
+   - 不要用 useReducedMotion() 的值做 useGSAP 依赖：hydration 后它从 null 变为 false 会触发 useGSAP 重跑，新旧动画并存互相清空文本；改为回调内同步 window.matchMedia('(prefers-reduced-motion: reduce)') 读取
+   - 无限 repeat（repeat: -1）的 tween 不能放进 timeline：会把 timeline 的 duration 撑成 Infinity，整条时间线停在 0 秒不推进；放在 timeline 的 onComplete 回调里用 contextSafe 单独启动
+   - useGSAP 回调的 contextSafe 参数类型可为 undefined，使用前先判空（tsc 会报 TS2722）
+   - StrictMode 开发态 useGSAP 双跑属正常（第二次覆盖第一次）；浏览器后台标签（visibility: hidden）rAF 被暂停时 GSAP 动画冻结是浏览器省电行为，非代码问题
 10. **dev 首次编译竞态**：Turbopack 慢文件系统下，路由首次请求可能瞬时 404（编译未完成）——重试/热更新后恢复，非代码问题；验证过 git stash 对照原代码同样 200
 
 ## 内容结构约定
@@ -96,7 +103,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 当前状态
 - **最近提交**：`858a747`
-- 无进行中的大任务；小改动直接按上述注意事项执行
+- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；globals.css 新增 .nav-card / .type-cursor
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。

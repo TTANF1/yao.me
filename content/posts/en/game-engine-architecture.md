@@ -1,7 +1,7 @@
 ---
 title: "From Requirements to a Game Engine: An Architecture Evolution Retrospective on a Frontend Gamified Gameplay"
 date: '2025-06-16'
-summary: "On how a single developer, owning the entire game zone under a reversed deadline, went from crash-and-burn to redemption."
+summary: "On Surviving Crunch: Going From Total Collapse to Recovery While Being the Sole Dev for an Entire Game Area."
 ai: true
 draft: false
 ---
