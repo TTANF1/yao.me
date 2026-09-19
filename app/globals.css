@@ -499,21 +499,39 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
    header 导航卡片（GSAP 控制 transform/opacity/z-index，CSS 管外观）
    ============================================================ */
 .nav-card {
+  /* 四角 L 形角标（参考图样式）：每角"横线 + 竖线"两条渐变组成直角括号，无中间边线。
+     --nav-corner 前景色淡化版，明暗主题自动适配；background-position 用四角关键字对齐，
+     随卡片动态尺寸自适应 */
+  --nav-corner: color-mix(in srgb, var(--foreground) 88%, transparent);
+  position: relative;
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 0.95rem;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--background) 92%, var(--foreground));
+  border: 0;
+  border-radius: 0;
+  background:
+    /* 左上：横线（顶边 2px 高、左 8px 宽）+ 竖线（左边 2px 宽、顶 8px 高） */
+    linear-gradient(90deg, var(--nav-corner) 0 8px, transparent 8px) 0 0 / 8px 2px no-repeat,
+    linear-gradient(180deg, var(--nav-corner) 0 8px, transparent 8px) 0 0 / 2px 8px no-repeat,
+    /* 右上：横线（顶边 2px 高、右 8px 宽）+ 竖线（右边 2px 宽、顶 8px 高） */
+    linear-gradient(270deg, var(--nav-corner) 0 8px, transparent 8px) 100% 0 / 8px 2px no-repeat,
+    linear-gradient(180deg, var(--nav-corner) 0 8px, transparent 8px) 100% 0 / 2px 8px no-repeat,
+    /* 左下：横线（底边 2px 高、左 8px 宽）+ 竖线（左边 2px 宽、底 8px 高） */
+    linear-gradient(90deg, var(--nav-corner) 0 8px, transparent 8px) 0 100% / 8px 2px no-repeat,
+    linear-gradient(0deg, var(--nav-corner) 0 8px, transparent 8px) 0 100% / 2px 8px no-repeat,
+    /* 右下：横线（底边 2px 高、右 8px 宽）+ 竖线（右边 2px 宽、底 8px 高） */
+    linear-gradient(270deg, var(--nav-corner) 0 8px, transparent 8px) 100% 100% / 8px 2px no-repeat,
+    linear-gradient(0deg, var(--nav-corner) 0 8px, transparent 8px) 100% 100% / 2px 8px no-repeat,
+    color-mix(in srgb, var(--background) 92%, var(--foreground));
   box-shadow: 0 1px 0 rgb(0 0 0 / 0.06), 0 3px 8px rgb(0 0 0 / 0.08);
   will-change: transform;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-/* 选中卡片边框：浅色主题偏暗的黑色、暗色主题偏亮的白色（前景色淡化版） */
+/* 选中卡片：四角角标变前景色（浅色=偏暗黑、暗色=亮白），阴影加深 */
 .nav-card[data-active='true'] {
+  --nav-corner: var(--foreground);
   color: var(--foreground);
-  border-color: color-mix(in srgb, var(--foreground) 62%, transparent);
   box-shadow: 0 2px 0 rgb(0 0 0 / 0.1), 0 4px 10px rgb(0 0 0 / 0.12);
 }
 .nav-card:hover {

@@ -21,6 +21,7 @@ export interface NavItem {
  * - 每个 tab 是一张错落倾斜的小卡片（确定性姿态表，避免随机导致每次渲染抖动）
  * - 当前路由的卡片"伸出"（摆正放大、不透明、z 提升），其余"收起"（缩小、半透明、错落摆放）
  * - hover 任意卡片时 GSAP 平滑摆正放大展示；移出后回到各自姿态
+ * - 卡片放大时内部文字按 1/cardScale 反补偿，card×label 合成缩放恒为 1（1:1 原生渲染，像素字体全程不插值、始终清晰）
  * - 移动端内容溢出时横向滚动（隐藏滚动条），左右尽头渐隐遮罩
  * - 语言切换文字洗牌（ScrambleText）保留
  */
@@ -39,6 +40,11 @@ const REST = { scale: 0.85, opacity: 0.72 }
 const ACTIVE = { scale: 1.32, opacity: 1, z: 4 }
 /** hover 展示姿态（任意卡片摆正放大） */
 const HOVER = { scale: 1.28, opacity: 1, z: 5 }
+/** 文字反补偿：label scale = 1/cardScale，使 card × label 的合成缩放恒为 1（1:1 原生渲染）。
+    像素字体对非整数倍 transform 缩放会插值发糊；组合恒 1 时文字全程清晰（视觉字号恒 16px，
+    即"限制最大字号"的上限），卡片放大只放大面积。禁止改为 20/16/cardScale 之类的比例——
+    静止组合会变成非整数倍（如 1.25），静止后文字立刻变糊（已踩坑）。 */
+const labelScaleFor = (cardScale: number) => 1 / cardScale
 
 export function NavBar({ items }: { items: NavItem[] }) {
   const scroller = useRef<HTMLElement>(null)
@@ -82,42 +88,62 @@ export function NavBar({ items }: { items: NavItem[] }) {
       cards.forEach((card, i) => {
         const pose = POSES[i % POSES.length]
         const active = card.dataset.active === 'true'
+        const label = card.querySelector<HTMLElement>('[data-nav-label]')
         const duration = reduce ? 0 : 0.45
+        const labelScale = (cardScale: number) => labelScaleFor(cardScale)
+        /** 统一设置卡片姿态并同步 label 反补偿（hover 缩放后 leave 时一并恢复） */
+        const setPose = (
+          t: { rotation: number; y: number; scale: number; opacity: number; zIndex: number },
+          dur: number,
+          ease: string,
+          overwrite?: boolean,
+        ) => {
+          gsap.to(card, { ...t, duration: dur, ease, overwrite })
+          if (label) {
+            gsap.to(label, { scale: labelScale(t.scale), duration: dur, ease, overwrite })
+          }
+        }
 
         // 初始姿态：当前路由伸出摆正，其余按姿态表收起错落
-        gsap.to(card, {
-          rotation: active ? 0 : pose.rotation,
-          y: active ? 0 : pose.y,
-          scale: active ? ACTIVE.scale : REST.scale,
-          opacity: active ? ACTIVE.opacity : REST.opacity,
-          zIndex: active ? ACTIVE.z : 1,
-          duration,
-          ease: 'power2.out',
-        })
-
-        const onEnter = contextSafe(() => {
-          gsap.to(card, {
-            rotation: 0,
-            y: 0,
-            scale: HOVER.scale,
-            opacity: HOVER.opacity,
-            zIndex: HOVER.z,
-            duration: reduce ? 0 : 0.32,
-            ease: 'back.out(1.6)',
-            overwrite: 'auto',
-          })
-        })
-        const onLeave = contextSafe(() => {
-          gsap.to(card, {
+        setPose(
+          {
             rotation: active ? 0 : pose.rotation,
             y: active ? 0 : pose.y,
             scale: active ? ACTIVE.scale : REST.scale,
             opacity: active ? ACTIVE.opacity : REST.opacity,
             zIndex: active ? ACTIVE.z : 1,
-            duration: reduce ? 0 : 0.35,
-            ease: 'power2.out',
-            overwrite: 'auto',
-          })
+          },
+          duration,
+          'power2.out',
+        )
+
+        const onEnter = contextSafe(() => {
+          setPose(
+            {
+              rotation: 0,
+              y: 0,
+              scale: HOVER.scale,
+              opacity: HOVER.opacity,
+              zIndex: HOVER.z,
+            },
+            reduce ? 0 : 0.32,
+            'back.out(1.6)',
+            true,
+          )
+        })
+        const onLeave = contextSafe(() => {
+          setPose(
+            {
+              rotation: active ? 0 : pose.rotation,
+              y: active ? 0 : pose.y,
+              scale: active ? ACTIVE.scale : REST.scale,
+              opacity: active ? ACTIVE.opacity : REST.opacity,
+              zIndex: active ? ACTIVE.z : 1,
+            },
+            reduce ? 0 : 0.35,
+            'power2.out',
+            true,
+          )
         })
 
         card.addEventListener('mouseenter', onEnter)
@@ -138,7 +164,7 @@ export function NavBar({ items }: { items: NavItem[] }) {
       <nav
         ref={scroller}
         aria-label="Main"
-        className="no-scrollbar flex items-center gap-1 overflow-x-auto px-5 pt-2 pb-6 sm:gap-2 sm:px-5"
+        className="no-scrollbar flex items-center gap-1 overflow-x-auto px-6 pt-6 pb-6 sm:gap-6 sm:px-6"
       >
         {items.map((item, i) => {
           const active = isActive(item.href)
@@ -152,8 +178,10 @@ export function NavBar({ items }: { items: NavItem[] }) {
               aria-current={active ? 'page' : undefined}
               className="nav-card link shrink-0 whitespace-nowrap"
             >
-              {/* 语言切换时导航文字做洗牌动效（B 方案，header 固定使用） */}
-              <ScrambleText id={`nav-${item.key}`} text={item.label} />
+              {/* 文字反补偿层：卡片放大时此层反向缩放，限制视觉字号（像素字体整数倍上限，防发糊） */}
+              <span data-nav-label className="inline-block">
+                <ScrambleText id={`nav-${item.key}`} text={item.label} />
+              </span>
             </Link>
           )
         })}

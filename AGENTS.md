@@ -35,7 +35,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
 3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 打字机下方像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
-4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+圆角+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；滚动区带 x 轴 padding（px-3 sm:px-4）防旋转卡片被裁切；header 无底边框，选中卡片边框用前景色淡化版（浅色=暗黑/暗色=亮白）；移动端保留横向滚动与遮罩、语言切换洗牌
+4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+四角 L 形角标+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；**卡片缩放时内部文字按 1/cardScale 反补偿，card×label 合成缩放恒为 1（1:1 原生渲染，像素字体全程不插值、始终清晰）**；滚动区带 x 轴 padding（px-5 pt-6 pb-6 sm:gap-6，用户手调）防旋转卡片被裁切；header 无底边框，卡片四角用 8 层 background 渐变绘 L 形直角角标（--nav-corner 前景色 88%，选中变纯前景色，无中间边线，参考用户图样式）；移动端保留横向滚动与遮罩、语言切换洗牌
 4. **文章/随记**：列表 + 详情（MD 渲染、shiki 高亮、TOC、mermaid）；列表 title 用 `.list-title` 下划线 hover，date muted 色，只显示 "23 min" 不显示"阅读时长"文案；**列表→详情导航视图过渡**（复刻 Chrome MPA 演示：被点击行标题⇄详情页标题 morph + 按方向滑动，仅前进方向 nav-forward；**返回按钮在长文底部、不做过渡**，走普通导航；标题 morph 时长随位移距离自适应，避免远距离高速位移掉帧）
 5. **项目页**：按公司维度的极简卡片流（ProjectCard + Reveal），无 tags/highlights
 6. **SEO**：sitemap、robots、RSS feed、opengraph-image
@@ -96,6 +96,9 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 无限 repeat（repeat: -1）的 tween 不能放进 timeline：会把 timeline 的 duration 撑成 Infinity，整条时间线停在 0 秒不推进；放在 timeline 的 onComplete 回调里用 contextSafe 单独启动
    - useGSAP 回调的 contextSafe 参数类型可为 undefined，使用前先判空（tsc 会报 TS2722）
    - StrictMode 开发态 useGSAP 双跑属正常（第二次覆盖第一次）；浏览器后台标签（visibility: hidden）rAF 被暂停时 GSAP 动画冻结是浏览器省电行为，非代码问题
+   - 卡片文字防糊（已两轮踩坑）：文字包 [data-nav-label] 层，label scale 必须恒 = 1/cardScale（card×label 组合缩放 = 1，1:1 原生渲染全程清晰）；**禁止** 20/16/cardScale 之类比例——静止组合变非整数倍（如 1.25），静止后文字立刻发糊（用户实测“移入一瞬清晰、随后变糊”即此因）
+   - 四角 L 形角标（纯 CSS，参考用户图样式）：每角“横线+竖线”两条 background 渐变（双位置色标 0→8px 颜色、8px 透明，2px 线宽），8 层渐变+底色；background-position 用 0 0 / 100% 0 / 0 100% / 100% 100% 对齐四角（支持百分比，随卡片动态尺寸自适应）；无中间边线（border: 0）；--nav-corner 前景色 88%、选中纯前景色；**该浏览器不支持 box-shadow 的百分比偏移（calc(100% - 10px) 直接无效），别用 box-shadow 复制角标**
+   - 入场动画方案已废弃：曾做 sessionStorage 会话级“首次滑入”，用户反馈看不到效果、要求删除（同一标签页刷新不重播 + StrictMode 双跑陷阱）；nav 直接 mount 即设姿态，无入场
 12. **Fusion Pixel 像素字体（仅首页/header/footer）**（改动前必读）
    - 子集化产物：`public/fonts/fusion-pixel-10px-zh-hans.woff2`（173 字符 4.3KB，10px 比例模式 zh-Hans）
    - 生成：`scripts/font-subset/`——collect_chars.py 从 lib/messages.ts 提取 hero/nav/footer/locale/theme 的 zh+en 文案，并入 footer 静态文字、ScrambleText 符号池、数字与常用标点；fonttools 子集化时保留 `--layout-features="*"`（比例模式字距）
@@ -115,7 +118,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 当前状态
 - **最近提交**：`0d55468`（用户已自行提交 GSAP 打字机 + 导航卡片）
-- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；header 移除底边框 + nav 卡片便签样式（选中边框前景色淡化、active 遮盖两侧、滚动区 x padding）；Fusion Pixel 像素字体接入（public/fonts/ 子集 woff2 + globals.css @font-face + scripts/font-subset/）；globals.css 新增 .nav-card / .type-cursor / @font-face / .sprite-anim（首页像素 sprite 动画）
+- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；header 移除底边框 + nav 卡片便签样式（选中边框前景色淡化、active 遮盖两侧、滚动区 x padding）；Fusion Pixel 像素字体接入（public/fonts/ 子集 woff2 + globals.css @font-face + scripts/font-subset/）；globals.css 新增 .nav-card / .type-cursor / @font-face / .sprite-anim（首页像素 sprite 动画）；文字反补偿恒 1:1 防糊 + 四角 L 形角标（background 渐变，参考用户图样式；入场动画已按用户要求删除）
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
