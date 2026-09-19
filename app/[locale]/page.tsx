@@ -47,6 +47,8 @@ export default async function HomePage({
             },
           ]}
         />
+        {/* 像素风 sprite 动画：程序员工作场景 8 帧循环（public/sprite-sheet.png） */}
+        <div className="sprite-anim mt-8" aria-hidden="true" />
       </section>
       {/* 签名水印：右下角背景装饰，按笔画顺序描边画出（循环） */}
       <SignatureWatermark className="sig-watermark" />

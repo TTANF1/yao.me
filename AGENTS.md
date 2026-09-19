@@ -34,7 +34,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
-3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
+3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 打字机下方像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
 4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+圆角+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；滚动区带 x 轴 padding（px-3 sm:px-4）防旋转卡片被裁切；header 无底边框，选中卡片边框用前景色淡化版（浅色=暗黑/暗色=亮白）；移动端保留横向滚动与遮罩、语言切换洗牌
 4. **文章/随记**：列表 + 详情（MD 渲染、shiki 高亮、TOC、mermaid）；列表 title 用 `.list-title` 下划线 hover，date muted 色，只显示 "23 min" 不显示"阅读时长"文案；**列表→详情导航视图过渡**（复刻 Chrome MPA 演示：被点击行标题⇄详情页标题 morph + 按方向滑动，仅前进方向 nav-forward；**返回按钮在长文底部、不做过渡**，走普通导航；标题 morph 时长随位移距离自适应，避免远距离高速位移掉帧）
 5. **项目页**：按公司维度的极简卡片流（ProjectCard + Reveal），无 tags/highlights
@@ -102,6 +102,11 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - **新增/修改首页/header/footer 文案必须重跑子集化**，否则新字符回退系统字体造成字形突兀
    - @font-face 在 globals.css，仅应用于 `[data-site-header]` / `footer` / `.font-pixel`（首页 hero section）；blog/notes/projects/about 正文沿用 sans，勿扩散
    - 上游：TakWolf/fusion-pixel-font release `2026.09.01`，OFL-1.1
+13. **首页像素 sprite 动画（.sprite-anim，public/sprite-sheet.png）**（改动前必读）
+   - 8 帧横向序列，帧 342×266、步距 345px（含 3px 透明分隔）；用 CSS 纯动画实现（无 JS）
+   - 对齐数学：`background-size: 800% 100%`（图宽=8×容器宽）时，`background-position: p%` 左移 7×容器宽×p%，帧 k 需 p = 100k/7 → 关键帧 0/14.2857/28.5714/42.8571/57.1428/71.4285/85.7142/100%，配合 `steps(1)` 段内跳变（不做插值滑动）
+   - **禁止**把 position 写成等分百分比（12.5% 等）或用像素 position 配响应式宽度——都会错位
+   - 尊重 prefers-reduced-motion（animation: none 停在第 1 帧）；后台标签页 CSS 动画冻结同 GSAP rAF 限制，属浏览器行为
 10. **dev 首次编译竞态**：Turbopack 慢文件系统下，路由首次请求可能瞬时 404（编译未完成）——重试/热更新后恢复，非代码问题；验证过 git stash 对照原代码同样 200
 
 ## 内容结构约定
@@ -110,7 +115,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 当前状态
 - **最近提交**：`0d55468`（用户已自行提交 GSAP 打字机 + 导航卡片）
-- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；header 移除底边框 + nav 卡片便签样式（选中边框前景色淡化、active 遮盖两侧、滚动区 x padding）；Fusion Pixel 像素字体接入（public/fonts/ 子集 woff2 + globals.css @font-face + scripts/font-subset/）；globals.css 新增 .nav-card / .type-cursor / @font-face
+- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；header 移除底边框 + nav 卡片便签样式（选中边框前景色淡化、active 遮盖两侧、滚动区 x padding）；Fusion Pixel 像素字体接入（public/fonts/ 子集 woff2 + globals.css @font-face + scripts/font-subset/）；globals.css 新增 .nav-card / .type-cursor / @font-face / .sprite-anim（首页像素 sprite 动画）
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
