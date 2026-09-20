@@ -51,14 +51,14 @@ const contentRoots: Record<ContentKind, string> = {
 }
 
 function contentDir(kind: ContentKind, locale: Locale) {
-  return path.join(contentRoots[kind], locale)
+  return path.join(/*turbopackIgnore: true*/ contentRoots[kind], locale)
 }
 
 function getContentSlugs(kind: ContentKind, locale: Locale): string[] {
   const dir = contentDir(kind, locale)
-  if (!fs.existsSync(dir)) return []
+  if (!fs.existsSync(/*turbopackIgnore: true*/ dir)) return []
   return fs
-    .readdirSync(dir)
+    .readdirSync(/*turbopackIgnore: true*/ dir)
     .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
     .map((f) => f.replace(/\.mdx?$/, ''))
 }
@@ -81,13 +81,13 @@ export function getAllNotes(locale: Locale): PostMeta[] {
 
 function getAllContent(kind: ContentKind, locale: Locale): PostMeta[] {
   const dir = contentDir(kind, locale)
-  if (!fs.existsSync(dir)) return []
+  if (!fs.existsSync(/*turbopackIgnore: true*/ dir)) return []
   return getContentSlugs(kind, locale)
     .map((slug) => {
       const file = fs
-        .readdirSync(dir)
+        .readdirSync(/*turbopackIgnore: true*/ dir)
         .find((f) => f.replace(/\.mdx?$/, '') === slug)!
-      const raw = fs.readFileSync(path.join(dir, file), 'utf8')
+      const raw = fs.readFileSync(path.join(/*turbopackIgnore: true*/ dir, file), 'utf8')
       const { data, content } = matter(raw)
       return {
         slug,
@@ -115,10 +115,10 @@ async function getContent(kind: ContentKind, locale: Locale, slug: string): Prom
   const dir = contentDir(kind, locale)
   const mdPath = path.join(dir, `${slug}.md`)
   const mdxPath = path.join(dir, `${slug}.mdx`)
-  const filePath = fs.existsSync(mdPath) ? mdPath : fs.existsSync(mdxPath) ? mdxPath : null
+  const filePath = fs.existsSync(/*turbopackIgnore: true*/ mdPath) ? mdPath : fs.existsSync(/*turbopackIgnore: true*/ mdxPath) ? mdxPath : null
   if (!filePath) return null
 
-  const raw = fs.readFileSync(filePath, 'utf8')
+  const raw = fs.readFileSync(/*turbopackIgnore: true*/ filePath, 'utf8')
   const { data, content } = matter(raw)
   if (data.draft) return null
 

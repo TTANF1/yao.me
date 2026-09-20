@@ -11,6 +11,8 @@ import MermaidRenderer from '@/components/mermaid-renderer'
 import PostToc from '@/components/post-toc'
 import { ScrollToTop } from '@/components/scroll-to-top'
 
+export const dynamicParams = false
+
 export function generateStaticParams() {
   return locales.flatMap((locale) =>
     getPostSlugs(locale).map((slug) => ({ locale, slug })),
