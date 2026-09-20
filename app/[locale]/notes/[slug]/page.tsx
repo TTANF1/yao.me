@@ -45,7 +45,7 @@ export default async function NotePage({
   if (!note) return notFound()
 
   return (
-    <article className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+    <article className="mission-detail mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
       <PostToc locale={locale}>
         <div className="mx-auto max-w-2xl">
 

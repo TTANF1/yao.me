@@ -31,8 +31,8 @@ export const zh = {
   },
   projects: {
     title: '项目',
-    description: '我的来时路。',
-    empty: '作品集整理中，敬请期待。',
+    description: '一些为了解决问题，也为了好玩而做的东西。',
+    empty: '实验场正在搭建中。',
   },
   about: {
     title: '关于',
@@ -88,9 +88,9 @@ export const en: Messages = {
     back: 'Back to notes',
   },
   projects: {
-    title: 'Works',
-    description: 'My journey so far.',
-    empty: 'Portfolio is being prepared. Stay tuned.',
+    title: 'Projects',
+    description: 'Things made to solve a problem, or simply for the fun of it.',
+    empty: 'The playground is under construction.',
   },
   about: {
     title: 'About',

@@ -25,9 +25,9 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - 内容为 Markdown（`content/`），构建时解析（`lib/posts.ts`），无 CMS
 
 ## 目录架构
-- `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects、about
+- `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验场 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card、post-toc、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
+- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、post-toc、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 
@@ -37,7 +37,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 打字机下方像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
 4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+四角 L 形角标+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；**卡片缩放时内部文字按 1/cardScale 反补偿，card×label 合成缩放恒为 1（1:1 原生渲染，像素字体全程不插值、始终清晰）**；滚动区带 x 轴 padding（px-5 pt-6 pb-6 sm:gap-6，用户手调）防旋转卡片被裁切；header 无底边框，卡片四角用 8 层 background 渐变绘 L 形直角角标（--nav-corner 前景色 88%，选中变纯前景色，无中间边线，参考用户图样式）；移动端保留横向滚动与遮罩、语言切换洗牌
 4. **文章/随记**：列表 + 详情（MD 渲染、shiki 高亮、TOC、mermaid）；列表 title 用 `.list-title` 下划线 hover，date muted 色，只显示 "23 min" 不显示"阅读时长"文案；**列表→详情导航视图过渡**（复刻 Chrome MPA 演示：被点击行标题⇄详情页标题 morph + 按方向滑动，仅前进方向 nav-forward；**返回按钮在长文底部、不做过渡**，走普通导航；标题 morph 时长随位移距离自适应，避免远距离高速位移掉帧）
-5. **项目页**：按公司维度的极简卡片流（ProjectCard + Reveal），无 tags/highlights
+5. **项目页**：个人实验场，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 6. **SEO**：sitemap、robots、RSS feed、opengraph-image
 7. 404 刷新回首页
 
@@ -110,6 +110,11 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 对齐数学：`background-size: 800% 100%`（图宽=8×容器宽）时，`background-position: p%` 左移 7×容器宽×p%，帧 k 需 p = 100k/7 → 关键帧 0/14.2857/28.5714/42.8571/57.1428/71.4285/85.7142/100%，配合 `steps(1)` 段内跳变（不做插值滑动）
    - **禁止**把 position 写成等分百分比（12.5% 等）或用像素 position 配响应式宽度——都会错位
    - 尊重 prefers-reduced-motion（animation: none 停在第 1 帧）；后台标签页 CSS 动画冻结同 GSAP rAF 限制，属浏览器行为
+14. **Edgewise Playground 数据边界**：
+   - 演示素材来自 `D:\Project\edgewise\examples\desk8`，站点副本位于 `public/projects/edgewise/before.png|after.png`
+   - 候选像素坐标、RGB 与处理后 RGBA 来自真实 `desk8` 前后帧；当前没有 JEV API 凭据，页面中的 JEV score 是明确标注的交互演示值，禁止宣传成在线/真实模型响应
+   - 真正的管线先用确定性规则筛选候选，再按颜色去重交给 JEV；页面高亮的是代表像素，勿改成“JEV 逐像素扫描整张图片”的误导文案
+   - Playground 的 GSAP 动画遵守注意事项 11：useGSAP + scope、回调内同步读取 reduced-motion、无嵌套 context / 无限 timeline
 10. **dev 首次编译竞态**：Turbopack 慢文件系统下，路由首次请求可能瞬时 404（编译未完成）——重试/热更新后恢复，非代码问题；验证过 git stash 对照原代码同样 200
 
 ## 内容结构约定
@@ -117,8 +122,8 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
-- **最近提交**：`0d55468`（用户已自行提交 GSAP 打字机 + 导航卡片）
-- **未提交改动**：新增 gsap + @gsap/react 依赖；首页 hero 打字机（components/hero-typewriter.tsx）；header nav 卡片化（components/nav-bar.tsx 重写）；header 移除底边框 + nav 卡片便签样式（选中边框前景色淡化、active 遮盖两侧、滚动区 x padding）；Fusion Pixel 像素字体接入（public/fonts/ 子集 woff2 + globals.css @font-face + scripts/font-subset/）；globals.css 新增 .nav-card / .type-cursor / @font-face / .sprite-anim（首页像素 sprite 动画）；文字反补偿恒 1:1 防糊 + 四角 L 形角标（background 渐变，参考用户图样式；入场动画已按用户要求删除）
+- **最近提交**：`910df69`（导航卡片 L 形角标与文字反补偿）
+- **未提交改动**：Projects 从公司履历改为个人实验场；新增 `/[locale]/projects/edgewise` 与 `components/edgewise-playground.tsx`；接入 desk8 前后帧素材；新增 Edgewise 自动巡检、放大镜、规则/JEV 裁决、阈值与前后对比交互；更新双语 Projects 文案、sitemap 与配套样式
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。

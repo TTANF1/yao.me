@@ -12,6 +12,7 @@ import { ScrollHeader } from '@/components/scroll-header'
 import { Footer } from '@/components/footer'
 import { ThemeProvider } from '@/components/theme-provider'
 import { NavTransitionBridge } from '@/components/nav-transition-bridge'
+import { GameTransitionOverlay } from '@/components/game-transition-overlay'
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
@@ -87,6 +88,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-screen flex-col antialiased" suppressHydrationWarning>
         <ThemeProvider>
           <NavTransitionBridge />
+          <GameTransitionOverlay />
           <Header locale={locale} />
           <ScrollHeader />
           <main className="flex flex-1 flex-col">{children}</main>

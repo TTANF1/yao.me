@@ -3,7 +3,7 @@ import { defaultLocale, locales, type Locale } from '@/lib/locale'
 import { getNoteSlugs, getPostSlugs } from '@/lib/posts'
 import { site } from '@/lib/site'
 
-const STATIC_PATHS = ['', '/blog', '/notes', '/projects', '/about'] as const
+const STATIC_PATHS = ['', '/blog', '/notes', '/projects', '/projects/edgewise', '/about'] as const
 
 function languageAlternates(path: string): Record<string, string> {
   const languages: Record<string, string> = {

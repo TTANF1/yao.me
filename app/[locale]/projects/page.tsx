@@ -3,7 +3,7 @@ import { Reveal } from '@/components/reveal'
 import { ScrambleText } from '@/components/scramble-text'
 import { getMessages } from '@/lib/i18n'
 import { isLocale, localizedAlternates, type Locale } from '@/lib/locale'
-import { getCompanies } from '@/lib/projects-data'
+import { getProjects } from '@/lib/projects-data'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({
@@ -29,12 +29,12 @@ export default async function ProjectsPage({
   const { locale: raw } = await params
   const locale: Locale = isLocale(raw) ? raw : 'zh'
   const t = getMessages(locale)
-  const companies = getCompanies(locale)
+  const projects = getProjects(locale)
 
   return (
     <div className="relative w-full">
       {/* 页头 */}
-      <div className="relative z-10 mx-auto w-full max-w-2xl px-6 pt-16 sm:pt-24">
+      <div className="relative z-10 mx-auto w-full max-w-4xl px-6 pt-16 sm:pt-24">
         <ScrambleText
           id="page-title-projects"
           as="h1"
@@ -46,17 +46,14 @@ export default async function ProjectsPage({
         </Reveal>
       </div>
 
-      {/* 公司卡片流 */}
-      <div className="mx-auto w-full max-w-2xl px-6 pb-32 pt-10">
+      {/* 可玩的实验项目 */}
+      <div className="mx-auto w-full max-w-4xl px-6 pb-32 pt-10">
         <div style={{ viewTransitionName: 'page-content' }} className="relative z-10">
-          <div className="space-y-24">
-            {companies.map((company) => (
-              <div
-                key={company.id}
-                className="flex flex-col items-center gap-6 sm:flex-row sm:items-end sm:justify-center"
-              >
-                <ProjectCard company={company} />
-              </div>
+          <div className="space-y-10">
+            {projects.map((project) => (
+              <Reveal key={project.id}>
+                <ProjectCard project={project} locale={locale} />
+              </Reveal>
             ))}
           </div>
         </div>

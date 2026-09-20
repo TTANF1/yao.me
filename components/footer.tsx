@@ -9,7 +9,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="border-t border-line">
+    <footer className="game-footer border-t border-line">
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-6 py-8 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>
           © {year} {site.name}. {t.footer.rights}.

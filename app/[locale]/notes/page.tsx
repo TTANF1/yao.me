@@ -2,9 +2,7 @@ import type { Metadata } from 'next'
 import { isLocale, formatDate, localizedAlternates, type Locale } from '@/lib/locale'
 import { getMessages } from '@/lib/i18n'
 import { getAllNotes } from '@/lib/posts'
-import { ScrambleText } from '@/components/scramble-text'
-import { Reveal } from '@/components/reveal'
-import { PostListLink } from '@/components/post-list-link'
+import { MissionBoard } from '@/components/mission-board'
 
 export async function generateMetadata({
   params,
@@ -30,43 +28,35 @@ export default async function NotesPage({
   const locale: Locale = isLocale(raw) ? raw : 'zh'
   const t = getMessages(locale)
   const notes = getAllNotes(locale)
+  const boardCopy = locale === 'zh'
+    ? { code: 'MISSION LOG // 02', lead: '完成过的任务、踩过的坑，以及从现场带回来的记录。点击报告可展开预览。' }
+    : { code: 'MISSION LOG // 02', lead: 'Completed missions, field notes, and lessons carried home. Select a report to inspect it.' }
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-6 py-16 sm:py-24">
-      {/* 页头：语言切换时文字洗牌（B 方案） */}
-      <ScrambleText
-        id="page-title-notes"
-        as="h1"
-        className="text-3xl font-semibold tracking-tight"
-        text={t.notes.title}
-      />
+    <div className="game-page game-notes-page">
+      <div className="game-page-shard" aria-hidden="true" />
+      <header className="game-page-heading">
+        <p className="font-pixel">{boardCopy.code}</p>
+        <h1>{t.notes.title}</h1>
+        <span>{boardCopy.lead}</span>
+      </header>
 
-      {/* 内容：语言切换时块级滚动过渡（A 方案，原生 View Transition） */}
       <div style={{ viewTransitionName: 'page-content' }} data-vt-content>
-
-        <Reveal>
-          {notes.length > 0 ? (
-          <ul className="mt-10 space-y-8">
-            {notes.map((note) => (
-              <li key={note.slug} className="border-t border-line pt-6 first:border-t-0 first:pt-0">
-                <PostListLink href={`/${locale}/notes/${note.slug}`} kind="note" slug={note.slug} className="group block">
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h2 className="list-title text-lg font-medium text-foreground/85 hover:text-foreground">{note.title}</h2>
-                    <time className="shrink-0 text-sm text-muted">
-                      {formatDate(note.date, locale)}
-                    </time>
-                  </div>
-                  {note.summary ? (
-                    <p className="mt-1.5 text-sm text-muted">{note.summary}</p>
-                  ) : null}
-                </PostListLink>
-              </li>
-            ))}
-          </ul>
+        {notes.length > 0 ? (
+          <MissionBoard
+            locale={locale}
+            notes={notes.map((note) => ({
+              slug: note.slug,
+              title: note.title,
+              summary: note.summary ?? '',
+              date: formatDate(note.date, locale),
+              readingMinutes: note.readingMinutes,
+              ai: Boolean(note.ai),
+            }))}
+          />
         ) : (
           <p className="mt-10 text-muted">{t.notes.empty}</p>
-          )}
-        </Reveal>
+        )}
       </div>
     </div>
   )
