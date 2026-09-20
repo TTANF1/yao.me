@@ -51,7 +51,6 @@ export function MissionBoard({ notes, locale }: { notes: MissionNote[]; locale: 
         {notes.map((note, index) => (
           <li key={note.slug} style={{ '--mission-rotate': `${POSES[index % POSES.length]}deg` } as CSSProperties}>
             <button type="button" className="mission-report" onClick={() => setSelected(note)} aria-label={`${t.open}: ${note.title}`}>
-              <span className="mission-pin" aria-hidden="true" />
               <span className="mission-stamp font-pixel">{t.status}</span>
               <span className="mission-id font-pixel">REPORT // {String(index + 1).padStart(2, '0')}</span>
               <strong>{note.title}</strong>
@@ -62,6 +61,7 @@ export function MissionBoard({ notes, locale }: { notes: MissionNote[]; locale: 
               </span>
               <span className="mission-open-mark font-pixel">＋ OPEN</span>
             </button>
+            <span className="mission-pin" aria-hidden="true" />
           </li>
         ))}
       </ul>
