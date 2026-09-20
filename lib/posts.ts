@@ -24,6 +24,8 @@ export interface PostMeta {
   /** ISO 日期字符串，格式 YYYY-MM-DD */
   date: string
   summary: string
+  /** 粗略阅读时长（分钟），与详情页同算法 */
+  readingMinutes: number
   /** 是否使用了 AI 辅助（生成/润色/翻译） */
   ai?: boolean
   draft?: boolean
@@ -86,12 +88,13 @@ function getAllContent(kind: ContentKind, locale: Locale): PostMeta[] {
         .readdirSync(dir)
         .find((f) => f.replace(/\.mdx?$/, '') === slug)!
       const raw = fs.readFileSync(path.join(dir, file), 'utf8')
-      const { data } = matter(raw)
+      const { data, content } = matter(raw)
       return {
         slug,
         title: String(data.title ?? slug),
         date: normalizeDate(data.date),
         summary: String(data.summary ?? ''),
+        readingMinutes: Math.max(1, Math.round(content.length / 500)),
         ai: data.ai === true,
         draft: Boolean(data.draft),
       } satisfies PostMeta
