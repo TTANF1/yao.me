@@ -57,7 +57,7 @@ export default async function BlogPage({
         text={t.blog.title}
       />
       <p className="classified-page-lead">
-        {locale === 'zh' ? '⚠️⚠️⚠️绝密情报，如若泄露，将面临严重后果⚠️⚠️⚠️' : 'Top-secret information; any disclosure will result in serious consequences.'}
+        {locale === 'zh' ? '⚠️⚠️⚠️绝密情报，请勿泄露⚠️⚠️⚠️' : 'Top-secret information; any disclosure will result in serious consequences.'}
       </p>
 
       <div style={{ viewTransitionName: 'page-content' }} data-vt-content>
