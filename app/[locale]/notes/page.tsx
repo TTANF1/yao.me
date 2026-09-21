@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
-import { isLocale, formatDate, localizedAlternates, type Locale } from '@/lib/locale'
-import { getMessages } from '@/lib/i18n'
-import { getAllNotes } from '@/lib/posts'
 import { MissionBoard } from '@/components/mission-board'
+import { getMessages } from '@/lib/i18n'
+import { formatDate, isLocale, localizedAlternates, type Locale } from '@/lib/locale'
+import { getAllNotes, getNote } from '@/lib/posts'
+import type { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
@@ -27,10 +27,12 @@ export default async function NotesPage({
   const { locale: raw } = await params
   const locale: Locale = isLocale(raw) ? raw : 'zh'
   const t = getMessages(locale)
-  const notes = getAllNotes(locale)
+  const noteMeta = getAllNotes(locale)
+  const notes = (await Promise.all(noteMeta.map((note) => getNote(locale, note.slug))))
+    .filter((note) => note !== null)
   const boardCopy = locale === 'zh'
-    ? { code: 'MISSION LOG // 02', lead: '完成过的任务、踩过的坑，以及从现场带回来的记录。点击报告可展开预览。' }
-    : { code: 'MISSION LOG // 02', lead: 'Completed missions, field notes, and lessons carried home. Select a report to inspect it.' }
+    ? { code: 'MISSION LOG // 02', lead: '一闪而过的想法，不记录下来就会消失；想做的事情不立刻去做，就会被拖到放弃。' }
+    : { code: 'MISSION LOG // 02', lead: 'A fleeting thought will vanish if you don’t write it down; if you don’t do what you want to do right away, you’ll end up putting it off until you give up.' }
 
   return (
     <div className="game-page game-notes-page">

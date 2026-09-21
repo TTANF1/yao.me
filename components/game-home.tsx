@@ -41,7 +41,6 @@ export function GameHome({ locale, hero, nav }: GameHomeProps) {
         <div className="game-home-visual" aria-label="Yao working at a desk in pixel art">
           <div className="game-home-burst" aria-hidden="true" />
           <div className="sprite-anim game-home-sprite" aria-hidden="true" />
-          <span className="game-home-sticker font-pixel">READY!</span>
           <span className="game-home-level font-pixel">LV. 06 FRONTEND</span>
         </div>
       </section>
@@ -58,7 +57,6 @@ export function GameHome({ locale, hero, nav }: GameHomeProps) {
         ))}
       </nav>
       <SignatureWatermark className="game-home-signature" />
-      <p className="game-home-keyhint font-pixel"><kbd>↑</kbd><kbd>↓</kbd> CHOOSE <kbd>ENTER</kbd> GO</p>
     </div>
   )
 }

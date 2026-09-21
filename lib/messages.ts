@@ -5,7 +5,7 @@ import type { Locale } from './locale'
  * 类型以 zh 为准（en 必须与 zh 结构一致）。
  */
 export const zh = {
-  nav: { home: '首页', blog: '文章', notes: '随记', projects: '项目', about: '关于' },
+  nav: { home: '首页', blog: '档案', notes: '随记', projects: '实验室', about: '关于' },
   hero: {
     greeting: '你好，我是',
     name: 'Yao',
@@ -21,7 +21,7 @@ export const zh = {
     readingTime: '阅读时长',
   },
   blog: {
-    title: '文章',
+    title: '档案',
     empty: '还没有文章，敬请期待。',
   },
   notes: {
@@ -30,7 +30,7 @@ export const zh = {
     back: '返回随记',
   },
   projects: {
-    title: '项目',
+    title: '实验室',
     description: '一些为了解决问题，也为了好玩而做的东西。',
     empty: '实验场正在搭建中。',
   },
@@ -63,7 +63,7 @@ export const zh = {
 export type Messages = typeof zh
 
 export const en: Messages = {
-  nav: { home: 'Home', blog: 'Blog', notes: 'Notes', projects: 'Works', about: 'About' },
+  nav: { home: 'Home', blog: 'Archive', notes: 'Notes', projects: 'Labs', about: 'About' },
   hero: {
     greeting: "Hey, I'm",
     name: 'Yao',
@@ -79,7 +79,7 @@ export const en: Messages = {
     readingTime: 'Reading time',
   },
   blog: {
-    title: 'Blog',
+    title: 'Archive',
     empty: 'No posts yet. Stay tuned.',
   },
   notes: {
@@ -88,7 +88,7 @@ export const en: Messages = {
     back: 'Back to notes',
   },
   projects: {
-    title: 'Projects',
+    title: 'Labs',
     description: 'Things made to solve a problem, or simply for the fun of it.',
     empty: 'The playground is under construction.',
   },

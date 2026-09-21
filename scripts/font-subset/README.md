@@ -2,7 +2,7 @@
 
 ## 用途
 yao.me 首页 / header / footer 使用 Fusion Pixel Font（10px 比例模式 zh-Hans）的**子集**，
-只含这些区域实际用到的字符（173 字符，产物 4.3KB）。
+只含这些区域实际用到的字符（175 字符，产物 4.4KB）。
 
 ## 重新生成（文案变更后）
 1. 下载字体包（GitHub release `2026.09.01`）：

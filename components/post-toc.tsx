@@ -1,132 +1,228 @@
 'use client'
 
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { Locale } from '@/lib/locale'
 import { isNavTransitionInFlight, NAV_TRANSITION_END_EVENT } from '@/lib/nav-transition'
 
-interface TocItem {
-  id: string
-  text: string
-  level: number
-}
+interface TocItem { id: string; text: string; level: number }
+const ROW_HEIGHT = 36
+const TOC_MIN_LEFT_SPACE = 232
+const FALLBACK_READING_LINE = 130
 
-/**
- * 文章页左侧目录：
- * - 从正文 DOM 提取 h2 / h3（id 由 rehype-slug 生成），构建两级目录
- * - 目录固定在视口左侧（header 下方），滚动文章时始终可见，不再受文章容器高度限制
- * - 鼠标进入文章详情区域时目录渐显，移出时渐隐（平时透明且不拦截交互）
- * - 点击目录项平滑滚动到对应标题（scrollIntoView smooth）
- * - 仅 md 及以上视口显示，移动端隐藏
- */
-export default function PostToc({
-  children,
-  locale,
-}: {
-  children: ReactNode
-  locale: Locale
-}) {
+export default function PostToc({ children, locale }: { children: ReactNode; locale: Locale }) {
   const contentRef = useRef<HTMLDivElement>(null)
+  const railRef = useRef<HTMLElement>(null)
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const mobileRef = useRef<HTMLDetailsElement>(null)
+  const unlockJump = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const jumpTarget = useRef<string | null>(null)
   const [items, setItems] = useState<TocItem[]>([])
-  const [visible, setVisible] = useState(false)
-  // 页面切换过渡在途时锁定：目录不响应 hover，等过渡落定（nav-transition-end）后再显示
+  const [activeId, setActiveId] = useState('')
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [railWidth, setRailWidth] = useState(0)
   const [locked, setLocked] = useState(() => isNavTransitionInFlight())
+  const captionId = useId()
 
   useEffect(() => {
     const root = contentRef.current
     if (!root) return
-
-    const headings = Array.from(root.querySelectorAll<HTMLElement>('h2, h3'))
-      .filter((h) => h.id)
-      .map((h) => ({
-        id: h.id,
-        text: h.textContent?.trim() ?? '',
-        level: h.tagName === 'H3' ? 3 : 2,
-      }))
-    setItems(headings)
-  }, [])
+    const headings = Array.from(root.querySelectorAll<HTMLElement>('h2[id], h3[id]'))
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const left = root.getBoundingClientRect().left
+      setRailWidth(left >= TOC_MIN_LEFT_SPACE ? Math.min(280, left - 40) : 0)
+      if (!headings.length) return
+      // Keep the reading line aligned with the heading's CSS scroll target. Using
+      // a separate viewport percentage made a freshly clicked heading land at
+      // one position while the active-section calculation used another.
+      const scrollMargin = Number.parseFloat(window.getComputedStyle(headings[0]).scrollMarginTop)
+      const marker = Number.isFinite(scrollMargin) ? scrollMargin : FALLBACK_READING_LINE
+      let current = headings[0]
+      for (const heading of headings) {
+        if (heading.getBoundingClientRect().top <= marker) current = heading
+        else break
+      }
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) current = headings[headings.length - 1]
+      // A click owns the active marker until its smooth scroll settles.
+      if (!jumpTarget.current) setActiveId(current.id)
+    }
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update) }
+    const initialize = requestAnimationFrame(() => {
+      setItems(headings.map((heading) => ({
+        id: heading.id,
+        text: heading.textContent?.trim() ?? '',
+        level: heading.tagName === 'H3' ? 3 : 2,
+      })))
+      update()
+    })
+    const cancelJump = () => {
+      jumpTarget.current = null
+      if (unlockJump.current) {
+        clearTimeout(unlockJump.current)
+        unlockJump.current = null
+      }
+      schedule()
+    }
+    const scrollEnd = () => {
+      if (jumpTarget.current) cancelJump()
+    }
+    const resize = new ResizeObserver(schedule)
+    resize.observe(root)
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    window.addEventListener('scrollend', scrollEnd)
+    window.addEventListener('wheel', cancelJump, { passive: true })
+    window.addEventListener('touchstart', cancelJump, { passive: true })
+    return () => {
+      cancelAnimationFrame(initialize)
+      cancelAnimationFrame(frame)
+      resize.disconnect()
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      window.removeEventListener('scrollend', scrollEnd)
+      window.removeEventListener('wheel', cancelJump)
+      window.removeEventListener('touchstart', cancelJump)
+      if (unlockJump.current) clearTimeout(unlockJump.current)
+    }
+  }, [locale])
 
   useEffect(() => {
     if (!locked) return
     const unlock = () => setLocked(false)
     window.addEventListener(NAV_TRANSITION_END_EVENT, unlock)
-    // 兜底：过渡事件丢失（如过渡被跳过）时超时强制解锁，避免目录永久不可见
-    const t = window.setTimeout(unlock, 1600)
+    const timer = window.setTimeout(unlock, 1600)
     return () => {
       window.removeEventListener(NAV_TRANSITION_END_EVENT, unlock)
-      window.clearTimeout(t)
+      window.clearTimeout(timer)
     }
   }, [locked])
 
-  const scrollTo = (id: string) => {
-    const el = document.getElementById(id)
-    if (!el) return
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const activeIndex = Math.max(0, items.findIndex((item) => item.id === activeId))
+  const focusIndex = hoveredIndex ?? activeIndex
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport || expanded) return
+    // Scroll only the rail, never the article or document.
+    viewport.scrollTop = Math.max(0, activeIndex * ROW_HEIGHT - viewport.clientHeight / 2 + ROW_HEIGHT / 2)
+  }, [activeIndex, expanded, railWidth, locked])
+
+  const collapse = () => {
+    setExpanded(false)
+    setHoveredIndex(null)
   }
 
-  const label = locale === 'zh' ? '目录' : 'Contents'
+  const scrollTo = (id: string) => {
+    const heading = document.getElementById(id)
+    if (!heading) return
+    if (unlockJump.current) clearTimeout(unlockJump.current)
+    jumpTarget.current = id
+    setActiveId(id)
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    heading.scrollIntoView({ behavior: reduce ? 'instant' : 'smooth', block: 'start' })
+    history.replaceState(history.state, '', '#' + encodeURIComponent(id))
+    unlockJump.current = setTimeout(() => {
+      jumpTarget.current = null
+      unlockJump.current = null
+      window.dispatchEvent(new Event('scroll'))
+    }, reduce ? 0 : 1600)
+    if (mobileRef.current?.open) {
+      mobileRef.current.open = false
+      mobileRef.current.querySelector('summary')?.focus({ preventScroll: true })
+    }
+  }
 
-// 目录（aside）固定宽度：正文左缘到视口左缘不足该宽度时放不下目录，不显示
-const TOC_MIN_LEFT_SPACE = 230
-
-/** 正文（article 标签）左缘与视口左缘的距离是否放得下目录 */
-const canFitToc = () => {
-  const article = document.querySelector('article')
-  return article ? article.getBoundingClientRect().left >= TOC_MIN_LEFT_SPACE : false
-}
+  const label = locale === 'zh' ? '文章目录' : 'Article contents'
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => {
-        // 过渡在途或正文左侧空间不足时，不显示目录
-        if (!locked && canFitToc()) setVisible(true)
-      }}
-      onMouseLeave={() => setVisible(false)}
-    >
-      {/* 目录：fixed 固定在 header 下方，滚动文章时始终跟随视口；hover 渐显渐隐。
-          随记等没有章节标题的文章不渲染目录（空目录无意义）。 */}
-      {items.length > 0 && (
+    <div className="post-reading-layout">
+      {items.length > 0 && railWidth > 0 && !locked ? (
         <aside
-          aria-hidden={!visible}
-          className={`fixed z-10 hidden transition-opacity duration-300 md:block ${
-            visible ? 'opacity-100' : 'pointer-events-none opacity-0'
-          }`}
-          style={{
-            top: 'max(5.5rem, 88px)',
-            // 正文 max-w-2xl 居中后，目录落在正文左侧空白区（窄视口下退到页边距）
-            left: 'max(1.5rem, calc(50vw - 37rem))',
-            width: '230px',
+          ref={railRef}
+          className="post-toc-rail"
+          data-expanded={expanded || undefined}
+          style={{ '--toc-width': railWidth + 'px', '--toc-selector-y': focusIndex * ROW_HEIGHT + 'px' } as CSSProperties}
+          onPointerEnter={(event) => { if (event.pointerType === 'mouse') setExpanded(true) }}
+          onPointerLeave={() => { if (!railRef.current?.contains(document.activeElement)) collapse() }}
+          onFocus={() => setExpanded(true)}
+          onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) collapse() }}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              (document.activeElement as HTMLElement)?.blur()
+              collapse()
+            }
+            if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+              event.preventDefault()
+              const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : Math.max(0, Math.min(items.length - 1, focusIndex + (event.key === 'ArrowDown' ? 1 : -1)))
+              railRef.current?.querySelectorAll<HTMLAnchorElement>('a')[next]?.focus()
+            }
           }}
         >
           <nav aria-label={label}>
-            <p className="text-xs font-medium uppercase tracking-wider text-muted">{label}</p>
-            <ul className="mt-3 space-y-1 border-l border-line pl-3.5 text-[13px] leading-snug">
-              {items.map((item) => (
-                <li key={item.id}>
-                  <a
-                    href={`#${item.id}`}
-                    onClick={(e) => {
-                      e.preventDefault()
-                      scrollTo(item.id)
-                    }}
-                    className={`block py-0.5 text-muted transition-colors duration-200 hover:text-foreground ${
-                      item.level === 3 ? 'pl-3' : ''
-                    }`}
-                  >
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div ref={viewportRef} className="post-toc-viewport">
+              <ol>
+                <li className="post-toc-selector" aria-hidden="true"><span /></li>
+                {items.map((item, index) => {
+                  const distance = Math.min(4, Math.abs(index - focusIndex))
+                  const active = item.id === activeId
+                  return (
+                    <li key={item.id} className="post-toc-item" data-active={active || undefined} data-distance={distance} data-level={item.level}>
+                      <a
+                        href={'#' + encodeURIComponent(item.id)}
+                        aria-current={active ? 'location' : undefined}
+                        aria-describedby={expanded && distance === 0 ? captionId : undefined}
+                        onPointerEnter={(event) => { if (event.pointerType === 'mouse') setHoveredIndex(index) }}
+                        onFocus={() => setHoveredIndex(index)}
+                        onClick={(event) => {
+                          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                          event.preventDefault()
+                          setExpanded(true)
+                          setHoveredIndex(index)
+                          scrollTo(item.id)
+                        }}
+                      >
+                        <span className="post-toc-bar" aria-hidden="true" />
+                        <span className="post-toc-title">{item.text}</span>
+                        <span className="post-toc-reading-dot" aria-hidden="true" />
+                      </a>
+                    </li>
+                  )
+                })}
+              </ol>
+            </div>
+            <div className="post-toc-caption" aria-hidden={!expanded}>
+              <span>{String(focusIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
+              <p id={captionId}>{items[focusIndex]?.text}</p>
+            </div>
           </nav>
         </aside>
-      )}
+      ) : null}
 
-      {/* 内容布局：正文本身居中，目录以 fixed 浮动层形式悬浮在左侧，不挤占正文位置 */}
-      <div ref={contentRef} className="mx-auto w-full max-w-2xl">
+      <div ref={contentRef} className="post-reading-content mx-auto w-full max-w-2xl">
+        {items.length > 0 && railWidth === 0 && !locked ? (
+          <details ref={mobileRef} className="post-toc-mobile" onKeyDown={(event) => {
+            if (event.key === 'Escape' && mobileRef.current) {
+              mobileRef.current.open = false
+              mobileRef.current.querySelector('summary')?.focus()
+            }
+          }}>
+            <summary>{label}<span aria-hidden="true"> +</span></summary>
+            <nav aria-label={label}>
+              {items.map((item) => (
+                <a key={item.id} href={'#' + encodeURIComponent(item.id)} data-level={item.level} aria-current={item.id === activeId ? 'location' : undefined}
+                  onClick={(event) => {
+                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                    event.preventDefault()
+                    scrollTo(item.id)
+                  }}>{item.text}</a>
+              ))}
+            </nav>
+          </details>
+        ) : null}
         {children}
       </div>
-
     </div>
   )
 }

@@ -47,14 +47,14 @@ export default async function PostPage({
   if (!post) return notFound()
 
   return (
-    <article className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+    <article className="classified-detail mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
       <PostToc locale={locale}>
         <div className="mx-auto max-w-2xl">
       {/* 标题：语言切换时文字洗牌（B 方案；两语言标题一致时自动跳过） */}
       <ScrambleText
         id={`post-title-${slug}`}
         as="h1"
-        className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl"
+        className="classified-detail-title mt-6 text-3xl font-semibold tracking-tight sm:text-4xl"
         style={{ viewTransitionName: 'detail-title', width: 'fit-content' }}
         text={post.title}
       />
@@ -68,7 +68,7 @@ export default async function PostPage({
           {post.ai ? (
             <>
               <span aria-hidden>·</span>
-              <span className="rounded-full border border-line px-2 py-0.5 text-xs">{locale === 'zh' ? 'AI 辅助' : 'AI-assisted'}</span>
+              <span className="text-xs">{locale === 'zh' ? 'AI 辅助' : 'AI-assisted'}</span>
             </>
           ) : null}
         </div>

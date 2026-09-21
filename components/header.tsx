@@ -33,7 +33,7 @@ export function Header({ locale }: { locale: Locale }) {
               className="h-full w-full object-cover"
             />
           </span>
-          <span>YAO<span className="text-accent">//</span>ME</span>
+          <span>YAO<span className="text-accent">{'//'}</span>ME</span>
         </GameTransitionLink>
         <nav className="game-hud-nav" aria-label="Main">
           {nav.map((item, index) => (
