@@ -1190,7 +1190,11 @@ body {
   .mission-board li { max-width: 100%; }
   .mission-report { min-height: 250px; }
   .game-page-shard { left: -15%; width: 115%; }
-  .game-page-heading > span { max-width: 88%; font-size: 0.82rem; }
+  .game-page-heading > span {
+    max-width: 88%;
+    color: color-mix(in srgb, var(--background) 88%, transparent);
+    font-size: 0.82rem;
+  }
   .mission-preview { box-shadow: 9px 11px 0 #111; }
   .game-transition-walker { width: 175px; }
 }
