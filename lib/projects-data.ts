@@ -17,9 +17,9 @@ const projects: Record<Locale, PlaygroundProject[]> = {
     {
       id: 'edgewise',
       name: 'Edgewise',
-      kicker: '像素边缘鉴证所',
+      kicker: '颜色归队',
       summary:
-        '观察规则引擎与 JEV 如何锁定受背景色污染的边缘像素，再把颜色拉回主体内部。',
+        '把散落的候选像素收成颜色组。一次判断，让同色像素沿原路归位。',
       status: 'PLAYABLE / 01',
       href: '/projects/edgewise',
       tags: ['PIXEL ART', 'JEV', 'COMPUTER VISION'],
@@ -31,9 +31,9 @@ const projects: Record<Locale, PlaygroundProject[]> = {
     {
       id: 'edgewise',
       name: 'Edgewise',
-      kicker: 'Pixel Forensics Lab',
+      kicker: 'Colors, reunited',
       summary:
-        'Watch the rule engine and Jev isolate wall-contaminated edge pixels, then pull their color back toward the subject.',
+        'Gather scattered candidate pixels by color. One judgment sends a whole group home.',
       status: 'PLAYABLE / 01',
       href: '/projects/edgewise',
       tags: ['PIXEL ART', 'JEV', 'COMPUTER VISION'],
