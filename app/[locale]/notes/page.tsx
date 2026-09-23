@@ -1,4 +1,5 @@
 import { MissionBoard } from '@/components/mission-board'
+import { ScrambleText } from '@/components/scramble-text'
 import { getMessages } from '@/lib/i18n'
 import { formatDate, isLocale, localizedAlternates, type Locale } from '@/lib/locale'
 import { getAllNotes, getNote } from '@/lib/posts'
@@ -30,18 +31,20 @@ export default async function NotesPage({
   const noteMeta = getAllNotes(locale)
   const notes = (await Promise.all(noteMeta.map((note) => getNote(locale, note.slug))))
     .filter((note) => note !== null)
-  const boardCopy = locale === 'zh'
-    ? { code: 'MISSION LOG // 02', lead: '一闪而过的想法，不记录下来就会消失；想做的事情不立刻去做，就会被拖到放弃。' }
-    : { code: 'MISSION LOG // 02', lead: 'A fleeting thought will vanish if you don’t write it down; if you don’t do what you want to do right away, you’ll end up putting it off until you give up.' }
+  const lead = locale === 'zh'
+    ? '一闪而过的想法，不记录下来就会消失；想做的事情不立刻去做，就会被拖到放弃。'
+    : 'A fleeting thought will vanish if you don’t write it down; if you don’t do what you want to do right away, you’ll end up putting it off until you give up.'
 
   return (
-    <div className="game-page game-notes-page">
-      <div className="game-page-shard" aria-hidden="true" />
-      <header className="game-page-heading">
-        <p className="font-pixel">{boardCopy.code}</p>
-        <h1>{t.notes.title}</h1>
-        <span>{boardCopy.lead}</span>
-      </header>
+    <div className="classified-page notes-page">
+      <p className="classified-kicker">NOTES // {locale === 'zh' ? 'LITTLE THOUGHTS' : 'FIELD NOTES'}</p>
+      <ScrambleText
+        id="page-title-notes"
+        as="h1"
+        className="classified-page-title"
+        text={t.notes.title}
+      />
+      <p className="classified-page-lead">{lead}</p>
 
       <div style={{ viewTransitionName: 'page-content' }} data-vt-content>
         {notes.length > 0 ? (
@@ -50,9 +53,9 @@ export default async function NotesPage({
             notes={notes.map((note) => ({
               slug: note.slug,
               title: note.title,
-              summary: note.summary ?? '',
               date: formatDate(note.date, locale),
-              readingMinutes: note.readingMinutes,
+              dateIso: note.date,
+              contentHtml: note.contentHtml,
               ai: Boolean(note.ai),
             }))}
           />

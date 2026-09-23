@@ -27,7 +27,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验场 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
+- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 
@@ -36,7 +36,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
 3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 打字机下方像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
 4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+四角 L 形角标+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；**卡片缩放时内部文字按 1/cardScale 反补偿，card×label 合成缩放恒为 1（1:1 原生渲染，像素字体全程不插值、始终清晰）**；滚动区带 x 轴 padding（px-5 pt-6 pb-6 sm:gap-6，用户手调）防旋转卡片被裁切；header 无底边框，卡片四角用 8 层 background 渐变绘 L 形直角角标（--nav-corner 前景色 88%，选中变纯前景色，无中间边线，参考用户图样式）；移动端保留横向滚动与遮罩、语言切换洗牌
-5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记是可展开的任务报告钉板。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
+5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；文章、随记、项目列表头部统一使用 blog 的 `classified-page` / kicker / title / lead 基线；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记采用整块毛毡背景与错落便签，只展示标题、模拟笔迹和日期；点击便签在当前页展开全文，关闭后返回原位。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
 6. **项目页**：个人实验场，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
@@ -122,13 +122,23 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 此处文案与编号使用 sans/mono，不扩大 Fusion Pixel 子集的使用范围；浅/深色各有低饱和纸色。CSS transition 可中断且支持 reduced-motion，无新增依赖。
 15. **dev 首次编译竞态**：Turbopack 慢文件系统下，路由首次请求可能瞬时 404（编译未完成）——重试/热更新后恢复，非代码问题；验证过 git stash 对照原代码同样 200
 
+16. **列表页头部一致性**：
+   - blog、notes、projects 列表页共用 `classified-page`、`classified-kicker`、`classified-page-title` 和 `classified-page-lead`，保持同一内容列宽、顶部内边距、标题字号和导语间距；页面特有内容从 `clamp(3rem, 7vw, 5.5rem)` 的统一起始距离展开。
+   - notes 仍在统一头部下承载毛毡便签板；projects 仍承载实验卡片。新增列表页不要恢复各自的 Tailwind 头部间距。
+
+17. **随记毛毡板（mission-board.tsx）**：
+   - 服务端将已解析的 `contentHtml` 传给便签组件；便签不展示 summary / 阅读时长 / 任务编号，点击直接在本页阅读全文，独立详情路由仍可直接访问。
+   - 原生 `dialog.showModal()` 保证顶层展示和背景 inert；Motion 从点击便签的真实位置、尺寸、旋转角展开纸张，关闭时重新测量原位（兼容 resize）。只动画纸张尺寸与位置，正文单独渐显，避免文字缩放变形；Mermaid 在展开落定后才挂载渲染器。
+   - 关闭动画结束后才卸载 dialog / 解除 body 锁定并恢复滚动；父组件 effect 在源便签重新可见后恢复焦点，不能在子组件清理期间对隐藏源元素 focus。支持关闭按钮、板面空白、Esc、原生焦点约束和 reduced-motion。
+   - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动。全部使用 sans / mono，不新增像素字体字符或依赖。
+
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
-- **最近提交**：`e243a4b`（任务板样式调整）
-- **未提交改动**：文章页优化为年份倒序分层重叠档案袋，支持单年份抽取/固定/外部及 Esc 收回、明暗纸色与窄屏下展；详情页移除背景纹理，左缘目录升级为共享选框和局部轮转标题，加入真实阅读标记、长目录滚动、完整标题提示与窄屏目录入口，并修正章节定位线及点击后的 active 同步；About 已恢复原简介与联系方式；首页关闭文字选择，移除 READY 与键盘提示并保留 LV. 06 FRONTEND 标签；修复随记读取时长类型、图钉裁切、移动端横向溢出及导语颜色；修复 Header JSX 注释文本 lint；按 messages.ts 最新文案重建 Fusion Pixel 字体子集。
+- **最近提交**：`c738b1e`（feat: 更新游戏页面标题样式，调整颜色混合效果）
+- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。

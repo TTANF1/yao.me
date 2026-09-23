@@ -32,23 +32,21 @@ export default async function ProjectsPage({
   const projects = getProjects(locale)
 
   return (
-    <div className="relative w-full">
-      {/* 页头 */}
-      <div className="relative z-10 mx-auto w-full max-w-4xl px-6 pt-16 sm:pt-24">
-        <ScrambleText
-          id="page-title-projects"
-          as="h1"
-          className="text-3xl font-semibold tracking-tight"
-          text={t.projects.title}
-        />
-        <Reveal>
-          <p className="mt-4 text-muted">{t.projects.description}</p>
-        </Reveal>
-      </div>
+    <div className="classified-page projects-page">
+      <p className="classified-kicker">LABS // {locale === 'zh' ? 'OPEN EXPERIMENTS' : 'OPEN EXPERIMENTS'}</p>
+      <ScrambleText
+        id="page-title-projects"
+        as="h1"
+        className="classified-page-title"
+        text={t.projects.title}
+      />
+      <Reveal>
+        <p className="classified-page-lead">{t.projects.description}</p>
+      </Reveal>
 
       {/* 可玩的实验项目 */}
-      <div className="mx-auto w-full max-w-4xl px-6 pb-32 pt-10">
-        <div style={{ viewTransitionName: 'page-content' }} className="relative z-10">
+      <div className="projects-list">
+        <div style={{ viewTransitionName: 'page-content' }}>
           <div className="space-y-10">
             {projects.map((project) => (
               <Reveal key={project.id}>
