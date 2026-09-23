@@ -376,70 +376,6 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
   z-index: 10;
 }
 
-/* ============================================================
-   header 导航横向滚动
-   ============================================================ */
-
-/* 隐藏滚动条（Firefox / WebKit / Chromium） */
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* 滚动尽头渐隐遮罩：80% 透明度与 header 毛玻璃背景（bg-background/80）一致，随明暗主题自动适配 */
-.nav-fade-left {
-  background: linear-gradient(
-    to right,
-    color-mix(in srgb, var(--background) 80%, transparent),
-    transparent
-  );
-}
-.nav-fade-right {
-  background: linear-gradient(
-    to left,
-    color-mix(in srgb, var(--background) 80%, transparent),
-    transparent
-  );
-}
-
-/* ============================================================
-   Project 卡片底部公路线（两侧实线 + 中间虚线，延伸动画）
-   ============================================================ */
-@keyframes road-draw {
-  from {
-    stroke-dashoffset: 420;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* 虚线画完后的流动循环（标线向后移动，营造公路感） */
-@keyframes road-flow {
-  to {
-    stroke-dashoffset: -21;
-  }
-}
-
-.road-solid {
-  stroke-dasharray: 420;
-  animation: road-draw 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.road-solid:nth-child(2) {
-  animation-delay: 0.15s;
-}
-
-.road-dash {
-  stroke-dasharray: 12 9;
-  animation:
-    road-draw 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-    road-flow 1.6s linear 1.1s infinite;
-}
-
 /* 列表标题（文章/随记）：hover 时从左到右出现细下划线 */
 .list-title {
   position: relative;
@@ -466,19 +402,6 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
   display: none;
 }
 
-/* 签名水印定位：右下角背景装饰（Tailwind 未生成的类，手写确保生效） */
-.sig-watermark {
-  position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  width: 9rem;
-  z-index: -10;
-  pointer-events: none;
-}
-@media (min-width: 640px) {
-  .sig-watermark { width: 11rem; }
-}
-
 /* Mermaid 流程图渲染容器：居中展示，宽图允许横向滚动，SVG 自适应容器宽度 */
 .mermaid-render {
   margin: 1.5rem 0;
@@ -495,63 +418,6 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
 .mermaid-render svg text {
   font-family: inherit;
 }
-/* ============================================================
-   header 导航卡片（GSAP 控制 transform/opacity/z-index，CSS 管外观）
-   ============================================================ */
-.nav-card {
-  /* 四角 L 形角标（参考图样式）：每角"横线 + 竖线"两条渐变组成直角括号，无中间边线。
-     --nav-corner 前景色淡化版，明暗主题自动适配；background-position 用四角关键字对齐，
-     随卡片动态尺寸自适应 */
-  --nav-corner: color-mix(in srgb, var(--foreground) 88%, transparent);
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.95rem;
-  border: 0;
-  border-radius: 0;
-  background:
-    /* 左上：横线（顶边 2px 高、左 8px 宽）+ 竖线（左边 2px 宽、顶 8px 高） */
-    linear-gradient(90deg, var(--nav-corner) 0 8px, transparent 8px) 0 0 / 8px 2px no-repeat,
-    linear-gradient(180deg, var(--nav-corner) 0 8px, transparent 8px) 0 0 / 2px 8px no-repeat,
-    /* 右上：横线（顶边 2px 高、右 8px 宽）+ 竖线（右边 2px 宽、顶 8px 高） */
-    linear-gradient(270deg, var(--nav-corner) 0 8px, transparent 8px) 100% 0 / 8px 2px no-repeat,
-    linear-gradient(180deg, var(--nav-corner) 0 8px, transparent 8px) 100% 0 / 2px 8px no-repeat,
-    /* 左下：横线（底边 2px 高、左 8px 宽）+ 竖线（左边 2px 宽、底 8px 高） */
-    linear-gradient(90deg, var(--nav-corner) 0 8px, transparent 8px) 0 100% / 8px 2px no-repeat,
-    linear-gradient(0deg, var(--nav-corner) 0 8px, transparent 8px) 0 100% / 2px 8px no-repeat,
-    /* 右下：横线（底边 2px 高、右 8px 宽）+ 竖线（右边 2px 宽、底 8px 高） */
-    linear-gradient(270deg, var(--nav-corner) 0 8px, transparent 8px) 100% 100% / 8px 2px no-repeat,
-    linear-gradient(0deg, var(--nav-corner) 0 8px, transparent 8px) 100% 100% / 2px 8px no-repeat,
-    color-mix(in srgb, var(--background) 92%, var(--foreground));
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.06), 0 3px 8px rgb(0 0 0 / 0.08);
-  will-change: transform;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-/* 选中卡片：四角角标变前景色（浅色=偏暗黑、暗色=亮白），阴影加深 */
-.nav-card[data-active='true'] {
-  --nav-corner: var(--foreground);
-  color: var(--foreground);
-  box-shadow: 0 2px 0 rgb(0 0 0 / 0.1), 0 4px 10px rgb(0 0 0 / 0.12);
-}
-.nav-card:hover {
-  color: var(--foreground);
-  box-shadow: 0 2px 0 rgb(0 0 0 / 0.1), 0 4px 10px rgb(0 0 0 / 0.12);
-}
-
-/* ============================================================
-   首页 hero 打字机光标（GSAP 控制显隐与闪烁）
-   ============================================================ */
-.type-cursor {
-  display: inline-block;
-  width: 2px;
-  height: 1.05em;
-  margin-left: 3px;
-  border-radius: 1px;
-  background: currentColor;
-  vertical-align: -0.15em;
-}
-
 /* ============================================================
    Edgewise — colors, reunited
    ============================================================ */
@@ -1011,38 +877,6 @@ body {
   87.5%, 100% { background-position: 100% 0; }
 }
 
-/* Game page headings and mission-report board */
-.game-page {
-  position: relative;
-  isolation: isolate;
-  width: min(1120px, 100%);
-  margin: 0 auto;
-  padding: clamp(3rem, 7vw, 6.5rem) clamp(1rem, 4vw, 3rem) 9rem;
-  overflow-x: clip;
-}
-.game-page-shard {
-  position: absolute;
-  z-index: -1;
-  top: 1rem;
-  left: -8vw;
-  width: 62%;
-  height: 15rem;
-  transform: rotate(-4deg);
-  background: var(--foreground);
-  clip-path: polygon(2% 12%, 100% 0, 91% 78%, 8% 100%);
-}
-.game-page-heading { max-width: 54rem; color: var(--background); transform: rotate(-1.5deg); }
-.game-page-heading > p { color: #ff3347; font-size: 10px; letter-spacing: 0.16em; }
-.game-page-heading h1 {
-  margin-top: 0.4rem;
-  font-size: clamp(4rem, 10vw, 8.5rem);
-  font-style: italic;
-  font-weight: 1000;
-  letter-spacing: -0.08em;
-  line-height: 0.85;
-  text-shadow: 5px 5px 0 var(--accent);
-}
-.game-page-heading > span { display: block; max-width: 38rem; margin-top: 1rem; color: color-mix(in srgb, var(--foreground) 74%, transparent); line-height: 1.7; }
 /* Felt board / notes that unfold into a reading sheet */
 .notes-page { padding-bottom: 6rem; }
 .notes-page .felt-board { margin-top: clamp(3rem, 7vw, 5.5rem); }
@@ -1102,17 +936,18 @@ body {
 @media (hover: hover) {
   .note-card:hover { transform: translateY(-4px) rotate(calc(var(--note-angle) * .5)); box-shadow: 2px 6px 8px #18251b26, 5px 18px 20px -8px #18251b66; }
 }
-.note-dialog { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; overflow: hidden; background: transparent; color: inherit; }
+.note-dialog { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; overflow: hidden; background: transparent; color: inherit; display: grid; place-items: center; }
+.note-dialog:not([open]) { display: none; }
 .note-dialog::backdrop { background: transparent; }
 .note-shade { position: absolute; inset: 0; background: #161e19a8; pointer-events: none; }
-.note-reader { position: absolute; display: flex; flex-direction: column; padding: 38px 26px 24px; margin: 0; transform-origin: center; box-shadow: 0 18px 70px #0c160c40, 0 3px 8px #0c160c30; }
+.note-reader { position: relative; display: flex; flex-direction: column; padding: 38px 26px 24px; margin: 0; transform-origin: center; box-shadow: 0 18px 70px #0c160c40, 0 3px 8px #0c160c30; }
 .note-reader .note-title { flex-shrink: 0; }
 .note-close { position: absolute; z-index: 2; top: 9px; right: 10px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: #60695d; cursor: pointer; transition: background 150ms ease; }
 .note-close:hover { background: #33372f0d; }
 .note-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; }
 .note-close:focus-visible, .note-reading-scroll:focus-visible { outline: 2px solid #697862; outline-offset: 2px; }
-.note-reading-area { position: relative; min-height: 0; flex: 1; margin-top: 23px; }
-.note-reading-scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8c938375 transparent; padding: 0 14px 8px 0; }
+.note-reading-area { display: flex; min-height: 0; flex: 1; margin-top: 23px; }
+.note-reading-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8c938375 transparent; padding: 0 14px 8px 0; }
 .note-reading-scroll .prose { margin-top: 0; font-size: 15px; line-height: 1.95; overflow-wrap: anywhere; }
 .note-reading-scroll .prose > :first-child { margin-top: 0; }
 .note-reading-scroll .prose > :last-child { margin-bottom: 0; }
@@ -1180,12 +1015,6 @@ body {
   .game-hud-nav a { padding-inline: 0.5rem; font-size: 0.68rem; }
   .game-hud-nav a i { display: none; }
   .game-header-tools { gap: 0; }
-  .game-page-shard { left: -15%; width: 115%; }
-  .game-page-heading > span {
-    max-width: 88%;
-    color: color-mix(in srgb, var(--background) 88%, transparent);
-    font-size: 0.82rem;
-  }
   .game-transition-walker { width: 175px; }
 }
 @media (prefers-reduced-motion: reduce) {

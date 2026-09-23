@@ -21,13 +21,14 @@ const copy = {
 } as const
 
 type PaperRect = { left: number; top: number; width: number; height: number; rotate: number }
+type ReadingTarget = { width: number; maxHeight: number; centerX: number; centerY: number }
 type Selection = {
   note: MissionNote
   index: number
   source: HTMLButtonElement
   origin: PaperRect
   shadow: string
-  target: PaperRect
+  target: ReadingTarget
   reduced: boolean
 }
 
@@ -42,12 +43,23 @@ function paperRect(element: HTMLElement): PaperRect {
     rotate: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI,
   }
 }
-
-function readingRect(): PaperRect {
+function readingRect(): ReadingTarget {
   const inset = window.innerWidth < 600 ? 12 : 32
   const width = Math.min(720, window.innerWidth - inset * 2)
-  const height = Math.min(820, window.innerHeight - inset * 2)
-  return { left: (window.innerWidth - width) / 2, top: (window.innerHeight - height) / 2, width, height, rotate: 0 }
+  const maxHeight = Math.min(820, window.innerHeight - inset * 2)
+  return { width, maxHeight, centerX: window.innerWidth / 2, centerY: window.innerHeight / 2 }
+}
+function flightFrom(r: PaperRect, target: ReadingTarget) {
+  return {
+    width: r.width,
+    x: r.left + r.width / 2 - target.centerX,
+    y: r.top + r.height / 2 - target.centerY,
+    rotate: r.rotate,
+  }
+}
+
+function openState(target: ReadingTarget) {
+  return { width: target.width, x: 0, y: 0, rotate: 0 }
 }
 
 function Handwriting() {
@@ -113,12 +125,13 @@ function NoteReader({ selection, locale, onClosed }: { selection: Selection; loc
       <motion.div className="note-shade" aria-hidden="true" initial={{ opacity: 0 }} animate={{ opacity: closing ? 0 : 1 }} transition={{ duration }} />
       <motion.article
         className="note-paper note-reader"
+        style={{ maxHeight: target.maxHeight }}
         data-paper={selection.index % 3}
         data-closing={closing || undefined}
         data-state={closing ? 'closing' : settled ? 'open' : 'opening'}
-        initial={reduced ? { ...target, opacity: 0 } : { ...origin, boxShadow: selection.shadow }}
+        initial={reduced ? { ...openState(target), opacity: 0 } : { ...flightFrom(origin, target), boxShadow: selection.shadow }}
         animate={{
-          ...(closing ? (reduced ? target : returnTo) : target),
+          ...(closing ? (reduced ? openState(target) : { ...flightFrom(returnTo, target), height: returnTo.height }) : openState(target)),
           opacity: reduced && closing ? 0 : 1,
           boxShadow: closing ? returnShadow : '0px 18px 70px 0px rgba(12,22,12,0.25), 0px 3px 8px 0px rgba(12,22,12,0.19)',
         }}

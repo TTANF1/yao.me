@@ -20,22 +20,22 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格，中英双语，免费路线部署（Vercel + 自有域名）。
 
 ## 技术栈
-- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，首页打字机与导航卡片动画）
+- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，Edgewise 实验场与导航过渡动画）
 - 首页/header/footer 使用 Fusion Pixel 像素字体（10px 比例模式 zh-Hans 子集，OFL-1.1）
 - 内容为 Markdown（`content/`），构建时解析（`lib/posts.ts`），无 CMS
 
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验场 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、nav-bar（GSAP 卡片导航）、hero-typewriter（首页 GSAP 打字机）、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）
+- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
-3. **首页**：hero 文案 GSAP 打字机（逐行输出 + 闪烁光标；SSR 首帧输出完整文本保证可读与 SEO；语言切换重新打字、浏览器回退不重打；尊重 prefers-reduced-motion）+ 打字机下方像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
-4. **导航卡片**：header nav 每项是错落倾斜的便签小卡片（GSAP 确定性姿态表，实底+四角 L 形角标+阴影），当前路由的卡片伸出（scale 1.32 遮盖两侧相邻卡片）、其余收起（缩小半透明错落），hover 任意卡片摆正放大展示；**卡片缩放时内部文字按 1/cardScale 反补偿，card×label 合成缩放恒为 1（1:1 原生渲染，像素字体全程不插值、始终清晰）**；滚动区带 x 轴 padding（px-5 pt-6 pb-6 sm:gap-6，用户手调）防旋转卡片被裁切；header 无底边框，卡片四角用 8 层 background 渐变绘 L 形直角角标（--nav-corner 前景色 88%，选中变纯前景色，无中间边线，参考用户图样式）；移动端保留横向滚动与遮罩、语言切换洗牌
+3. **首页**：hero 文案用 ScrambleText 乱码洗牌动画（稳定 id，语言切换重洗牌）+ 像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
+4. **Header 导航**：sticky 毛玻璃（game-header，底部 3px 前景色粗线 + accent 斜角装饰），nav 项为 game-hud-nav 倾斜文字链接（skewX(-9deg)，前缀 i 编号用像素字体），hover 前景/背景反转；链接文字用 ScrambleText（稳定 id），语言切换洗牌
 5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；文章、随记、项目列表头部统一使用 blog 的 `classified-page` / kicker / title / lead 基线；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记采用整块毛毡背景与错落便签，只展示标题、模拟笔迹和日期；点击便签在当前页展开全文，关闭后返回原位。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
 6. **项目页**：个人实验场，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
@@ -43,7 +43,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 关键注意事项（踩过的坑，动手前必读）
 
-1. **Tailwind v4 JIT 不自动生成新类**：新增类没生效就手写进 `app/globals.css`（已沉淀 .sig-watermark / .snap-x / .list-title 等）
+1. **Tailwind v4 JIT 不自动生成新类**：新增类没生效就手写进 `app/globals.css`（已沉淀 .snap-x / .list-title 等）
 2. **CRLF 环境**：Edit 工具多行替换会失败——用 PowerShell `[IO.File]::ReadAllText/WriteAllText` + `.Contains()/.Replace()`（先统一 `\n` 替换、写回 CRLF）
 3. **提交铁律**：commit/push 前必须列变更摘要并获用户确认；用户拒绝的操作不得换写法重试
 4. **浏览器验证**：用户接受桌面接管（CU），触发前需获得用户同意；bu 无法触发真实 CSS :hover，时序验证用 MutationObserver 挂 body
@@ -90,15 +90,13 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - ② 入场动画播放期间容器 `pointer-events: none` 禁点内部链接（等动画结束才能点击跳转）：`onAnimationComplete` 置 settled + `useEffect` 1.2s 兜底超时强制放行（防 IO 未触发/动画中断导致永久锁死）
    - **注意**：render 期间调 `Date.now()` 会触发 React 19 react-hooks/purity 报错，时间窗口判断必须用事件驱动标志 + useState 快照
 
-10. **GSAP（gsap + @gsap/react，首页打字机 / 导航卡片）**（改动前必读）
+10. **GSAP（gsap + @gsap/react，Edgewise 实验场 / 游戏导航过渡）**（改动前必读）
    - 必须用 useGSAP + scope，动画只在客户端（useLayoutEffect 时机，绘制前执行）；不要在 useGSAP 回调里再嵌套 gsap.context（嵌套 context 不在其清理范围内，unmount/revert 时旧动画残留）
    - 不要用 useReducedMotion() 的值做 useGSAP 依赖：hydration 后它从 null 变为 false 会触发 useGSAP 重跑，新旧动画并存互相清空文本；改为回调内同步 window.matchMedia('(prefers-reduced-motion: reduce)') 读取
    - 无限 repeat（repeat: -1）的 tween 不能放进 timeline：会把 timeline 的 duration 撑成 Infinity，整条时间线停在 0 秒不推进；放在 timeline 的 onComplete 回调里用 contextSafe 单独启动
    - useGSAP 回调的 contextSafe 参数类型可为 undefined，使用前先判空（tsc 会报 TS2722）
    - StrictMode 开发态 useGSAP 双跑属正常（第二次覆盖第一次）；浏览器后台标签（visibility: hidden）rAF 被暂停时 GSAP 动画冻结是浏览器省电行为，非代码问题
-   - 卡片文字防糊（已两轮踩坑）：文字包 [data-nav-label] 层，label scale 必须恒 = 1/cardScale（card×label 组合缩放 = 1，1:1 原生渲染全程清晰）；**禁止** 20/16/cardScale 之类比例——静止组合变非整数倍（如 1.25），静止后文字立刻发糊（用户实测“移入一瞬清晰、随后变糊”即此因）
-   - 四角 L 形角标（纯 CSS，参考用户图样式）：每角“横线+竖线”两条 background 渐变（双位置色标 0→8px 颜色、8px 透明，2px 线宽），8 层渐变+底色；background-position 用 0 0 / 100% 0 / 0 100% / 100% 100% 对齐四角（支持百分比，随卡片动态尺寸自适应）；无中间边线（border: 0）；--nav-corner 前景色 88%、选中纯前景色；**该浏览器不支持 box-shadow 的百分比偏移（calc(100% - 10px) 直接无效），别用 box-shadow 复制角标**
-   - 入场动画方案已废弃：曾做 sessionStorage 会话级“首次滑入”，用户反馈看不到效果、要求删除（同一标签页刷新不重播 + StrictMode 双跑陷阱）；nav 直接 mount 即设姿态，无入场
+
 11. **Fusion Pixel 像素字体（仅首页/header/footer）**（改动前必读）
    - 子集化产物：`public/fonts/fusion-pixel-10px-zh-hans.woff2`（175 字符 4.4KB，10px 比例模式 zh-Hans）
    - 生成：`scripts/font-subset/`——collect_chars.py 从 lib/messages.ts 提取 hero/nav/footer/locale/theme 的 zh+en 文案，并入 footer 静态文字、ScrambleText 符号池、数字与常用标点；fonttools 子集化时保留 `--layout-features="*"`（比例模式字距）
@@ -127,12 +125,13 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - notes 仍在统一头部下承载毛毡便签板；projects 仍承载实验卡片。新增列表页不要恢复各自的 Tailwind 头部间距。
 
 17. **Header / 首页文案乱码动画**：
-   - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item 和首页 `game-home-copy` 的 `PLAYER // 01` 之外四行文案必须使用稳定 id 的 `ScrambleText`。旧的 `components/nav-bar.tsx` 不是 Header 当前渲染路径，不能只修那里。
+   - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item 和首页 `game-home-copy` 的 `PLAYER // 01` 之外四行文案必须使用稳定 id 的 `ScrambleText`。
 
 18. **随记毛毡板（mission-board.tsx）**：
    - 服务端将已解析的 `contentHtml` 传给便签组件；便签不展示 summary / 阅读时长 / 任务编号，点击直接在本页阅读全文，独立详情路由仍可直接访问。
    - 原生 `dialog.showModal()` 保证顶层展示和背景 inert；Motion 从点击便签的真实位置、尺寸、旋转角展开纸张，关闭时重新测量原位（兼容 resize）。只动画纸张尺寸与位置，正文单独渐显，避免文字缩放变形；Mermaid 在展开落定后才挂载渲染器。
    - 关闭动画结束后才卸载 dialog / 解除 body 锁定并恢复滚动；父组件 effect 在源便签重新可见后恢复焦点，不能在子组件清理期间对隐藏源元素 focus。支持关闭按钮、板面空白、Esc、原生焦点约束和 reduced-motion。
+   - 阅读对话框高度以内容为准：CSS height:auto + 最大高度（min(820px, 视口高 - 2×inset)），dialog 用 grid place-items:center 使纸张视觉居中，长文在 max-height 内滚动；motion 只动画 width/x/y/rotate（不动画 height），宽度变化时浏览器实时回流；关闭时显式把 height 缩回便签高度。阅读滚动区必须是在流内 flex 子项（.note-reading-area display:flex + .note-reading-scroll flex:1），高度 auto 下绝对定位会让 flex:1 坍缩为 0、正文不可见（已踩坑）。
    - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动。全部使用 sans / mono，不新增像素字体字符或依赖。
 
 ## 内容结构约定
@@ -141,7 +140,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 当前状态
 - **最近提交**：`c738b1e`（feat: 更新游戏页面标题样式，调整颜色混合效果）
-- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线；恢复 Header nav item 与首页 hero 文案的中英切换乱码动画。
+- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线；恢复 Header nav item 与首页 hero 文案的中英切换乱码动画。清理未使用组件（nav-bar、hero-typewriter 已删）与其专属 CSS（nav-card / no-scrollbar / nav-fade / type-cursor / road / sig-watermark / game-page），随记阅读对话框改为内容高度 + 最大高度并保持视觉居中。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
