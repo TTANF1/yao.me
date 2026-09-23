@@ -1,6 +1,7 @@
 import type { Locale } from '@/lib/locale'
 import { GameTransitionLink } from './game-transition-link'
 import { SignatureWatermark } from './signature-watermark'
+import { ScrambleText } from './scramble-text'
 
 interface GameHomeProps {
   locale: Locale
@@ -33,10 +34,10 @@ export function GameHome({ locale, hero, nav }: GameHomeProps) {
       <section className="game-home-hero">
         <div className="game-home-copy">
           <p className="font-pixel">PLAYER // 01</p>
-          <p>{hero.greeting}</p>
-          <h1>{hero.name}</h1>
-          <strong>{hero.tagline}</strong>
-          <span>{hero.intro}</span>
+          <p><ScrambleText id="hero-greeting" as="span" text={hero.greeting} /></p>
+          <h1><ScrambleText id="hero-name" as="span" text={hero.name} /></h1>
+          <strong><ScrambleText id="hero-tagline" as="span" text={hero.tagline} /></strong>
+          <span><ScrambleText id="hero-intro" as="span" text={hero.intro} /></span>
         </div>
         <div className="game-home-visual" aria-label="Yao working at a desk in pixel art">
           <div className="game-home-burst" aria-hidden="true" />

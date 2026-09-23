@@ -4,6 +4,7 @@ import { site } from '@/lib/site'
 import Image from 'next/image'
 import { GameTransitionLink } from './game-transition-link'
 import { LocaleSwitcher } from './locale-switcher'
+import { ScrambleText } from './scramble-text'
 import { ThemeToggle } from './theme-toggle'
 
 export function Header({ locale }: { locale: Locale }) {
@@ -39,7 +40,7 @@ export function Header({ locale }: { locale: Locale }) {
           {nav.map((item, index) => (
             <GameTransitionLink key={item.key} href={item.href}>
               <i className="font-pixel">0{index + 1}</i>
-              {item.label}
+              <ScrambleText id={`nav-${item.key}`} text={item.label} />
             </GameTransitionLink>
           ))}
         </nav>

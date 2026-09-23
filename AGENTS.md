@@ -126,7 +126,10 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - blog、notes、projects 列表页共用 `classified-page`、`classified-kicker`、`classified-page-title` 和 `classified-page-lead`，保持同一内容列宽、顶部内边距、标题字号和导语间距；页面特有内容从 `clamp(3rem, 7vw, 5.5rem)` 的统一起始距离展开。
    - notes 仍在统一头部下承载毛毡便签板；projects 仍承载实验卡片。新增列表页不要恢复各自的 Tailwind 头部间距。
 
-17. **随记毛毡板（mission-board.tsx）**：
+17. **Header / 首页文案乱码动画**：
+   - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item 和首页 `game-home-copy` 的 `PLAYER // 01` 之外四行文案必须使用稳定 id 的 `ScrambleText`。旧的 `components/nav-bar.tsx` 不是 Header 当前渲染路径，不能只修那里。
+
+18. **随记毛毡板（mission-board.tsx）**：
    - 服务端将已解析的 `contentHtml` 传给便签组件；便签不展示 summary / 阅读时长 / 任务编号，点击直接在本页阅读全文，独立详情路由仍可直接访问。
    - 原生 `dialog.showModal()` 保证顶层展示和背景 inert；Motion 从点击便签的真实位置、尺寸、旋转角展开纸张，关闭时重新测量原位（兼容 resize）。只动画纸张尺寸与位置，正文单独渐显，避免文字缩放变形；Mermaid 在展开落定后才挂载渲染器。
    - 关闭动画结束后才卸载 dialog / 解除 body 锁定并恢复滚动；父组件 effect 在源便签重新可见后恢复焦点，不能在子组件清理期间对隐藏源元素 focus。支持关闭按钮、板面空白、Esc、原生焦点约束和 reduced-motion。
@@ -138,7 +141,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 当前状态
 - **最近提交**：`c738b1e`（feat: 更新游戏页面标题样式，调整颜色混合效果）
-- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线。
+- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线；恢复 Header nav item 与首页 hero 文案的中英切换乱码动画。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
