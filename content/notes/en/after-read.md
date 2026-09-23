@@ -1,5 +1,5 @@
 ---
-title: Strangers: Conversations with Jihadists
+title: "Strangers: Conversations with Jihadists"
 date: '2023-08-19'
 ai: false
 draft: false
