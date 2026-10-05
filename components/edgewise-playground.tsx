@@ -69,9 +69,9 @@ export function EdgewisePlayground({ locale }: { locale: Locale }) {
   const allDone = returned.length === GROUPS.length
 
   useEffect(() => {
-    const element = root.current
+    const element = root.current?.querySelector('.color-gather-stage')
     if (!element) return
-    const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width < 620))
+    const observer = new ResizeObserver(([entry]) => setCompact(entry.contentRect.width < 500))
     observer.observe(element)
     return () => observer.disconnect()
   }, [])
@@ -187,45 +187,47 @@ export function EdgewisePlayground({ locale }: { locale: Locale }) {
         ))}
       </div>
 
-      <div className="color-gather-pull">
-        <div className="color-gather-pull-label">
-          <label htmlFor={sliderId}>{t.pull}</label>
-          <button type="button" disabled={returning !== null || (spread === 0 && returned.length === 0)} onClick={() => {
-            setSpread(0)
-            setSelected(null)
-            setReturned([])
-          }}>{t.reset} ↺</button>
+      <div className="color-gather-sidebar">
+        <div className="color-gather-pull">
+          <div className="color-gather-pull-label">
+            <label htmlFor={sliderId}>{t.pull}</label>
+            <button type="button" disabled={returning !== null || (spread === 0 && returned.length === 0)} onClick={() => {
+              setSpread(0)
+              setSelected(null)
+              setReturned([])
+            }}>{t.reset} ↺</button>
+          </div>
+          <input id={sliderId} type="range" min="0" max="100" step="1" value={spread} disabled={returning !== null}
+            aria-valuetext={`${spread}% · ${t.source} → ${t.gathered}`}
+            style={{ '--gather-progress': spread + '%' } as CSSProperties}
+            onChange={(event) => setSpread(Number(event.target.value))}
+          />
+          <div className="color-gather-pull-ends" aria-hidden="true"><span>{t.source}</span><span>{t.gathered}</span></div>
         </div>
-        <input id={sliderId} type="range" min="0" max="100" step="1" value={spread} disabled={returning !== null}
-          aria-valuetext={`${spread}% · ${t.source} → ${t.gathered}`}
-          style={{ '--gather-progress': spread + '%' } as CSSProperties}
-          onChange={(event) => setSpread(Number(event.target.value))}
-        />
-        <div className="color-gather-pull-ends" aria-hidden="true"><span>{t.source}</span><span>{t.gathered}</span></div>
-      </div>
 
-      <div className="color-gather-verdict" aria-live="polite" aria-atomic="true">
-        {sample && verdict && ready ? (
-          <>
-            <div className="color-gather-verdict-copy">
-              <p className="color-gather-verdict-heading"><span className="color-gather-swatch" style={{ background: `rgb(${sample.rgb.join(' ')})` }} />{sample.id}<span>{sample.pixels.length} {t.pixels}</span></p>
-              <p><strong>{t[verdict]}</strong><span className="color-gather-score">{t.demo} / {sample.demoScore.toFixed(2)}</span></p>
-              <p className="color-gather-reason">{t[`${verdict}Reason`]}</p>
-              <span className="color-gather-evidence">{t.evidence} {sample.representative.x},{sample.representative.y} · RGB {sample.rgb.join('/')} → {t.inside} {sample.representative.interior.join('/')}</span>
-            </div>
-            <button className="color-gather-apply" type="button" disabled={done || returning !== null} onClick={() => setReturning(selected)}>
-              {returning !== null ? t.returning : done ? t.returned + ' ✓' : t.apply + ' ↙'}
-            </button>
-          </>
-        ) : (
-          <p className="color-gather-prompt">{allDone ? t.complete : ready ? t.select : t.start}</p>
-        )}
+        <div className="color-gather-verdict" aria-live="polite" aria-atomic="true">
+          {sample && verdict ? (
+            <>
+              <div className="color-gather-verdict-copy">
+                <p className="color-gather-verdict-heading"><span className="color-gather-swatch" style={{ background: `rgb(${sample.rgb.join(' ')})` }} />{sample.id}<span>{sample.pixels.length} {t.pixels}</span></p>
+                <p><strong>{t[verdict]}</strong><span className="color-gather-score">{t.demo} / {sample.demoScore.toFixed(2)}</span></p>
+                <p className="color-gather-reason">{t[`${verdict}Reason`]}</p>
+                <span className="color-gather-evidence">{t.evidence} {sample.representative.x},{sample.representative.y} · RGB {sample.rgb.join('/')} → {t.inside} {sample.representative.interior.join('/')}</span>
+              </div>
+              <button className="color-gather-apply" type="button" disabled={!ready || done || returning !== null} onClick={() => setReturning(selected)}>
+                {returning !== null ? t.returning : done ? t.returned + ' ✓' : t.apply + ' ↙'}
+              </button>
+            </>
+          ) : (
+            <p className="color-gather-prompt">{allDone ? t.complete : ready ? t.select : t.start}</p>
+          )}
+        </div>
+        <details className="color-gather-note" open>
+          <summary>{t.provenance}<span aria-hidden="true"> +</span></summary>
+          <p>{t.note}</p>
+          <p>{t.subset}: {data.sampledPixelCount} px / {GROUPS.length} {t.colors} · {t.full}: {data.candidateCount} px / {data.colorCount} {t.colors}</p>
+        </details>
       </div>
-      <details className="color-gather-note">
-        <summary>{t.provenance}<span aria-hidden="true"> +</span></summary>
-        <p>{t.note}</p>
-        <p>{t.subset}: {data.sampledPixelCount} px / {GROUPS.length} {t.colors} · {t.full}: {data.candidateCount} px / {data.colorCount} {t.colors}</p>
-      </details>
       <span className="sr-only">{returned.length} / {GROUPS.length} {t.applied}</span>
     </div>
   )

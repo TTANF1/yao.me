@@ -20,12 +20,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格，中英双语，免费路线部署（Vercel + 自有域名）。
 
 ## 技术栈
-- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，Edgewise 实验场与导航过渡动画）
+- Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，Edgewise 实验室与导航过渡动画）
 - 首页/header/footer 使用 Fusion Pixel 像素字体（10px 比例模式 zh-Hans 子集，OFL-1.1）
 - 内容为 Markdown（`content/`），构建时解析（`lib/posts.ts`），无 CMS
 
 ## 目录架构
-- `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验场 + `projects/edgewise` 像素鉴证 Playground）、about
+- `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验室 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
 - `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
@@ -39,7 +39,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 3. **首页**：hero 文案用 ScrambleText 乱码洗牌动画（稳定 id，语言切换重洗牌）+ 像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
 4. **Header 导航**：sticky 毛玻璃（game-header，底部 3px 前景色粗线 + accent 斜角装饰），nav 项为 game-hud-nav 倾斜文字链接（skewX(-9deg)，前缀 i 编号用像素字体），hover 前景/背景反转；链接文字用 ScrambleText（稳定 id），语言切换洗牌
 5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；文章、随记、项目列表头部统一使用 blog 的 `classified-page` / kicker / title / lead 基线；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记采用整块毛毡背景与错落便签，只展示标题、模拟笔迹和日期；点击便签在当前页展开全文，关闭后返回原位。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
-6. **项目页**：个人实验场，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
+6. **项目页**：个人实验室，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
 
@@ -92,7 +92,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - ② 入场动画播放期间容器 `pointer-events: none` 禁点内部链接（等动画结束才能点击跳转）：`onAnimationComplete` 置 settled + `useEffect` 1.2s 兜底超时强制放行（防 IO 未触发/动画中断导致永久锁死）
    - **注意**：render 期间调 `Date.now()` 会触发 React 19 react-hooks/purity 报错，时间窗口判断必须用事件驱动标志 + useState 快照
 
-10. **GSAP（gsap + @gsap/react，Edgewise 实验场 / 游戏导航过渡）**（改动前必读）
+10. **GSAP（gsap + @gsap/react，Edgewise 实验室 / 游戏导航过渡）**（改动前必读）
    - 必须用 useGSAP + scope，动画只在客户端（useLayoutEffect 时机，绘制前执行）；不要在 useGSAP 回调里再嵌套 gsap.context（嵌套 context 不在其清理范围内，unmount/revert 时旧动画残留）
    - 不要用 useReducedMotion() 的值做 useGSAP 依赖：hydration 后它从 null 变为 false 会触发 useGSAP 重跑，新旧动画并存互相清空文本；改为回调内同步 window.matchMedia('(prefers-reduced-motion: reduce)') 读取
    - 无限 repeat（repeat: -1）的 tween 不能放进 timeline：会把 timeline 的 duration 撑成 Infinity，整条时间线停在 0 秒不推进；放在 timeline 的 onComplete 回调里用 contextSafe 单独启动
@@ -141,6 +141,8 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
+- **Edgewise 详情布局（2026-10-05）**：压缩标题、描述和页头间距；>=1000px 使用左侧像素场景、右侧拉环/裁决/说明的双列布局，窄屏保持上下排列。说明默认展开、字号 13px；场景 ResizeObserver 测量 stage 实际宽度，分栏后也能切换紧凑坐标布局。此项属于当前未提交批次。
+
 - **最近提交**：`dababab`（feat: 添加 LXGW Marker Gothic 字体支持并更新随记标题样式）
 - **未提交改动**：新增 `.codex/boo-boo-kitchen/` 设计文档（总览、玩法、美术与素材、整体架构、Roadmap），建立 Boo Boo Kitchen 游戏内容与运行素材目录骨架，入口风格待定；更新本文件的最近提交与设计状态。2026-10-05 开始本批次前工作树干净；上一批字体/随记相关改动已不属于未提交批次。
 

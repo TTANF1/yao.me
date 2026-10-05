@@ -32,7 +32,7 @@ export const zh = {
   projects: {
     title: '实验室',
     description: '一些为了解决问题，也为了好玩而做的东西。',
-    empty: '实验场正在搭建中。',
+    empty: '实验室正在搭建中。',
   },
   about: {
     title: '关于',

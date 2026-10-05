@@ -7,7 +7,7 @@ const copy = {
   zh: {
     title: 'Edgewise · 颜色归队',
     description: '把散落的边缘像素收成颜色组，看看一次判断如何让它们归位。',
-    back: '返回实验场',
+    back: '返回实验室',
     heading: '散落的是像素，归队的是颜色。',
     intro: '拉开这幅像素画，把同色候选收在一起。选一组，看看 Edgewise 如何借助 JEV 的判断，修正边缘的背景色污染。',
   },
