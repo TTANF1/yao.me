@@ -68,10 +68,11 @@ export function LabWorkbench({ projects, locale }: { projects: PlaygroundProject
   }, [])
 
   return (
-    <section ref={root} className={styles.workbench} data-running={running} aria-label={zh ? '实验室' : 'Experimental lab'}>
+    <section ref={root} className={styles.workbench} data-running={running} data-lab-route={`/${locale}/projects`} aria-label={zh ? '实验室' : 'Experimental lab'}>
       <div className={styles.stage}>
         <div className={styles.tableFrame}>
           <Image className={styles.table} src="/games/main/project-table-bg.png" width={1846} height={852}
+            loading="eager" data-lab-asset data-lab-desktop
             sizes="(max-width: 1400px) 115vw, 1608px" alt="" draggable={false} />
         </div>
         {projects.map((item, index) => {
@@ -79,13 +80,16 @@ export function LabWorkbench({ projects, locale }: { projects: PlaygroundProject
           const contents = item.prop === 'edgewise' ? <>
             <span className={styles.screen}><EdgewisePreview className={styles.preview} /></span>
             <Image className={styles.machineImage} src="/games/main/edgewise-machine.png" width={1536} height={1024}
+              loading="eager" data-lab-asset
               sizes="(max-width: 700px) 90vw, (max-width: 1400px) 44vw, 620px" alt="" draggable={false} />
           </> : <>
             <Image className={styles.pot} src="/games/main/boo-boo-kitchen-pot.png" width={1536} height={1024}
+              loading="eager" data-lab-asset
               sizes="(max-width: 700px) 90vw, (max-width: 1400px) 38vw, 540px" alt="" draggable={false} />
             {(hovered === item.id || scrollActive === item.id) && <span className={styles.words} aria-hidden="true"><span>egg</span><span>pork</span><span>mixing!</span></span>}
             <span className={styles.lid}>
               <Image src="/games/main/boo-boo-kitchen-pot-lid.png" width={1536} height={1024}
+                loading="eager" data-lab-asset
                 sizes="(max-width: 700px) 60vw, (max-width: 1400px) 26vw, 370px" alt="" draggable={false} />
             </span>
           </>

@@ -5,6 +5,7 @@ import gsap from 'gsap'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { GAME_NAVIGATE_EVENT } from './game-transition-link'
+import { waitForLabImages } from '@/lib/lab-transition-ready'
 
 gsap.registerPlugin(useGSAP)
 
@@ -49,6 +50,10 @@ export function GameTransitionOverlay() {
       })
 
       const timeline = gsap.timeline({ onComplete: finish })
+      const controller = new AbortController()
+      const path = new URL(destination, window.location.origin).pathname.replace(/\/$/, '')
+      const waitsForLab = /^\/(zh|en)\/projects$/.test(path)
+      let ready: Promise<void> = Promise.resolve()
       timeline
         .set(root.current, { autoAlpha: 1, pointerEvents: 'auto' })
         .set('[data-game-walker]', { x: '-35vw', rotation: -4 })
@@ -68,8 +73,19 @@ export function GameTransitionOverlay() {
           { x: '48vw', rotation: 1, duration: 0.72, ease: 'power1.inOut' },
           '-=0.26',
         )
-        .call(() => router.push(destination), undefined, '-=0.30')
+        .call(() => {
+          if (waitsForLab) ready = waitForLabImages(path, controller.signal)
+          router.push(destination)
+        }, undefined, '-=0.30')
         .to('[data-game-route-label]', { autoAlpha: 1, y: 0, duration: 0.18 }, '<')
+      if (waitsForLab) {
+        timeline.addPause('+=0.12', contextSafe(() => {
+          void ready.then(() => {
+            if (!controller.signal.aborted) timeline.resume()
+          })
+        }))
+      }
+      timeline
         .to('[data-game-walker]', { x: '125vw', duration: 0.58, ease: 'power2.in' }, '+=0.12')
         .to(
           '[data-game-slice]',
@@ -77,6 +93,7 @@ export function GameTransitionOverlay() {
           '-=0.15',
         )
         .set(root.current, { autoAlpha: 0, pointerEvents: 'none' })
+      return () => controller.abort()
     },
     { scope: root, dependencies: [active, destination], revertOnUpdate: true },
   )

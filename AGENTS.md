@@ -137,6 +137,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动；滚动条默认透明，滚动时 100ms 显示，停止 900ms 后用 350ms 渐隐，仅改变 scrollbar-color 保持内容宽度稳定，卸载时清理计时器，支持 reduced-motion。标题使用 LXGW Marker Gothic Regular 裁剪字体，正文和日期继续使用 sans / mono；PC（>=900px）阅读滚动区左右内边距为 48px。新增或修改随记标题后须运行 scripts/font-subset/subset_note_titles.py（详见同目录 README），覆盖双语标题、ASCII 和乱码符号，许可证随字体保留。
 
 19. **实验台列表（lab-workbench.tsx / .module.css）**：
+   - 游戏导航进入 /zh|en/projects 时，遮罩在退场前等待目标 data-lab-route 挂载及 data-lab-asset 图片加载/decode（lib/lab-transition-ready.ts）。四张 PNG 使用 eager，移动端不等待隐藏桌面图。缓存立即通过，错误放行，15s 兜底；卸载取消监听与等待。其他路由与 reduced-motion 保持原逻辑，直接刷新不新增全局过场。
    - 主体美术使用 public/games/main 下用户提供的桌面、机器、锅身和锅盖 PNG；原图均保留，next/image 按 sizes 优化交付。
    - 机器图 1536×1024 的屏幕开口使用百分比定位、skew 与裁切叠加 EdgewisePreview；替换机器资产后必须重新核对位置，不能只调整整个物件宽度。
    - 删除 lab-readout/notebook，介绍改为各 object 内上方的想法气泡（hover/focus-within 显示），以 left:50%/bottom:100% 相对定位，自动跟随用户手调位置。Edgewise 点击直接进入且禁止预取；保留 objectLabel。锅具词汇仅在鼠标 hover 时挂载，移出卸载以避免暂停在可见帧；后台/离开视口暂停，支持 reduced-motion。
