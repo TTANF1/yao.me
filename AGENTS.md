@@ -27,11 +27,11 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验室 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
+- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 - `.codex/boo-boo-kitchen/`：Boo Boo Kitchen 英语烹饪游戏设计入口（README.md）及玩法、美术、架构、Roadmap；用户已选 Three.js 路线，当前仅设计，尚未创建游戏路由或安装依赖。建议固定正交视角、三维厨房配二维手绘角色，按 M0–M5 完成首道菜，M6 扩展。
-- `games/boo-boo-kitchen/` 与 `public/games/boo-boo-kitchen/`：已建立游戏逻辑（scene/gameplay/data/services）与运行素材（models/textures/sprites/audio）目录骨架；尚无实现、依赖或入口组件，实验室列表交互风格待用户选择。
+- `games/boo-boo-kitchen/` 与 `public/games/boo-boo-kitchen/`：已建立游戏逻辑（scene/gameplay/data/services）与运行素材（models/textures/sprites/audio）目录骨架；游戏逻辑尚未实现且未安装 Three.js；列表已采用手绘实验台，厨房锅具是可选中介绍的待开发展示物，无游戏链接。
 
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
@@ -39,7 +39,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 3. **首页**：hero 文案用 ScrambleText 乱码洗牌动画（稳定 id，语言切换重洗牌）+ 像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
 4. **Header 导航**：sticky 毛玻璃（game-header，底部 3px 前景色粗线 + accent 斜角装饰），nav 项为 game-hud-nav 倾斜文字链接（skewX(-9deg)，前缀 i 编号用像素字体），hover 前景/背景反转；链接文字用 ScrambleText（稳定 id），语言切换洗牌
 5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；文章、随记、项目列表头部统一使用 blog 的 `classified-page` / kicker / title / lead 基线；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记采用整块毛毡背景与错落便签，只展示标题、模拟笔迹和日期；点击便签在当前页展开全文，关闭后返回原位。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
-6. **项目页**：个人实验室，不再展示公司履历；Edgewise 是首个可玩项目，入口卡片循环演示扫描/前后对比，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
+6. **项目页**：个人实验室，不再展示公司履历；列表使用独立全景布局与用户提供的桌面、机器、锅身和锅盖 PNG；紧凑标题（1.8–2.6rem）与导语、物件标签已恢复，介绍改为上方想法气泡，桌面原比例完整展示。机器透明屏幕嵌入像素预览，hover/focus 显示介绍，点击机器直接进入 Edgewise；厨房尚未可玩，无链接，词汇只在鼠标移入时挂载并播放、移出立即卸载。支持键盘链接和 reduced-motion。Edgewise 是首个可玩项目，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
 
@@ -124,7 +124,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 16. **列表页头部一致性**：
    - blog、notes、projects 列表页共用 `classified-page`、`classified-kicker`、`classified-page-title` 和 `classified-page-lead`，保持同一内容列宽、顶部内边距、标题字号和导语间距；页面特有内容从 `clamp(3rem, 7vw, 5.5rem)` 的统一起始距离展开。
-   - notes 仍在统一头部下承载毛毡便签板；projects 仍承载实验卡片。新增列表页不要恢复各自的 Tailwind 头部间距。
+   - notes 仍在统一头部下承载毛毡便签板。projects 现按用户要求例外：使用 lab-workbench.module.css 独立全景布局，使用独立紧凑标题与导语，避免 classified-page 的宽度和顶部留白；桌面图禁止放大裁切。
 
 17. **Header / 首页文案乱码动画**：
    - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item 和首页 `game-home-copy` 的 `PLAYER // 01` 之外四行文案必须使用稳定 id 的 `ScrambleText`。
@@ -136,6 +136,14 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 阅读对话框高度以内容为准：CSS height:auto + 最大高度（min(820px, 视口高 - 2×inset)），dialog 用 grid place-items:center 使纸张视觉居中，长文在 max-height 内滚动；motion 只动画 width/x/y/rotate（不动画 height），宽度变化时浏览器实时回流；关闭时显式把 height 缩回便签高度。阅读滚动区必须是在流内 flex 子项（.note-reading-area display:flex + .note-reading-scroll flex:1），高度 auto 下绝对定位会让 flex:1 坍缩为 0、正文不可见（已踩坑）。
    - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动；滚动条默认透明，滚动时 100ms 显示，停止 900ms 后用 350ms 渐隐，仅改变 scrollbar-color 保持内容宽度稳定，卸载时清理计时器，支持 reduced-motion。标题使用 LXGW Marker Gothic Regular 裁剪字体，正文和日期继续使用 sans / mono；PC（>=900px）阅读滚动区左右内边距为 48px。新增或修改随记标题后须运行 scripts/font-subset/subset_note_titles.py（详见同目录 README），覆盖双语标题、ASCII 和乱码符号，许可证随字体保留。
 
+19. **实验台列表（lab-workbench.tsx / .module.css）**：
+   - 主体美术使用 public/games/main 下用户提供的桌面、机器、锅身和锅盖 PNG；原图均保留，next/image 按 sizes 优化交付。
+   - 机器图 1536×1024 的屏幕开口使用百分比定位、skew 与裁切叠加 EdgewisePreview；替换机器资产后必须重新核对位置，不能只调整整个物件宽度。
+   - 删除 lab-readout/notebook，介绍改为各 object 内上方的想法气泡（hover/focus-within 显示），以 left:50%/bottom:100% 相对定位，自动跟随用户手调位置。Edgewise 点击直接进入且禁止预取；保留 objectLabel。锅具词汇仅在鼠标 hover 时挂载，移出卸载以避免暂停在可见帧；后台/离开视口暂停，支持 reduced-motion。
+   - 厨房 availability=coming-soon 不提供链接；仅 playable 类型有 href。列表不加载 Three.js 或厨房游戏素材。不要为了介绍入口新增空白游戏路由。
+   - PC 桌面 width:120%/left:-10% 是用户锁定的最佳展示尺寸，禁止自行改为100%。页面宽度限制为 min(1400px,83.333333%)，为两侧桌角预留空间，无横向裁切。stage 高度 calc(50cqw + 100px)，tableFrame 高度 calc(29.577465cqw + 100px) 保留底部额外100px。移动端恢复页面100%宽与流式布局。
+   - 移动端（<=700px）隐藏桌面背景，物件与想法气泡改为纵向流式布局；气泡预留高度，避免显示时推移物件。scroll/resize 经 rAF 在视口中部 20%–80% 选择最靠近中心的物件，data-scroll-active 驱动气泡、像素归组、锅盖与单词动画，离开取消；监听与 rAF 在卸载时清理。桌面维持 hover/focus 交互与手调位置。
+
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
@@ -143,8 +151,8 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 当前状态
 - **Edgewise 详情布局（2026-10-05）**：压缩标题、描述和页头间距；>=1000px 使用左侧像素场景、右侧拉环/裁决/说明的双列布局，窄屏保持上下排列。说明默认展开、字号 13px；场景 ResizeObserver 测量 stage 实际宽度，分栏后也能切换紧凑坐标布局。此项属于当前未提交批次。
 
-- **最近提交**：`dababab`（feat: 添加 LXGW Marker Gothic 字体支持并更新随记标题样式）
-- **未提交改动**：新增 `.codex/boo-boo-kitchen/` 设计文档（总览、玩法、美术与素材、整体架构、Roadmap），建立 Boo Boo Kitchen 游戏内容与运行素材目录骨架，入口风格待定；更新本文件的最近提交与设计状态。2026-10-05 开始本批次前工作树干净；上一批字体/随记相关改动已不属于未提交批次。
+- **最近提交**：`2b816b8`（feat: 更新项目相关术语，将“实验场”替换为“实验室”，调整样式和布局以提升用户体验）
+- **未提交改动**：实验室列表改为 LabWorkbench 手绘实验台；抽取 EdgewisePreview、补充双语厨房展示数据与 playable/coming-soon 类型；新增 CSS Module、接入用户提供的四张 PNG。游戏内容仍是目录骨架，厨房游戏路由与运行时尚未实现。当前保留紧凑标题/导语与 objectLabel，删除 notebook，hover/focus 想法气泡介绍，点击 Edgewise 直接进入；保留用户手调位置和尺寸（机器 left17%/top18.82%/width35%，锅具 left54%/top17%/width35%），PC 桌面裁掉桌脚并收紧场景高度，局部限制横向溢出；移动端隐藏背景、滚动展开气泡，词汇按对应交互播放。按用户要求只做代码检查，不进行浏览器自动验证。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
