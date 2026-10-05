@@ -30,6 +30,8 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（实验项目入口）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
+- `.codex/boo-boo-kitchen/`：Boo Boo Kitchen 英语烹饪游戏设计入口（README.md）及玩法、美术、架构、Roadmap；用户已选 Three.js 路线，当前仅设计，尚未创建游戏路由或安装依赖。建议固定正交视角、三维厨房配二维手绘角色，按 M0–M5 完成首道菜，M6 扩展。
+- `games/boo-boo-kitchen/` 与 `public/games/boo-boo-kitchen/`：已建立游戏逻辑（scene/gameplay/data/services）与运行素材（models/textures/sprites/audio）目录骨架；尚无实现、依赖或入口组件，实验室列表交互风格待用户选择。
 
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
@@ -139,8 +141,8 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
-- **最近提交**：`14f7ae4`（feat: 添加达芬奇D-LogM调色流程文档）
-- **未提交改动**：保留用户对列表内容起始间距 7vw→5vw 的调整；随记便签、阅读对话框与独立详情页标题换用 LXGW Marker Gothic v1.003，加入双语标题 WOFF2 裁剪脚本和 OFL 许可证；PC 阅读正文左右留白从 16px 增至 48px；从 Obsidian 导入《All Creatures Great & Small》（2026-09-29），保留中文原文并新增同 slug 英文译文（ai: true）；便签 dialog 滚动条在停止滚动后渐隐。
+- **最近提交**：`dababab`（feat: 添加 LXGW Marker Gothic 字体支持并更新随记标题样式）
+- **未提交改动**：新增 `.codex/boo-boo-kitchen/` 设计文档（总览、玩法、美术与素材、整体架构、Roadmap），建立 Boo Boo Kitchen 游戏内容与运行素材目录骨架，入口风格待定；更新本文件的最近提交与设计状态。2026-10-05 开始本批次前工作树干净；上一批字体/随记相关改动已不属于未提交批次。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。

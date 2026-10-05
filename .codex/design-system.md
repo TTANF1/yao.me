@@ -12,7 +12,7 @@
 
 - Header is a compact HUD. The homepage owns the primary navigation.
 - Route navigation uses the whistling walk transition asset at
-  `public/game/whistle-walk-source.png`.
+  `public/games/main/whistle-walk-source.png`.
 - Reduced-motion users get immediate navigation without the crossing animation.
 - Dark/light themes remain supported; red is the common signal color.
 

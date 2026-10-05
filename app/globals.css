@@ -859,7 +859,7 @@ body {
 .game-whistle-sprite {
   width: 100%;
   aspect-ratio: 271.5 / 724;
-  background: url('/game/whistle-walk-source.png') no-repeat;
+  background: url('/games/main/whistle-walk-source.png') no-repeat;
   background-size: 800% 100%;
   image-rendering: pixelated;
   animation: game-whistle-frames 0.82s steps(1) infinite;
