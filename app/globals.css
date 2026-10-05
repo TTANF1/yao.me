@@ -12,6 +12,15 @@
   font-style: normal;
   font-display: swap;
 }
+/* 随记标题字体：仅包含中英文随记标题所需字形。 */
+@font-face {
+  font-family: "LXGW Marker Gothic";
+  src: url("/fonts/lxgw-marker-gothic-note-titles.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+.note-title, .mission-detail h1 { font-family: "LXGW Marker Gothic", var(--font-sans); font-weight: 400; font-synthesis: none; }
 /* 首页 hero、header、footer 使用像素字体（其他区域沿用 sans） */
 [data-site-header],
 footer,
@@ -879,8 +888,8 @@ body {
 
 /* Felt board / notes that unfold into a reading sheet */
 .notes-page { padding-bottom: 6rem; }
-.notes-page .felt-board { margin-top: clamp(3rem, 7vw, 5.5rem); }
-.projects-list { width: min(900px, 100%); margin-top: clamp(3rem, 7vw, 5.5rem); padding-bottom: 5rem; }
+.notes-page .felt-board { margin-top: clamp(3rem, 5vw, 5.5rem); }
+.projects-list { width: min(900px, 100%); margin-top: clamp(3rem, 5vw, 5.5rem); padding-bottom: 5rem; }
 .projects-list > div { position: relative; }
 .projects-list .space-y-10 > * + * { margin-top: 2.5rem; }
 .felt-board {
@@ -926,7 +935,7 @@ body {
 .dark .note-paper { --paper: #d8d0b3; }
 .note-card { display: flex; flex-direction: column; width: 100%; min-height: 292px; padding: 38px 26px 24px; transform: rotate(var(--note-angle)); transition: transform 220ms ease, box-shadow 220ms ease; cursor: pointer; }
 .note-tape { position: absolute; pointer-events: none; width: 82px; height: 27px; left: calc(50% - 41px); top: -13px; transform: rotate(-3deg); background: #ddd9c9b3; border-inline: 2px dotted #ffffff4a; box-shadow: 0 1px 2px #37372a13; }
-.note-title { display: block; margin: 0; font-size: 22px; font-weight: 650; letter-spacing: -.025em; line-height: 1.5; overflow-wrap: anywhere; }
+.note-title { display: block; margin: 0; font-size: 22px; font-weight: 400; letter-spacing: -.025em; line-height: 1.5; overflow-wrap: anywhere; }
 .note-handwriting { display: block; width: 100%; max-width: 240px; height: 88px; margin-top: 23px; color: #777c7080; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; }
 .note-handwriting path:nth-child(2) { opacity: .7; }
 .note-handwriting path:nth-child(3) { opacity: .85; }
@@ -947,7 +956,9 @@ body {
 .note-close svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.5; }
 .note-close:focus-visible, .note-reading-scroll:focus-visible { outline: 2px solid #697862; outline-offset: 2px; }
 .note-reading-area { display: flex; min-height: 0; flex: 1; margin-top: 23px; }
-.note-reading-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #8c938375 transparent; padding: 0 14px 8px 0; }
+.note-reading-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color 350ms ease; padding: 0 14px 8px 0; }
+.note-reading-scroll[data-scrolling] { scrollbar-color: #8c938375 transparent; transition-duration: 100ms; }
+@media (prefers-reduced-motion: reduce) { .note-reading-scroll { transition: none; } }
 .note-reading-scroll .prose { margin-top: 0; font-size: 15px; line-height: 1.95; overflow-wrap: anywhere; }
 .note-reading-scroll .prose > :first-child { margin-top: 0; }
 .note-reading-scroll .prose > :last-child { margin-bottom: 0; }
@@ -956,7 +967,7 @@ body {
 .note-reader-meta > span { font-size: 10px; }
 .note-card-face { position: absolute; top: 38px; left: 26px; pointer-events: none; }
 .note-reader[data-closing] .note-reading-scroll { pointer-events: none; }
-@media (min-width: 900px) { .note-reading-scroll { padding-inline: 16px; } }
+@media (min-width: 900px) { .note-reading-scroll { padding-inline: 48px; } }
 @media (max-width: 950px) {
   .felt-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .felt-notes > li:nth-child(3n + 2), .felt-notes > li:nth-child(3n + 3) { margin-top: 0; }
@@ -1063,7 +1074,7 @@ body {
   line-height: 1.12;
 }
 .classified-page-lead { max-width: 34rem; margin-top: 1.15rem; color: var(--muted); font-size: .875rem; line-height: 1.8; }
-.classified-archive { --folder-width: 38%; position: relative; margin-top: clamp(3rem, 7vw, 5.5rem); }
+.classified-archive { --folder-width: 38%; position: relative; margin-top: clamp(3rem, 5vw, 5.5rem); }
 .classified-archive-hint {
   display: flex;
   justify-content: space-between;

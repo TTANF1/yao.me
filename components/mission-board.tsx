@@ -77,12 +77,26 @@ function NoteReader({ selection, locale, onClosed }: { selection: Selection; loc
   const { note, source, origin, reduced } = selection
   const dialogRef = useRef<HTMLDialogElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [target, setTarget] = useState(selection.target)
   const [returnTo, setReturnTo] = useState(origin)
   const [returnShadow, setReturnShadow] = useState(selection.shadow)
   const [closing, setClosing] = useState(false)
   const [settled, setSettled] = useState(false)
   const t = copy[locale]
+
+  useEffect(() => () => {
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current)
+  }, [])
+
+  const showScrollbar = (element: HTMLDivElement) => {
+    element.dataset.scrolling = 'true'
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current)
+    scrollIdleTimer.current = setTimeout(() => {
+      delete element.dataset.scrolling
+      scrollIdleTimer.current = null
+    }, 900)
+  }
 
   const close = () => {
     if (closing) return
@@ -154,6 +168,7 @@ function NoteReader({ selection, locale, onClosed }: { selection: Selection; loc
         <div className="note-reading-area">
           <motion.div
             className="note-reading-scroll" tabIndex={0} aria-label={note.title}
+            onScroll={(event) => showScrollbar(event.currentTarget)}
             initial={{ opacity: 0, y: reduced ? 0 : 8 }} animate={{ opacity: closing ? 0 : 1, y: 0 }}
             transition={{ duration: closing ? 0.1 : 0.24, delay: closing || reduced ? 0 : 0.18 }}
           >

@@ -16,6 +16,18 @@ yao.me 首页 / header / footer 使用 Fusion Pixel Font（10px 比例模式 zh-
 
 依赖：Python 3.14 + `pip install fonttools brotli`
 
+## 随记标题：LXGW Marker Gothic
+
+从 `content/notes/{zh,en}/*.md*` 收集全部标题，并保留 ASCII 与语言切换乱码符号。
+新增随记或修改标题后运行（仓库根目录）：
+
+```powershell
+python scripts/font-subset/subset_note_titles.py 'D:\Font\LxgwMarkerGothic-v1.003\LxgwMarkerGothic-v1.003\fonts\ttf\LXGWMarkerGothic-Regular.ttf'
+```
+
+产物：`public/fonts/lxgw-marker-gothic-note-titles.woff2`；许可证：同目录 `LXGWMarkerGothic-OFL.txt`。
+只应用到便签标题、阅读对话框标题及独立随记详情页 h1；正文继续使用 sans。
+
 ## 注意
 - 只覆盖首页/header/footer 文案；新增文案必须重跑子集化，否则新字符会回退到系统字体。
 - @font-face 定义在 app/globals.css，应用于 [data-site-header] / footer / .font-pixel。

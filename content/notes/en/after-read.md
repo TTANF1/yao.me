@@ -1,7 +1,7 @@
 ---
 title: "Strangers: Conversations with Jihadists"
 date: '2023-08-19'
-ai: false
+ai: true
 draft: false
 ---
 

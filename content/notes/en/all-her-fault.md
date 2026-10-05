@@ -1,7 +1,7 @@
 ---
 title: All Her Fault
 date: '2026-06-30'
-ai: false
+ai: true
 draft: false
 ---
 

@@ -132,15 +132,15 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 原生 `dialog.showModal()` 保证顶层展示和背景 inert；Motion 从点击便签的真实位置、尺寸、旋转角展开纸张，关闭时重新测量原位（兼容 resize）。只动画纸张尺寸与位置，正文单独渐显，避免文字缩放变形；Mermaid 在展开落定后才挂载渲染器。
    - 关闭动画结束后才卸载 dialog / 解除 body 锁定并恢复滚动；父组件 effect 在源便签重新可见后恢复焦点，不能在子组件清理期间对隐藏源元素 focus。支持关闭按钮、板面空白、Esc、原生焦点约束和 reduced-motion。
    - 阅读对话框高度以内容为准：CSS height:auto + 最大高度（min(820px, 视口高 - 2×inset)），dialog 用 grid place-items:center 使纸张视觉居中，长文在 max-height 内滚动；motion 只动画 width/x/y/rotate（不动画 height），宽度变化时浏览器实时回流；关闭时显式把 height 缩回便签高度。阅读滚动区必须是在流内 flex 子项（.note-reading-area display:flex + .note-reading-scroll flex:1），高度 auto 下绝对定位会让 flex:1 坍缩为 0、正文不可见（已踩坑）。
-   - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动。全部使用 sans / mono，不新增像素字体字符或依赖。
+   - `note-paper` 自带纸色 / 墨色变量，避免深色主题正文低对比；三列→两列→手机单列，全文区域单独滚动；滚动条默认透明，滚动时 100ms 显示，停止 900ms 后用 350ms 渐隐，仅改变 scrollbar-color 保持内容宽度稳定，卸载时清理计时器，支持 reduced-motion。标题使用 LXGW Marker Gothic Regular 裁剪字体，正文和日期继续使用 sans / mono；PC（>=900px）阅读滚动区左右内边距为 48px。新增或修改随记标题后须运行 scripts/font-subset/subset_note_titles.py（详见同目录 README），覆盖双语标题、ASCII 和乱码符号，许可证随字体保留。
 
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
-- **最近提交**：`c738b1e`（feat: 更新游戏页面标题样式，调整颜色混合效果）
-- **未提交改动**：从 Obsidian 新增随记《我想做的是视觉传达工程师》，并补充同 slug 英文译文；随记页面改为毛毡便签板，移除摘要预览步骤，加入纸张原地展开全文与返回动画、原生阅读对话框、键盘焦点和滚动恢复、响应式及深浅色样式；notes 与 projects 列表页头部统一到 blog 的布局和视觉基线；恢复 Header nav item 与首页 hero 文案的中英切换乱码动画。清理未使用组件（nav-bar、hero-typewriter 已删）与其专属 CSS（nav-card / no-scrollbar / nav-fade / type-cursor / road / sig-watermark / game-page），随记阅读对话框改为内容高度 + 最大高度并保持视觉居中。
+- **最近提交**：`14f7ae4`（feat: 添加达芬奇D-LogM调色流程文档）
+- **未提交改动**：保留用户对列表内容起始间距 7vw→5vw 的调整；随记便签、阅读对话框与独立详情页标题换用 LXGW Marker Gothic v1.003，加入双语标题 WOFF2 裁剪脚本和 OFL 许可证；PC 阅读正文左右留白从 16px 增至 48px；从 Obsidian 导入《All Creatures Great & Small》（2026-09-29），保留中文原文并新增同 slug 英文译文（ai: true）；便签 dialog 滚动条在停止滚动后渐隐。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。

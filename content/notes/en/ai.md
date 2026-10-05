@@ -1,7 +1,7 @@
 ---
 title: AI
 date: '2026-09-07'
-ai: false
+ai: true
 draft: false
 ---
 
