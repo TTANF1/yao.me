@@ -645,6 +645,10 @@ body {
 .game-header-tools { display: flex; flex: none; align-items: center; gap: 0.15rem; }
 
 /* Home chrome: the poster fills the first viewport; inner routes retain their HUD. */
+@media (min-width: 801px) {
+  body:has([data-home-scene]) { min-height: 0; }
+  body:has([data-home-scene]) > .game-footer { display: none; }
+}
 body:has([data-home-scene]) .game-header {
   position: absolute;
   inset: 0 0 auto;

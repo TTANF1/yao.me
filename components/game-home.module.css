@@ -7,7 +7,9 @@
   position: relative;
   isolation: isolate;
   height: 100svh;
-  min-height: 680px;
+  height: 100dvh;
+  min-height: 0;
+  flex: none;
   overflow: hidden;
   background: var(--home-paper);
   color: var(--home-ink);
@@ -181,6 +183,44 @@
 .caption > span { color: var(--home-red); font-size: 1.6rem; font-style: italic; font-weight: 900; }
 .caption p { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.22em; line-height: 1.7; opacity: 0.6; }
 .signature { position: absolute; z-index: 5; right: 2rem; bottom: 1rem; width: 7rem; color: #fff; opacity: 0.22; pointer-events: none; }
+.footerLayer { position: absolute; z-index: 6; inset: 0; pointer-events: none; }
+.footerLayer footer { font-family: var(--font-mono); }
+.footerLayer [data-home-copyright] {
+  position: absolute;
+  left: max(3%, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  color: #fff;
+  opacity: 0.5;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.035em;
+}
+.footerLayer [data-home-social] {
+  position: absolute;
+  left: 55%;
+  bottom: max(4%, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 3px 14px;
+  background: #141416d9;
+  color: #f5f3f0;
+  transform: rotate(-5deg);
+  pointer-events: auto;
+}
+.footerLayer a { min-height: 38px; color: inherit; font-size: 11px; cursor: pointer; }
+.footerLayer a:hover { color: #ff5369; }
+.footerLayer a:focus-visible { outline: 2px solid #ff5369; outline-offset: 4px; }
+
+@media (min-width: 801px) and (max-height: 620px) {
+  .copyDepth { top: 27%; }
+  .copy h1 { font-size: clamp(5rem, 10vw, 10rem); }
+  .menuDepth { top: 22%; }
+  .menuRow { margin-bottom: 0.35rem; }
+  .menuItem { padding-block: 0.55rem; }
+  .menuLabel, .home[data-locale='en'] .menuLabel { font-size: clamp(1.8rem, 3.8vw, 3.5rem); }
+  .caption { display: none; }
+}
 
 @media (min-width: 801px) and (max-aspect-ratio: 4 / 3) {
   .portraitArt { height: min(95%, 64vw); top: 16%; left: 45.5%; }
@@ -199,6 +239,7 @@
 @media (max-width: 800px) {
   .home { height: auto; min-height: 1060px; }
   .camera { position: relative; min-height: 1060px; }
+  .footerLayer { display: none; }
   .portraitArt { top: 48px; left: 68%; height: 650px; }
   .copyDepth { top: 185px; left: 7%; width: 47%; }
   .copy { transform: rotate(-5deg); }

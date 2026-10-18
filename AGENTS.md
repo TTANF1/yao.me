@@ -151,14 +151,17 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - GSAP 入场只操作内层 `data-home-*`；视差只操作外层 depth/camera，避免 transform 相互覆盖。人物的百分比居中壳与菜单的响应式 rotate/translate 壳也不能直接交给 GSAP：GSAP 会把独立变换折算为首帧像素值并留下内联样式，导致 resize 后人物偏移、菜单保留旧角度；须动画内部无定位变换的独立 wrapper。useGSAP + scope 负责 revert；人物 decode 后启动，1.4s 兜底，键盘 focus 或动态开启 reduced-motion 直接落定。模块变量记录本次文档已完成入场，语言切换/站内返回不重播，刷新可重播。CSS scripting 媒体查询配合 data-home-ready 避免 hydration 前静态完成帧闪现，2.5s 可见性兜底保证脚本异常时可读；无 JS / reduced-motion 直接展示。
    - 视差范围：镜头 rotateX ±0.55° / rotateY ±0.85°，背景反向 7/5px、人物 20/13px、文案 9/6px、菜单 12/8px。rAF 指数阻尼，停稳停止请求；移出窗口回正，后台/失焦/离开视口停止，卸载清理监听与 observer。仅 fine pointer + hover + no-preference 启用。
    - <=800px 使用纵向海报布局，<=480px 再压缩人物与文案；菜单独立可点击，不用鼠标 hover 才能显示。主题切换原有圆形动画参数与签名笔画参数保持原值。
+   - PC（>=801px）首页固定 100dvh（100svh 兜底），取消原 680px 最小高度，隐藏 body 直属的默认 .game-footer；版权在左下角以 10px/0.5 opacity 弱化，GitHub/Email/RSS 在人物脚边右侧。Footer 的 variant="home" 由服务端 page 传入 GameHome 的 footer 插槽，复用默认页脚的链接与双语邮箱逻辑。只隐藏默认 footer，不能误隐藏内嵌 footer。<=800px 保留原纵向布局、独立 footer 与正常页面滚动，隐藏内嵌 footer；禁止全局 overflow:hidden 强行裁剪内容。主题切换按钮使用 cursor:pointer，圆形切换参数保持不变。
 
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
+- **页脚发布批次（2026-10-18）**：仅 PC 首页将 Footer 功能融入主体，左下角弱化版权、人物脚右侧社交入口，消除纵向滚动；移动端保持原布局与独立 footer、允许滚动。Footer 新增 home variant，通过首页服务端插槽复用链接；主题切换按钮新增 cursor:pointer。用户验证通过，已确认提交并推送 main；无其他未提交改动。
+- **页脚调整验证**：TypeScript、涉及文件 ESLint、diff 检查及 Webpack 生产构建通过；浏览器确认 PC 1280×800 / 900×600 的 scrollHeight 等于视口高，390×844 手机保留 1123px 页面与独立 footer，主题按钮 cursor 为 pointer；中文/英文邮箱正确，进入内页恢复独立 footer。
 - **首页发布批次（2026-10-18）**：开发分支 `codex/street-portrait-home`，用户已确认提交并合并到 `main` 后推送，沿用 Vercel Git 自动部署。
-- **最近提交**：本批次 `feat: 重构红黑动漫首页并添加视差与入场动画`；上次提交 `fe16a2b`（发布472ms长任务排查文章中英双语）。此前实验台、Edgewise 布局已在现有提交中，开始本次任务时工作区干净。
+- **最近提交**：本次 `fix: 将 PC 首页页脚融入主体并取消纵向滚动`；上次 `493f8cf`（红黑动漫首页、视差与入场动画），已完成 Vercel 发布。
 - **本批次改动**：首页按用户提供的红黑动漫设计重构，接入透明人物 PNG；新增 game-home.module.css，实现分层鼠标视差、GSAP 首访错峰入场、双语菜单、明暗主题与手机布局。globals.css 删除旧首页样式并添加首页专属透明 header。未新增依赖。此批次作为一个提交合并到 main，未保留其他未提交改动。
 - **本批次验证**：TypeScript、首页 ESLint、diff 检查通过；浏览器验证中文/英文、浅色/深色、390px 手机及桌面布局、鼠标视差、导航与返回、刷新入场及 resize 往返一致性。`next build --webpack` 完整通过（38 个静态页面）。默认 Turbopack 生产构建遇到子进程连接异常；沙箱内另遇 Google 字体网络限制，未更改既有构建配置或字体来源。
 

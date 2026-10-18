@@ -222,6 +222,7 @@ export function ThemeToggle({ label }: { label: string }) {
         onClick={handleClick}
         aria-label={label}
         title={label}
+        style={{ cursor: 'pointer' }}
         className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-foreground/5 hover:text-foreground"
       >
         {/* 用 .dark 类控制显隐，避免水合不一致 */}

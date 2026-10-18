@@ -3,7 +3,7 @@
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import Image from 'next/image'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import type { Locale } from '@/lib/locale'
 import { GameTransitionLink } from './game-transition-link'
 import { SignatureWatermark } from './signature-watermark'
@@ -19,9 +19,10 @@ interface GameHomeProps {
   locale: Locale
   hero: { greeting: string; name: string; tagline: string; intro: string }
   nav: { blog: string; notes: string; projects: string; about: string }
+  footer: ReactNode
 }
 
-export function GameHome({ locale, hero, nav }: GameHomeProps) {
+export function GameHome({ locale, hero, nav, footer }: GameHomeProps) {
   const root = useRef<HTMLDivElement>(null)
   const portrait = useRef<HTMLImageElement>(null)
 
@@ -199,6 +200,7 @@ export function GameHome({ locale, hero, nav }: GameHomeProps) {
           <span>/</span><p>FRONTEND<br />ENGINEER /<br />CONTENT CREATOR</p>
         </div>
       </div>
+      <div className={styles.footerLayer}>{footer}</div>
       <SignatureWatermark className={styles.signature} />
     </div>
   )
