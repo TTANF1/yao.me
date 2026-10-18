@@ -21,13 +21,13 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 技术栈
 - Next.js 16（App Router + Turbopack）+ React 19 + TypeScript + Tailwind v4 + motion + GSAP（gsap + @gsap/react，Edgewise 实验室与导航过渡动画）
-- 首页/header/footer 使用 Fusion Pixel 像素字体（10px 比例模式 zh-Hans 子集，OFL-1.1）
+- 内页 header/footer 使用 Fusion Pixel 像素字体（10px 比例模式 zh-Hans 子集，OFL-1.1）；红黑海报首页及其 header 使用 sans/mono
 - 内容为 Markdown（`content/`），构建时解析（`lib/posts.ts`），无 CMS
 
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验室 + `projects/edgewise` 像素鉴证 Playground）、about
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home（首页）、game-transition-link / game-transition-overlay（游戏化导航过渡）
+- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home + game-home.module.css（红黑海报首页、分层视差与首次入场）、game-transition-link / game-transition-overlay（游戏化导航过渡）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
 - `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
 - `.codex/boo-boo-kitchen/`：Boo Boo Kitchen 英语烹饪游戏设计入口（README.md）及玩法、美术、架构、Roadmap；用户已选 Three.js 路线，当前仅设计，尚未创建游戏路由或安装依赖。建议固定正交视角、三维厨房配二维手绘角色，按 M0–M5 完成首道菜，M6 扩展。
@@ -36,7 +36,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 主要功能
 1. **中英双语**：路径路由；语言切换 = ViewTransition + ScrambleText 乱码洗牌动画（首帧即乱码，不等旧文案）
 2. **明暗主题**：自定义"扩散-回缩-加速"圆形切换动画（参数已锁定勿动）；ThemeProvider + localStorage 持久化
-3. **首页**：hero 文案用 ScrambleText 乱码洗牌动画（稳定 id，语言切换重洗牌）+ 像素风 sprite 动画（public/sprite-sheet.png，8 帧横向序列循环播放）+ 右下角签名水印（SVG 按笔画描边动画，单次播放定格，参数用户手调过）
+3. **首页**：红黑街头动漫海报布局（左侧自我介绍、中间透明人物、右侧四项斜切菜单），人物来自用户提供的透明 PNG；CSS 绘制斜切色块、网点与速度线。鼠标位移驱动轻微镜头旋转和背景/人物/文案/菜单的差速位移；GSAP 在当前文档首次访问首页时错峰入场，语言切换与站内返回不重播。hero 与菜单使用稳定 id 的 ScrambleText，保留语言切换、主题切换及签名水印。移动端改为上方人物/文案、下方菜单，触屏与 reduced-motion 禁用视差。旧 sprite 素材/样式保留供其他用途，首页已不再引用。
 4. **Header 导航**：sticky 毛玻璃（game-header，底部 3px 前景色粗线 + accent 斜角装饰），nav 项为 game-hud-nav 倾斜文字链接（skewX(-9deg)，前缀 i 编号用像素字体），hover 前景/背景反转；链接文字用 ScrambleText（稳定 id），语言切换洗牌
 5. **文章/随记**：文章列表按年份分组为堆叠“机密档案袋”，hover 滑出该年目录、点击固定、点击外部收回；文章、随记、项目列表头部统一使用 blog 的 `classified-page` / kicker / title / lead 基线；详情保持克制阅读版式，TOC 收敛在最左侧，默认是短柱条，hover 后按当前/悬停标题形成放大—渐缩—退回柱条的轮转层级；随记采用整块毛毡背景与错落便签，只展示标题、模拟笔迹和日期；点击便签在当前页展开全文，关闭后返回原位。详情继续支持 MD、shiki、mermaid 与列表标题 morph 过渡；返回按钮在长文底部且不做过渡。
 6. **项目页**：个人实验室，不再展示公司履历；列表使用独立全景布局与用户提供的桌面、机器、锅身和锅盖 PNG；紧凑标题（1.8–2.6rem）与导语、物件标签已恢复，介绍改为上方想法气泡，桌面原比例完整展示。机器透明屏幕嵌入像素预览，hover/focus 显示介绍，点击机器直接进入 Edgewise；厨房尚未可玩，无链接，词汇只在鼠标移入时挂载并播放、移出立即卸载。支持键盘链接和 reduced-motion。Edgewise 是首个可玩项目，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
@@ -103,7 +103,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 子集化产物：`public/fonts/fusion-pixel-10px-zh-hans.woff2`（175 字符 4.4KB，10px 比例模式 zh-Hans）
    - 生成：`scripts/font-subset/`——collect_chars.py 从 lib/messages.ts 提取 hero/nav/footer/locale/theme 的 zh+en 文案，并入 footer 静态文字、ScrambleText 符号池、数字与常用标点；fonttools 子集化时保留 `--layout-features="*"`（比例模式字距）
    - **新增/修改首页/header/footer 文案必须重跑子集化**，否则新字符回退系统字体造成字形突兀
-   - @font-face 在 globals.css，仅应用于 `[data-site-header]` / `footer` / `.font-pixel`（首页 hero section）；blog/notes/projects/about 正文沿用 sans，勿扩散
+   - @font-face 在 globals.css，应用于内页 `[data-site-header]` / `footer` / `.font-pixel`；海报首页及其 header 覆盖为 sans/mono；blog/notes/projects/about 正文沿用 sans，勿扩散
    - 上游：TakWolf/fusion-pixel-font release `2026.09.01`，OFL-1.1
 12. **首页像素 sprite 动画（.sprite-anim，public/sprite-sheet.png）**（改动前必读）
    - 8 帧横向序列，帧 342×266、步距 345px（含 3px 透明分隔）；用 CSS 纯动画实现（无 JS）
@@ -127,7 +127,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - notes 仍在统一头部下承载毛毡便签板。projects 现按用户要求例外：使用 lab-workbench.module.css 独立全景布局，使用独立紧凑标题与导语，避免 classified-page 的宽度和顶部留白；桌面图禁止放大裁切。
 
 17. **Header / 首页文案乱码动画**：
-   - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item 和首页 `game-home-copy` 的 `PLAYER // 01` 之外四行文案必须使用稳定 id 的 `ScrambleText`。
+   - 当前实际渲染路径是 `components/header.tsx` 与 `components/game-home.tsx`；Header nav item、首页自我介绍的四行文案与四个菜单标题必须使用稳定 id 的 `ScrambleText`，`PLAYER // 01` 保持静态。
 
 18. **随记毛毡板（mission-board.tsx）**：
    - 服务端将已解析的 `contentHtml` 传给便签组件；便签不展示 summary / 阅读时长 / 任务编号，点击直接在本页阅读全文，独立详情路由仍可直接访问。
@@ -145,15 +145,22 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - PC 桌面 width:120%/left:-10% 是用户锁定的最佳展示尺寸，禁止自行改为100%。页面宽度限制为 min(1400px,83.333333%)，为两侧桌角预留空间，无横向裁切。stage 高度 calc(50cqw + 100px)，tableFrame 高度 calc(29.577465cqw + 100px) 保留底部额外100px。移动端恢复页面100%宽与流式布局。
    - 移动端（<=700px）隐藏桌面背景，物件与想法气泡改为纵向流式布局；气泡预留高度，避免显示时推移物件。scroll/resize 经 rAF 在视口中部 20%–80% 选择最靠近中心的物件，data-scroll-active 驱动气泡、像素归组、锅盖与单词动画，离开取消；监听与 rAF 在卸载时清理。桌面维持 hover/focus 交互与手调位置。
 
+20. **红黑海报首页（game-home.tsx / .module.css）**：
+   - 人物为 `public/images/home/yao-street-portrait.png`（1402×1122，保留用户原始透明素材与左右透明边距）；使用 next/image eager + fetchPriority。不要用整张参考设计图替代真实文字、菜单或分层背景。
+   - `data-home-scene` 是首页专属标识。globals.css 用 `body:has([data-home-scene])` 将共用 header 改为透明悬浮、隐藏重复 HUD 导航、调整 logo 和工具；离开首页自动恢复内页 header。首页使用 sans/mono 匹配参考稿，未修改双语原文或 Fusion Pixel 字符集。
+   - GSAP 入场只操作内层 `data-home-*`；视差只操作外层 depth/camera，避免 transform 相互覆盖。人物的百分比居中壳与菜单的响应式 rotate/translate 壳也不能直接交给 GSAP：GSAP 会把独立变换折算为首帧像素值并留下内联样式，导致 resize 后人物偏移、菜单保留旧角度；须动画内部无定位变换的独立 wrapper。useGSAP + scope 负责 revert；人物 decode 后启动，1.4s 兜底，键盘 focus 或动态开启 reduced-motion 直接落定。模块变量记录本次文档已完成入场，语言切换/站内返回不重播，刷新可重播。CSS scripting 媒体查询配合 data-home-ready 避免 hydration 前静态完成帧闪现，2.5s 可见性兜底保证脚本异常时可读；无 JS / reduced-motion 直接展示。
+   - 视差范围：镜头 rotateX ±0.55° / rotateY ±0.85°，背景反向 7/5px、人物 20/13px、文案 9/6px、菜单 12/8px。rAF 指数阻尼，停稳停止请求；移出窗口回正，后台/失焦/离开视口停止，卸载清理监听与 observer。仅 fine pointer + hover + no-preference 启用。
+   - <=800px 使用纵向海报布局，<=480px 再压缩人物与文案；菜单独立可点击，不用鼠标 hover 才能显示。主题切换原有圆形动画参数与签名笔画参数保持原值。
+
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
-- **Edgewise 详情布局（2026-10-05）**：压缩标题、描述和页头间距；>=1000px 使用左侧像素场景、右侧拉环/裁决/说明的双列布局，窄屏保持上下排列。说明默认展开、字号 13px；场景 ResizeObserver 测量 stage 实际宽度，分栏后也能切换紧凑坐标布局。此项属于当前未提交批次。
-
-- **最近提交**：`2b816b8`（feat: 更新项目相关术语，将“实验场”替换为“实验室”，调整样式和布局以提升用户体验）
-- **未提交改动**：实验室列表改为 LabWorkbench 手绘实验台；抽取 EdgewisePreview、补充双语厨房展示数据与 playable/coming-soon 类型；新增 CSS Module、接入用户提供的四张 PNG。游戏内容仍是目录骨架，厨房游戏路由与运行时尚未实现。当前保留紧凑标题/导语与 objectLabel，删除 notebook，hover/focus 想法气泡介绍，点击 Edgewise 直接进入；保留用户手调位置和尺寸（机器 left17%/top18.82%/width35%，锅具 left54%/top17%/width35%），PC 桌面裁掉桌脚并收紧场景高度，局部限制横向溢出；移动端隐藏背景、滚动展开气泡，词汇按对应交互播放。按用户要求只做代码检查，不进行浏览器自动验证。
+- **首页发布批次（2026-10-18）**：开发分支 `codex/street-portrait-home`，用户已确认提交并合并到 `main` 后推送，沿用 Vercel Git 自动部署。
+- **最近提交**：本批次 `feat: 重构红黑动漫首页并添加视差与入场动画`；上次提交 `fe16a2b`（发布472ms长任务排查文章中英双语）。此前实验台、Edgewise 布局已在现有提交中，开始本次任务时工作区干净。
+- **本批次改动**：首页按用户提供的红黑动漫设计重构，接入透明人物 PNG；新增 game-home.module.css，实现分层鼠标视差、GSAP 首访错峰入场、双语菜单、明暗主题与手机布局。globals.css 删除旧首页样式并添加首页专属透明 header。未新增依赖。此批次作为一个提交合并到 main，未保留其他未提交改动。
+- **本批次验证**：TypeScript、首页 ESLint、diff 检查通过；浏览器验证中文/英文、浅色/深色、390px 手机及桌面布局、鼠标视差、导航与返回、刷新入场及 resize 往返一致性。`next build --webpack` 完整通过（38 个静态页面）。默认 Turbopack 生产构建遇到子进程连接异常；沙箱内另遇 Google 字体网络限制，未更改既有构建配置或字体来源。
 
 ## 维护约定（agent 必读）
 - **任务完成或新增功能后，及时更新本文件**：架构/功能清单/注意事项/当前状态（含最近提交、未提交批次）要与代码同步。
