@@ -42,7 +42,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 6. **项目页**：个人实验室，不再展示公司履历；列表使用独立全景布局与用户提供的桌面、机器、锅身和锅盖 PNG；紧凑标题（1.8–2.6rem）与导语、物件标签已恢复，介绍改为上方想法气泡，桌面原比例完整展示。机器透明屏幕嵌入像素预览，hover/focus 显示介绍，点击机器直接进入 Edgewise；厨房尚未可玩，无链接，词汇只在鼠标移入时挂载并播放、移出立即卸载。支持键盘链接和 reduced-motion。Edgewise 是首个可玩项目，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
-9. **About AI 客服（2026-10-26，分支 `codex/agent-support`）**：`/zh|en/about` 右下角悬浮球 + 可展开面板；浏览器 `components/support-chat.tsx` → Next.js `POST /api/support` → 本机 Docker Python FastAPI `POST /api/v1/chat`。Python 独占检索、模型调用、数据库和会话历史；浏览器仅传 `{message, sessionId?, locale}`，不传 history，代理将 `session_id` / 来源行号转换为既有 UI 的 camelCase。`[n]` 引用与来源卡、About 专属样式保留。Next 仅用服务端 `SUPPORT_API_BASE_URL` / `SUPPORT_SITE_TOKEN`，单次上游最长 90 秒、`maxDuration=120`、不重试，进程内限流 20 次/分钟/IP。旧 TS Agent、检索、提示词及静态知识快照已删除。
+9. **About AI 客服（2026-10-26，分支 `codex/agent-support`）**：`/zh|en/about` 右下角悬浮球 + 可展开面板；浏览器 `components/support-chat.tsx` → Next.js `POST /api/support` → 本机 Docker Python FastAPI `POST /api/v1/chat`。Python 独占检索、模型调用、数据库和会话历史；浏览器仅传 `{message, sessionId?, locale}`，不传 history，代理将 `session_id` / 来源行号转换为既有 UI 的 camelCase。`[n]` 引用与来源卡、About 专属样式保留。Next 仅用服务端 `SUPPORT_API_BASE_URL` / `SUPPORT_SITE_TOKEN`，单次上游最长 90 秒、`maxDuration=120`、不重试，进程内限流 5 次/分钟/IP。旧 TS Agent、检索、提示词及静态知识快照已删除。
 
 ## 关键注意事项（踩过的坑，动手前必读）
 
@@ -160,7 +160,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - **Vercel 无法访问工作站 localhost**：生产/预览环境的 base URL 必须改为可达的 HTTPS 隧道或服务地址，由 Vercel 服务端通过共享 token 访问本机 Docker。隧道、Docker 和公网入口需要用户自行部署；本批次未实际开通或配置任何隧道服务。域名、TLS 与上游连通性不能靠前端 localhost 配置解决。
    - 请求 `{message, sessionId?, locale:'zh'|'en'}`，Python 使用 `session_id`；不接受客户端 history。会话 ID 仅保存在组件内存，清空会话会清 ID、abort 在途请求并用请求身份检查丢弃迟到响应；刷新/新标签开启新会话，但不会删除 Python 已存历史。网络取消不保证 Python 回滚已持久化的请求，因此不得自动重试 POST。
    - 输入最多 2000 字符、JSON 流最多 16 KiB；代理校验 locale/session、限制响应大小、上游超时 90 秒、Next `maxDuration=120`。只请求一次，错误只给稳定 code，不透传上游响应正文、机器路径或鉴权细节。GET 实际查询 `/api/v1/health`，仅返回 status 与 rag/llm/store 布尔就绪状态，不公开配置路径、模型名或数据库计数。
-   - 限流是进程内有界 Map（POST/GET 共用 20 次/分钟/IP），多实例/冷启动不共享；公开流量大时应在 Vercel Firewall 或网关加共享限流。部署平台需要支持 120 秒函数时长，Next 声明本身不提升套餐上限。
+   - 限流是进程内有界 Map（POST/GET 共用 5 次/分钟/IP），多实例/冷启动不共享；公开流量大时应在 Vercel Firewall 或网关加共享限流。部署平台需要支持 120 秒函数时长，Next 声明本身不提升套餐上限。
    - 引用编号/合并由 Python 负责；网站只转换来源 `start_line/end_line` 为 `startLine/endLine`，显示公开相对路径，不重新编号。组件只在 about 页挂载；要全站挂载需用户确认，并检查首页红黑 header / 游戏过渡的 z-index 与交互。
 
 ## 内容结构约定

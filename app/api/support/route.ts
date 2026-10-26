@@ -4,7 +4,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 120
 
-const RATE_LIMIT = 20
+const RATE_LIMIT = 5
 const RATE_WINDOW_MS = 60_000
 const MAX_BODY_BYTES = 16_384
 const buckets = new Map<string, number[]>()
