@@ -8,6 +8,19 @@ const RATE_LIMIT = 5
 const RATE_WINDOW_MS = 60_000
 const MAX_BODY_BYTES = 16_384
 const buckets = new Map<string, number[]>()
+const DEFAULT_ALLOWED_ORIGINS = ['https://fyao.me']
+
+function allowedOrigins(): string[] {
+  const extra = process.env.SUPPORT_ALLOWED_ORIGINS?.split(',').map((s) => s.trim()).filter(Boolean) ?? []
+  const dev = process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : []
+  return [...DEFAULT_ALLOWED_ORIGINS, ...extra, ...dev]
+}
+
+function verifyOrigin(request: Request): void {
+  const origin = request.headers.get('origin')
+  if (!origin) throw new SupportApiError('bad_origin', 403)
+  if (!allowedOrigins().includes(origin)) throw new SupportApiError('forbidden_origin', 403)
+}
 
 function rateAllowed(request: Request): boolean {
   const now = Date.now()
@@ -69,6 +82,7 @@ async function readInput(request: Request): Promise<Record<string, unknown>> {
 
 export async function POST(request: Request) {
   try {
+    verifyOrigin(request)
     if (!rateAllowed(request)) throw new SupportApiError('rate_limited', 429)
     const input = await readInput(request)
     if (Object.keys(input).some((key) => !['message', 'sessionId', 'locale'].includes(key))) {
@@ -91,6 +105,7 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
+    verifyOrigin(request)
     if (!rateAllowed(request)) throw new SupportApiError('rate_limited', 429)
     return Response.json(await healthViaApi(request), { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {

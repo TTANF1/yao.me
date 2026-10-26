@@ -62,9 +62,10 @@ async function upstream(path: string, request: Request, body?: object): Promise<
   const timer = setTimeout(abort, UPSTREAM_TIMEOUT_MS)
   try {
     // One attempt only: retrying a POST could persist a duplicate turn in Python.
+    const upstreamOrigin = request.headers.get('origin')
     const response = await fetch(`${base}${path}`, {
       method: body ? 'POST' : 'GET',
-      headers: { 'X-Site-Token': token, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+      headers: { 'X-Site-Token': token, ...(body ? { 'Content-Type': 'application/json' } : {}), ...(upstreamOrigin ? { Origin: upstreamOrigin } : {}) },
       ...(body ? { body: JSON.stringify(body) } : {}),
       cache: 'no-store',
       redirect: 'error',
