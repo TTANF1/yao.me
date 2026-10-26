@@ -4,6 +4,7 @@ import { getMessages } from '@/lib/i18n'
 import { site } from '@/lib/site'
 import { Reveal } from '@/components/reveal'
 import { ScrambleText } from '@/components/scramble-text'
+import { SupportChat } from '@/components/support-chat'
 import { GitHubIcon, MailIcon } from '@/components/icons'
 
 export async function generateMetadata({
@@ -84,6 +85,8 @@ export default async function AboutPage({
           </section>
         </Reveal>
       </div>
+
+      <SupportChat locale={locale} labels={t.support} />
     </div>
   )
 }

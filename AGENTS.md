@@ -26,10 +26,10 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 
 ## 目录架构
 - `app/[locale]/`：双语路由（`/zh` `/en`）——layout（Header/Footer/主题）、page（首页）、blog、notes、projects（实验室 + `projects/edgewise` 像素鉴证 Playground）、about
-- `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts
-- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home + game-home.module.css（红黑海报首页、分层视差与首次入场）、game-transition-link / game-transition-overlay（游戏化导航过渡）
+- `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts、api/support/route.ts（About AI 客服接口）
+- `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home + game-home.module.css（红黑海报首页、分层视差与首次入场）、game-transition-link / game-transition-overlay（游戏化导航过渡）、support-chat + support-chat.module.css（About 页 AI 客服悬浮球/面板）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
-- `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）
+- `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）、support/（api.ts 服务端 FastAPI 代理与 types.ts 接口类型）
 - `.codex/boo-boo-kitchen/`：Boo Boo Kitchen 英语烹饪游戏设计入口（README.md）及玩法、美术、架构、Roadmap；用户已选 Three.js 路线，当前仅设计，尚未创建游戏路由或安装依赖。建议固定正交视角、三维厨房配二维手绘角色，按 M0–M5 完成首道菜，M6 扩展。
 - `games/boo-boo-kitchen/` 与 `public/games/boo-boo-kitchen/`：已建立游戏逻辑（scene/gameplay/data/services）与运行素材（models/textures/sprites/audio）目录骨架；游戏逻辑尚未实现且未安装 Three.js；列表已采用手绘实验台，厨房锅具是可选中介绍的待开发展示物，无游戏链接。
 
@@ -42,6 +42,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 6. **项目页**：个人实验室，不再展示公司履历；列表使用独立全景布局与用户提供的桌面、机器、锅身和锅盖 PNG；紧凑标题（1.8–2.6rem）与导语、物件标签已恢复，介绍改为上方想法气泡，桌面原比例完整展示。机器透明屏幕嵌入像素预览，hover/focus 显示介绍，点击机器直接进入 Edgewise；厨房尚未可玩，无链接，词汇只在鼠标移入时挂载并播放、移出立即卸载。支持键盘链接和 reduced-motion。Edgewise 是首个可玩项目，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
+9. **About AI 客服（2026-10-26，分支 `codex/agent-support`）**：`/zh|en/about` 右下角悬浮球 + 可展开面板；浏览器 `components/support-chat.tsx` → Next.js `POST /api/support` → 本机 Docker Python FastAPI `POST /api/v1/chat`。Python 独占检索、模型调用、数据库和会话历史；浏览器仅传 `{message, sessionId?, locale}`，不传 history，代理将 `session_id` / 来源行号转换为既有 UI 的 camelCase。`[n]` 引用与来源卡、About 专属样式保留。Next 仅用服务端 `SUPPORT_API_BASE_URL` / `SUPPORT_SITE_TOKEN`，单次上游最长 90 秒、`maxDuration=120`、不重试，进程内限流 20 次/分钟/IP。旧 TS Agent、检索、提示词及静态知识快照已删除。
 
 ## 关键注意事项（踩过的坑，动手前必读）
 
@@ -153,6 +154,15 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - <=800px 使用纵向海报布局，<=480px 再压缩人物与文案；菜单独立可点击，不用鼠标 hover 才能显示。主题切换原有圆形动画参数与签名笔画参数保持原值。
    - PC（>=801px）首页固定 100dvh（100svh 兜底），取消原 680px 最小高度，隐藏 body 直属的默认 .game-footer；版权在左下角以 10px/0.5 opacity 弱化，GitHub/Email/RSS 在人物脚边右侧。Footer 的 variant="home" 由服务端 page 传入 GameHome 的 footer 插槽，复用默认页脚的链接与双语邮箱逻辑。只隐藏默认 footer，不能误隐藏内嵌 footer。<=800px 保留原纵向布局、独立 footer 与正常页面滚动，隐藏内嵌 footer；禁止全局 overflow:hidden 强行裁剪内容。主题切换按钮使用 cursor:pointer，圆形切换参数保持不变。
 
+21. **About AI 客服接入（support-chat / lib/support）**：
+   - 活动部署链：浏览器 → Next.js `/api/support` → Docker Python FastAPI `/api/v1/chat`；Python 工程 `D:\Project\knowledge-support-agent` 管理公开知识检索、LLM、SQLite 数据及历史。网站只保留 `api.ts` 服务端代理和 `types.ts` 接口类型；旧 TS Agent、BM25/RRF 检索、提示词、静态知识快照及其专属类型已按用户要求删除，知识与模型逻辑统一由 Python 管理。
+   - 必须显式配置服务端 `SUPPORT_API_BASE_URL` 与 `SUPPORT_SITE_TOKEN`，缺失时返回通用 503；本机 Next 开发可用 `http://127.0.0.1:8787`。代理用 `X-Site-Token` 认证，禁止 `NEXT_PUBLIC_`、浏览器直连 Python、组件内密钥或日志输出密钥。网站无需模型 API key。`.env.example` 只含脱敏模板，真实值放忽略的 `.env.local` / 部署环境。
+   - **Vercel 无法访问工作站 localhost**：生产/预览环境的 base URL 必须改为可达的 HTTPS 隧道或服务地址，由 Vercel 服务端通过共享 token 访问本机 Docker。隧道、Docker 和公网入口需要用户自行部署；本批次未实际开通或配置任何隧道服务。域名、TLS 与上游连通性不能靠前端 localhost 配置解决。
+   - 请求 `{message, sessionId?, locale:'zh'|'en'}`，Python 使用 `session_id`；不接受客户端 history。会话 ID 仅保存在组件内存，清空会话会清 ID、abort 在途请求并用请求身份检查丢弃迟到响应；刷新/新标签开启新会话，但不会删除 Python 已存历史。网络取消不保证 Python 回滚已持久化的请求，因此不得自动重试 POST。
+   - 输入最多 2000 字符、JSON 流最多 16 KiB；代理校验 locale/session、限制响应大小、上游超时 90 秒、Next `maxDuration=120`。只请求一次，错误只给稳定 code，不透传上游响应正文、机器路径或鉴权细节。GET 实际查询 `/api/v1/health`，仅返回 status 与 rag/llm/store 布尔就绪状态，不公开配置路径、模型名或数据库计数。
+   - 限流是进程内有界 Map（POST/GET 共用 20 次/分钟/IP），多实例/冷启动不共享；公开流量大时应在 Vercel Firewall 或网关加共享限流。部署平台需要支持 120 秒函数时长，Next 声明本身不提升套餐上限。
+   - 引用编号/合并由 Python 负责；网站只转换来源 `start_line/end_line` 为 `startLine/endLine`，显示公开相对路径，不重新编号。组件只在 about 页挂载；要全站挂载需用户确认，并检查首页红黑 header / 游戏过渡的 z-index 与交互。
+
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
@@ -161,6 +171,9 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - **页脚发布批次（2026-10-18）**：仅 PC 首页将 Footer 功能融入主体，左下角弱化版权、人物脚右侧社交入口，消除纵向滚动；移动端保持原布局与独立 footer、允许滚动。Footer 新增 home variant，通过首页服务端插槽复用链接；主题切换按钮新增 cursor:pointer。用户验证通过，已确认提交并推送 main；无其他未提交改动。
 - **页脚调整验证**：TypeScript、涉及文件 ESLint、diff 检查及 Webpack 生产构建通过；浏览器确认 PC 1280×800 / 900×600 的 scrollHeight 等于视口高，390×844 手机保留 1123px 页面与独立 footer，主题按钮 cursor 为 pointer；中文/英文邮箱正确，进入内页恢复独立 footer。
 - **首页发布批次（2026-10-18）**：开发分支 `codex/street-portrait-home`，用户已确认提交并合并到 `main` 后推送，沿用 Vercel Git 自动部署。
+- **About AI 客服批次（2026-10-26，未提交）**：分支 `codex/agent-support`；原有 About 悬浮球/面板/来源卡保留，活动 `/api/support` 已切换为 `lib/support/api.ts` → Docker Python FastAPI。浏览器仅传 message/sessionId/locale，Python 管理数据库/历史；清空会话中止在途请求并丢弃迟到响应。旧 `agent.ts`、`retrieval.ts`、`prompts.ts`、`knowledge.json` 原地保留且未改动，不再被活动路由导入；types.ts 兼容旧实现。新增脱敏 `.env.example` 及对应 ignore 例外，真实环境变量须私下配置。未 commit/push。
+- **AI 客服本批次验证**：`npx tsc --noEmit`、涉及代理/类型/组件的 ESLint、`git diff --check`、`npx next build --webpack` 全部通过（38 静态页面 + 动态 `/api/support`）。真实本地假 HTTP 上游的 25 项 route-handler smoke 验证通过：鉴权、会话/引用/usage 转换、health 脱敏、history 拒绝、校验/流式大小限制、缺配置、错误/路径脱敏、重定向拒绝、取消、限流和不重试；90 秒超时分支仅在测试 harness 中缩短计时，覆盖响应头及正文阶段。2026-10-26 已验证真实本机 Docker 链路：Next.js health 返回 200、一次真实问答和同会话追问均 200/answered 且带来源，Python SQLite 记录 1 个会话/4 则消息；无 token 直接调用 Python 返回 401，About 页 HTTP 200。已获授权建立被忽略的 `.env.local`，只含 Python 地址与共享服务 token，不含模型密钥。未做本批次浏览器自动化；隧道/Vercel 公网链路尚未接入。
+- **AI 客服部署**：本机 Docker Python 服务监听映射端口 8787，网站服务端必须显式配置 `SUPPORT_API_BASE_URL` 与匹配的 `SUPPORT_SITE_TOKEN`；Vercel 的 Production/Preview/Development 需配置可达 HTTPS 隧道/服务地址及 token，不能填工作站 localhost。模型 key、知识路径、数据库和持久化由 Python 服务管理。`maxDuration=120`、上游超时 90 秒、不自动重试；平台函数时长限制需匹配。本批次未开通隧道或发布部署。
 - **最近提交**：本次 `fix: 将 PC 首页页脚融入主体并取消纵向滚动`；上次 `493f8cf`（红黑动漫首页、视差与入场动画），已完成 Vercel 发布。
 - **本批次改动**：首页按用户提供的红黑动漫设计重构，接入透明人物 PNG；新增 game-home.module.css，实现分层鼠标视差、GSAP 首访错峰入场、双语菜单、明暗主题与手机布局。globals.css 删除旧首页样式并添加首页专属透明 header。未新增依赖。此批次作为一个提交合并到 main，未保留其他未提交改动。
 - **本批次验证**：TypeScript、首页 ESLint、diff 检查通过；浏览器验证中文/英文、浅色/深色、390px 手机及桌面布局、鼠标视差、导航与返回、刷新入场及 resize 往返一致性。`next build --webpack` 完整通过（38 个静态页面）。默认 Turbopack 生产构建遇到子进程连接异常；沙箱内另遇 Google 字体网络限制，未更改既有构建配置或字体来源。
