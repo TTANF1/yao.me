@@ -8,7 +8,7 @@ const RATE_LIMIT = 5
 const RATE_WINDOW_MS = 60_000
 const MAX_BODY_BYTES = 16_384
 const buckets = new Map<string, number[]>()
-const DEFAULT_ALLOWED_ORIGINS = ['https://fyao.me']
+const DEFAULT_ALLOWED_ORIGINS = ['https://fyao.me', 'https://www.fyao.me']
 
 function allowedOrigins(): string[] {
   const extra = process.env.SUPPORT_ALLOWED_ORIGINS?.split(',').map((s) => s.trim()).filter(Boolean) ?? []

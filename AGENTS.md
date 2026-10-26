@@ -161,7 +161,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 请求 `{message, sessionId?, locale:'zh'|'en'}`，Python 使用 `session_id`；不接受客户端 history。会话 ID 仅保存在组件内存，清空会话会清 ID、abort 在途请求并用请求身份检查丢弃迟到响应；刷新/新标签开启新会话，但不会删除 Python 已存历史。网络取消不保证 Python 回滚已持久化的请求，因此不得自动重试 POST。
    - 输入最多 2000 字符、JSON 流最多 16 KiB；代理校验 locale/session、限制响应大小、上游超时 90 秒、Next `maxDuration=120`。只请求一次，错误只给稳定 code，不透传上游响应正文、机器路径或鉴权细节。GET 实际查询 `/api/v1/health`，仅返回 status 与 rag/llm/store 布尔就绪状态，不公开配置路径、模型名或数据库计数。
    - 限流是进程内有界 Map（POST/GET 共用 5 次/分钟/IP），多实例/冷启动不共享；公开流量大时应在 Vercel Firewall 或网关加共享限流。部署平台需要支持 120 秒函数时长，Next 声明本身不提升套餐上限。
-   - 域名限制（2026-10-26）：verifyOrigin 要求请求必须携带 Origin 且命中白名单（默认 https://fyao.me，SUPPORT_ALLOWED_ORIGINS 可追加，非生产额外放行 http://localhost:3000），缺失或不在白名单返回 403 bad_origin/forbidden_origin；lib/support/api.ts 代理会把浏览器 Origin 透传给上游 FastAPI（上游同样严格校验 Origin，白名单配置在 Python 端 config/docker/agent.toml）。
+   - 域名限制（2026-10-26）：verifyOrigin 要求请求必须携带 Origin 且命中白名单（默认 https://fyao.me、https://www.fyao.me，SUPPORT_ALLOWED_ORIGINS 可追加，非生产额外放行 http://localhost:3000），缺失或不在白名单返回 403 bad_origin/forbidden_origin；lib/support/api.ts 代理会把浏览器 Origin 透传给上游 FastAPI（上游同样严格校验 Origin，白名单配置在 Python 端 config/docker/agent.toml）。
    - 引用编号/合并由 Python 负责；网站只转换来源 `start_line/end_line` 为 `startLine/endLine`，显示公开相对路径，不重新编号。组件只在 about 页挂载；要全站挂载需用户确认，并检查首页红黑 header / 游戏过渡的 z-index 与交互。
 
 ## 内容结构约定
