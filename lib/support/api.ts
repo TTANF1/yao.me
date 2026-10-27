@@ -1,6 +1,7 @@
 import 'server-only'
 
 import type { PublicSource, SupportApiResponse, SupportStatus } from './types'
+import { encodeServerEvent, readServerEvents } from './sse'
 
 const UPSTREAM_TIMEOUT_MS = 90_000
 const MAX_RESPONSE_BYTES = 1_048_576
@@ -137,11 +138,15 @@ export async function chatViaApi(
   request: Request,
   input: { message: string; sessionId?: string; locale: 'zh' | 'en' },
 ): Promise<SupportApiResponse> {
-  const payload = record(await upstream('/api/v1/chat', request, {
+  return chatResponse(await upstream('/api/v1/chat', request, {
     message: input.message,
     ...(input.sessionId ? { session_id: input.sessionId } : {}),
     locale: input.locale,
   }))
+}
+
+function chatResponse(value: unknown): SupportApiResponse {
+  const payload = record(value)
   const status = text(payload.status) as SupportStatus
   if (!STATUSES.has(status) || !validSessionId(payload.session_id) || !Array.isArray(payload.sources) ||
       payload.sources.length > 50 || !Array.isArray(payload.followups) || payload.followups.length > 10) {
@@ -164,6 +169,115 @@ export async function chatViaApi(
       completionTokens: integer(usage.completion_tokens),
       totalTokens: integer(usage.total_tokens),
     },
+  }
+}
+
+export async function streamChatViaApi(
+  request: Request,
+  input: { message: string; sessionId?: string; locale: 'zh' | 'en' },
+): Promise<Response> {
+  const { base, token } = configuration()
+  const controller = new AbortController()
+  const abort = () => controller.abort()
+  const timer = setTimeout(abort, UPSTREAM_TIMEOUT_MS)
+  request.signal.addEventListener('abort', abort, { once: true })
+  if (request.signal.aborted) abort()
+  const cleanup = () => {
+    clearTimeout(timer)
+    request.signal.removeEventListener('abort', abort)
+  }
+  const failure = (error: unknown) => {
+    if (controller.signal.aborted) return new SupportApiError(request.signal.aborted ? 'request_cancelled' : 'support_timeout', request.signal.aborted ? 499 : 504)
+    return error instanceof SupportApiError ? error : new SupportApiError('support_unavailable', 503)
+  }
+  try {
+    const origin = request.headers.get('origin')
+    const response = await fetch(`${base}/api/v1/chat/stream`, {
+      method: 'POST',
+      headers: { 'X-Site-Token': token, 'Content-Type': 'application/json', Accept: 'text/event-stream', ...(origin ? { Origin: origin } : {}) },
+      body: JSON.stringify({ message: input.message, locale: input.locale, ...(input.sessionId ? { session_id: input.sessionId } : {}) }),
+      cache: 'no-store',
+      redirect: 'error',
+      signal: controller.signal,
+    })
+    if (!response.ok || !response.body || !response.headers.get('content-type')?.startsWith('text/event-stream')) {
+      await response.body?.cancel()
+      if (response.status === 429) throw new SupportApiError('rate_limited', 429)
+      if (response.status === 408 || response.status === 504) throw new SupportApiError('support_timeout', 504)
+      if (response.status === 404) throw new SupportApiError('session_unavailable', 409)
+      throw new SupportApiError('support_unavailable', 503)
+    }
+    const events = readServerEvents(response.body)
+    let hasMessage = false
+    let answerLength = 0
+    let cancelled = false
+    const stream = new ReadableStream<Uint8Array>({
+      async pull(output) {
+        try {
+          while (true) {
+            const next = await events.next()
+            if (cancelled) return
+            if (next.done) throw new SupportApiError('upstream_invalid_response', 502)
+            const { event, data } = next.value
+            const value = record(data)
+            if (event === 'status') {
+              const stage = text(value.stage, 40)
+              if (!['working', 'retrieving', 'generating'].includes(stage)) continue
+              output.enqueue(encodeServerEvent('status', { stage }))
+            } else if (event === 'session') {
+              if (!validSessionId(value.session_id)) throw new SupportApiError('upstream_invalid_response', 502)
+              output.enqueue(encodeServerEvent('session', { sessionId: value.session_id }))
+            } else if (event === 'delta') {
+              if (hasMessage) throw new SupportApiError('upstream_invalid_response', 502)
+              const delta = text(value.text)
+              answerLength += delta.length
+              if (answerLength > 20_000) throw new SupportApiError('upstream_invalid_response', 502)
+              output.enqueue(encodeServerEvent('delta', { text: delta }))
+            } else if (event === 'message') {
+              if (hasMessage) throw new SupportApiError('upstream_invalid_response', 502)
+              output.enqueue(encodeServerEvent('message', chatResponse(value)))
+              hasMessage = true
+            } else if (event === 'done') {
+              if (!hasMessage) throw new SupportApiError('upstream_invalid_response', 502)
+              output.enqueue(encodeServerEvent('done', {}))
+              output.close()
+              abort()
+              await events.return(undefined)
+              cleanup()
+            } else if (event === 'error') {
+              // Upstream errors may contain implementation details; expose only stable codes.
+              const code = ['rate_limited', 'session_unavailable', 'support_timeout'].includes(String(value.code)) ? String(value.code) : 'support_unavailable'
+              throw new SupportApiError(code, 503)
+            } else {
+              continue
+            }
+            return
+          }
+        } catch (error) {
+          if (!cancelled) {
+            output.enqueue(encodeServerEvent('error', { code: failure(error).code }))
+            output.close()
+          }
+          abort()
+          await events.return(undefined).catch(() => {})
+          cleanup()
+        }
+      },
+      async cancel() {
+        cancelled = true
+        abort()
+        await events.return(undefined).catch(() => {})
+        cleanup()
+      },
+    })
+    return new Response(stream, {
+      headers: { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-store, no-transform', 'X-Accel-Buffering': 'no' },
+    })
+  } catch (error) {
+    const known = failure(error)
+    abort()
+    cleanup()
+    throw known
   }
 }
 

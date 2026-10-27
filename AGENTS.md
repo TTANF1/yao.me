@@ -29,7 +29,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 - `app/`：globals.css（含手写工具类）、feed.xml/route.ts（RSS）、sitemap.ts、robots.ts、api/support/route.ts（About AI 客服接口）
 - `components/`：header、footer、theme-provider、theme-toggle、locale-switcher、scramble-text（语言切换乱码动画）、reveal（滚动入场）、signature-watermark（首页签名水印）、project-card（旧版实验入口）、lab-workbench（手绘实验台列表与分层物件）、edgewise-preview（共用像素归组预览）、edgewise-playground（像素鉴证交互）、classified-archive（按年份机密档案袋）、mission-board（毛毡便签与原地全文阅读）、post-toc（左侧轮转目录）、mermaid-renderer、scroll-header、scroll-to-top、icons、nav-transition-bridge（导航过渡桥接）、post-list-link（列表→详情过渡链接）、back-link（详情→列表过渡返回）、game-home + game-home.module.css（红黑海报首页、分层视差与首次入场）、game-transition-link / game-transition-overlay（游戏化导航过渡）、support-chat + support-chat.module.css（About 页 AI 客服悬浮球/面板）
 - `content/posts|notes/{zh,en}/`：文章与随记；同名文件成对 = 中英双语
-- `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）、support/（api.ts 服务端 FastAPI 代理与 types.ts 接口类型）
+- `lib/`：i18n、locale、messages（UI 文案）、posts（内容解析）、projects-data、site（站点配置：域名/社交/默认语言）、view-transition（语言切换/导航共用过渡槽位）、nav-transition（列表⇄详情导航过渡编排）、rehype-shiki（代码高亮）、support/（api.ts 服务端 FastAPI JSON/SSE 代理、sse.ts 共用有界事件解析与 types.ts 接口类型）
 - `.codex/boo-boo-kitchen/`：Boo Boo Kitchen 英语烹饪游戏设计入口（README.md）及玩法、美术、架构、Roadmap；用户已选 Three.js 路线，当前仅设计，尚未创建游戏路由或安装依赖。建议固定正交视角、三维厨房配二维手绘角色，按 M0–M5 完成首道菜，M6 扩展。
 - `games/boo-boo-kitchen/` 与 `public/games/boo-boo-kitchen/`：已建立游戏逻辑（scene/gameplay/data/services）与运行素材（models/textures/sprites/audio）目录骨架；游戏逻辑尚未实现且未安装 Three.js；列表已采用手绘实验台，厨房锅具是可选中介绍的待开发展示物，无游戏链接。
 
@@ -42,7 +42,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 6. **项目页**：个人实验室，不再展示公司履历；列表使用独立全景布局与用户提供的桌面、机器、锅身和锅盖 PNG；紧凑标题（1.8–2.6rem）与导语、物件标签已恢复，介绍改为上方想法气泡，桌面原比例完整展示。机器透明屏幕嵌入像素预览，hover/focus 显示介绍，点击机器直接进入 Edgewise；厨房尚未可玩，无链接，词汇只在鼠标移入时挂载并播放、移出立即卸载。支持键盘链接和 reduced-motion。Edgewise 是首个可玩项目，详情页提供自动巡检、代表像素放大镜、规则证据、JEV 三段式裁决、候选切换、阈值调节与 Before/After 拖动对比
 7. **SEO**：sitemap、robots、RSS feed、opengraph-image
 8. 404 刷新回首页
-9. **About AI 客服（2026-10-26，分支 `codex/agent-support`）**：`/zh|en/about` 右下角悬浮球 + 可展开面板；浏览器 `components/support-chat.tsx` → Next.js `POST /api/support` → 本机 Docker Python FastAPI `POST /api/v1/chat`。Python 独占检索、模型调用、数据库和会话历史；浏览器仅传 `{message, sessionId?, locale}`，不传 history，代理将 `session_id` / 来源行号转换为既有 UI 的 camelCase。`[n]` 引用与来源卡、About 专属样式保留。Next 仅用服务端 `SUPPORT_API_BASE_URL` / `SUPPORT_SITE_TOKEN`，单次上游最长 90 秒、`maxDuration=120`、不重试，进程内限流 5 次/分钟/IP。旧 TS Agent、检索、提示词及静态知识快照已删除。
+9. **About AI 客服（2026-10-27）**：`/zh|en/about` 右下角入口与 Claude 风格纸色阅读面板；浏览器 `components/support-chat.tsx` → Next.js `POST /api/support`（Accept: text/event-stream）→ Python FastAPI `POST /api/v1/chat/stream`，支持经校验片段流式输出、停止生成、自适应输入框、复制、来源展开和阅读滚动锁；不带 SSE Accept 继续走 `/api/v1/chat` 的 JSON 兼容接口。Python 独占检索、模型调用、数据库和会话历史；浏览器仅传 `{message, sessionId?, locale}`，不传 history，代理将 `session_id` / 来源行号转换为既有 UI 的 camelCase。`[n]` 引用与来源卡、About 专属样式保留。Next 仅用服务端 `SUPPORT_API_BASE_URL` / `SUPPORT_SITE_TOKEN`，单次上游最长 90 秒、`maxDuration=120`、不重试，进程内限流 5 次/分钟/IP。旧 TS Agent、检索、提示词及静态知识快照已删除。
 
 ## 关键注意事项（踩过的坑，动手前必读）
 
@@ -155,7 +155,7 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - PC（>=801px）首页固定 100dvh（100svh 兜底），取消原 680px 最小高度，隐藏 body 直属的默认 .game-footer；版权在左下角以 10px/0.5 opacity 弱化，GitHub/Email/RSS 在人物脚边右侧。Footer 的 variant="home" 由服务端 page 传入 GameHome 的 footer 插槽，复用默认页脚的链接与双语邮箱逻辑。只隐藏默认 footer，不能误隐藏内嵌 footer。<=800px 保留原纵向布局、独立 footer 与正常页面滚动，隐藏内嵌 footer；禁止全局 overflow:hidden 强行裁剪内容。主题切换按钮使用 cursor:pointer，圆形切换参数保持不变。
 
 21. **About AI 客服接入（support-chat / lib/support）**：
-   - 活动部署链：浏览器 → Next.js `/api/support` → Docker Python FastAPI `/api/v1/chat`；Python 工程 `D:\Project\knowledge-support-agent` 管理公开知识检索、LLM、SQLite 数据及历史。网站只保留 `api.ts` 服务端代理和 `types.ts` 接口类型；旧 TS Agent、BM25/RRF 检索、提示词、静态知识快照及其专属类型已按用户要求删除，知识与模型逻辑统一由 Python 管理。
+   - 活动部署链：浏览器 → Next.js `/api/support` → Docker Python FastAPI `/api/v1/chat/stream`（SSE）或 `/api/v1/chat`（JSON 兼容）；Python 工程 `D:\Project\knowledge-support-agent` 管理公开知识检索、LLM、SQLite 数据及历史。网站只保留 `api.ts` 服务端代理和 `types.ts` 接口类型；旧 TS Agent、BM25/RRF 检索、提示词、静态知识快照及其专属类型已按用户要求删除，知识与模型逻辑统一由 Python 管理。
    - 必须显式配置服务端 `SUPPORT_API_BASE_URL` 与 `SUPPORT_SITE_TOKEN`，缺失时返回通用 503；本机 Next 开发可用 `http://127.0.0.1:8787`。代理用 `X-Site-Token` 认证，禁止 `NEXT_PUBLIC_`、浏览器直连 Python、组件内密钥或日志输出密钥。网站无需模型 API key。`.env.example` 只含脱敏模板，真实值放忽略的 `.env.local` / 部署环境。
    - **Vercel 无法访问工作站 localhost**：生产/预览环境的 base URL 必须改为可达的 HTTPS 隧道或服务地址，由 Vercel 服务端通过共享 token 访问本机 Docker。隧道、Docker 和公网入口需要用户自行部署；本批次未实际开通或配置任何隧道服务。域名、TLS 与上游连通性不能靠前端 localhost 配置解决。
    - 请求 `{message, sessionId?, locale:'zh'|'en'}`，Python 使用 `session_id`；不接受客户端 history。会话 ID 仅保存在组件内存，清空会话会清 ID、abort 在途请求并用请求身份检查丢弃迟到响应；刷新/新标签开启新会话，但不会删除 Python 已存历史。网络取消不保证 Python 回滚已持久化的请求，因此不得自动重试 POST。
@@ -163,12 +163,24 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
    - 限流是进程内有界 Map（POST/GET 共用 5 次/分钟/IP），多实例/冷启动不共享；公开流量大时应在 Vercel Firewall 或网关加共享限流。部署平台需要支持 120 秒函数时长，Next 声明本身不提升套餐上限。
    - 域名限制（2026-10-26）：verifyOrigin 要求请求必须携带 Origin 且命中白名单（默认 https://fyao.me、https://www.fyao.me，SUPPORT_ALLOWED_ORIGINS 可追加，非生产额外放行 http://localhost:3000），缺失或不在白名单返回 403 bad_origin/forbidden_origin；lib/support/api.ts 代理会把浏览器 Origin 透传给上游 FastAPI（上游同样严格校验 Origin，白名单配置在 Python 端 config/docker/agent.toml）。
    - 引用编号/合并由 Python 负责；网站只转换来源 `start_line/end_line` 为 `startLine/endLine`，显示公开相对路径，不重新编号。组件只在 about 页挂载；要全站挂载需用户确认，并检查首页红黑 header / 游戏过渡的 z-index 与交互。
+   - **SSE（2026-10-27）**：浏览器以 Accept 选择 SSE，JSON 请求体不变。事件为 status → session（代理将 session_id 转 sessionId）→ delta `{text}` → message（最终完整且经校验的 camelCase 响应）→ done；失败 error 仅带脱敏 code。sse.ts 支持跨块 UTF-8 / CRLF / 多行 data / 注释，累计最大 1 MiB；代理正文最多 20,000 字符，必须收到完整 message + done，超时覆盖整个流，客户端取消传到上游，不重试 POST。
+   - Python 保留 DeepSeek 提供方，以真实 provider SSE 生成 JSONL 片段；每段引用及组合正文先校验再发 delta，最终整体校验并原子保存完整问答。非 answered 草稿缓冲以兼容资料扩展重试。禁止把原始 JSON、改写或 reasoning_content 发给浏览器；失败/停止时 UI 丢弃未完成草稿，早期 session 保留以便继续。完整回答已保存后再断线不保证回滚。
+   - 客服视觉独立使用纸色 / 暖灰 / sans 与站点 accent，不改首页/header/footer 字体。rAF 文字队列将网络片段逐字展开，新换行轻淡入，已显示行不重复播放；最终 message 校正正文，done 后等队列显示完再开放来源/复制/追问。停止/清空/卸载清理队列与监听，后台标签页或 reduced-motion 直接落定，避免 rAF 暂停卡住完成状态；保留 emoji 代理对。接近底部才自动跟随；输入支持中文 IME、自适应高度与 Shift+Enter，生成中可编辑下一问并用停止按钮取消。手机面板全屏并锁背景滚动、背景 inert 和焦点约束，桌面保持非模态；卸载恢复所有状态。role=status 只播报状态，不对每个片段重复朗读。
+   - 来源展开为一块弱化淡底色的紧凑单行列表，无逐条卡片/边框；编号沿用 Python，展示标题：简介，长内容省略，完整说明与公开相对路径/行号保留在 title。lib/support/source.ts 从 excerpt 清理 Markdown/HTML 生成短介绍；仅在 github/<repo>.md 与 TTANF1/<repo> 标题身份匹配时构建固定 github.com 公开仓库链接，不将知识库相对路径伪装成网站路由。
+   - 源码修改不更新已有 Docker 镜像，需另行重建并验收；真实模型 JSONL 遵循率、Cloudflare/Vercel 是否缓冲需在部署后检查，fake-provider 单测不能代替真实验收。
 
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
 
 ## 当前状态
+- **提交 / 容器发布批次（2026-10-27）**：用户已授权前后端 commit、仅前端 push，并追加授权后端容器部署。本提交收录本次客服 UI、逐字动画/淡底来源列表、SSE代理与测试；前端通过 main 推送沿用 Vercel 自动部署。后端容器已构建重建且 healthy，保留持久卷；公开索引20篇、check-public violations=[]，真实容器问答3段delta + message + done（7来源，首段3.88s/总4.89s），Docker结构化stdout成功日志生效。后端61项测试、前端11项测试及Webpack生产构建通过；14题真实模型评测状态全部符合预期，引用范围/关键词各有q09未完全命中（0.8889），报告保留且不改基线。以下“未提交/未发布/未更新Docker”描述是阶段历史，以本条为准；公网Vercel/Cloudflare流式链路尚待上线后验收。
+- **来源列表 / 文字展开（2026-10-27，未提交）**：按用户要求取消来源逐条卡片，改为一块淡底色紧凑列表（浏览器实测每行21px），有 GitHub 公开来源身份的显示仓库链接与简介，其余显示标题：简述；新增 lib/support/source.ts。回答加入独立于网络片段的逐字队列与新换行淡入，最终来源/追问/复制等待正文显示完成；停止、清空、卸载、后台标签页与动态 reduced-motion 均处理队列收尾。TypeScript、涉及文件 ESLint、11项 SSE/来源回归通过；本地3000无头 Edge 验证整批 SSE 渐进显示、仅 message 无 delta、来源链接/21px无边框列表、桌面/手机深色、停止/清空显示尾段、模拟后台 visibility 与静态/动态 reduced-motion、中断草稿清理，无 pageerror。截图位于忽略的 node_modules/.cache/support-screenshots。前后端继续仅本地运行，未 commit/push/deploy，Docker未更新。
+- **本地联调修复（2026-10-27，未提交）**：用户要求先本地测试、不发布。独立 Python 127.0.0.1:8788 + Next localhost:3000，临时启动器 node_modules/.cache/start-local-support.mjs 在进程内注入独立 token，不改 .env.local；本地会话库位于 Python .state/local-preview，原 Docker 8787 保持运行。真实“yao最近做了哪些项目”请求复现模型结尾提供 citations 却漏写正文 [n] 导致 invalid_stream；Python 现校验合法来源编号后补齐遗漏标记，继续拒绝空/伪造引用，不重试、不保存半条。业务日志追加白名单单行 stdout 的 request/session/trace、阶段耗时、首段时间、片段数/字符数、成功/失败/取消及具体 detail_code，删除原问答片段日志，具体以 Python docs/deployment.md 为准。61 项后端测试通过，更新并重启本地服务后同题 HTTP 验收 6 段 delta + message + done（首段约3.25s、总4.89s，6来源），日志 event=success。
+- **客服交互 / SSE 优化（2026-10-27，未提交）**：在 main 工作区调整 support-chat.tsx / .module.css 和双语客服文案，应用本机 frontend-design skill 的设计指导，参考 Claude 的纸色界面、助理无气泡排版、一体输入框，保留站点红色强调。按用户追加要求，双语欢迎语改为温柔知性、优雅幽默且原则坚定的男管家，事实/隐私边界不变，Python 人设提示词同步更新。新增停止、复制、滚动跟随控制、状态播报、中文 IME 与手机焦点/背景管理；新增 lib/support/sse.ts、Accept 协商代理与 scripts/test-support-stream.mjs。Python 工程同步实现真实 provider 流和经校验 JSONL 片段。两个仓库均未 commit/push，未重建 Docker、未部署。
+- **GitHub 知识源 / 管家人设（2026-10-27，未提交）**：Python 工程新增 `config/github.public.toml` 的 11 个公开非 fork 仓库白名单（含 profile），`import-github` 只读无认证 GitHub API 的元数据和 README，快照保留 URL/README SHA/抓取时间；8 篇含 README，3 篇仅元数据。新目录快照不可覆盖，后续用新版本目录更新并切换来源。已导入本地公开索引（20 篇，GitHub 11 + 文章 6 + 品牌 2 + 随记 1），check-public violations=[]；Docker 新增只读来源挂载配置但运行容器尚未更新。Python JSON/SSE 共用温柔知性、机智优雅且原则坚定的男管家人设，静态回复同步；未调用真实模型验收。网站只使用既有代理，不直接访问 GitHub。
+- **本批次验证（2026-10-27）**：TypeScript、相关 ESLint、diff 检查与 Webpack 生产构建通过；网站 10 项 SSE 测试通过（含正文阶段超时），Python 49 项 unittest 通过（含公开 GitHub 导入与人设边界）。实际启动生产站点，About HTTP 200，假上游 SSE 首块约 54ms、完整回答约 455ms，确认响应不等待全量缓存。用户授权后临时安装 @playwright/test（使用 npm 镜像，缓存及验收脚本位于忽略的 node_modules/.cache，未新增项目依赖），以无头 Edge 完成桌面/手机、明暗主题、英文、人设欢迎语、首段先于最终消息、来源、复制、停止、清空、手机背景状态恢复、中文 IME/Shift+Enter、限流、中断草稿移除及长回答回底验收，无 pageerror；截图保存在 node_modules/.cache/support-screenshots。未调用付费模型；真实模型评测和线上 SSE 连通性尚未验收，现有 Docker 仍是旧代码。
+- **当前最近提交**：`137a2a8`（www.fyao.me Origin 白名单）；以下 2026-10-26 的“未提交/尚未接入”记录是历史批次记录，当前基线已提交，新的未提交内容以上述 2026-10-27 批次为准。
 - **页脚发布批次（2026-10-18）**：仅 PC 首页将 Footer 功能融入主体，左下角弱化版权、人物脚右侧社交入口，消除纵向滚动；移动端保持原布局与独立 footer、允许滚动。Footer 新增 home variant，通过首页服务端插槽复用链接；主题切换按钮新增 cursor:pointer。用户验证通过，已确认提交并推送 main；无其他未提交改动。
 - **页脚调整验证**：TypeScript、涉及文件 ESLint、diff 检查及 Webpack 生产构建通过；浏览器确认 PC 1280×800 / 900×600 的 scrollHeight 等于视口高，390×844 手机保留 1123px 页面与独立 footer，主题按钮 cursor 为 pointer；中文/英文邮箱正确，进入内页恢复独立 footer。
 - **首页发布批次（2026-10-18）**：开发分支 `codex/street-portrait-home`，用户已确认提交并合并到 `main` 后推送，沿用 Vercel Git 自动部署。

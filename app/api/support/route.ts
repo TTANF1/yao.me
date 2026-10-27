@@ -1,4 +1,4 @@
-import { chatViaApi, healthViaApi, SupportApiError, validSessionId } from '@/lib/support/api'
+import { chatViaApi, streamChatViaApi, healthViaApi, SupportApiError, validSessionId } from '@/lib/support/api'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -96,7 +96,11 @@ export async function POST(request: Request) {
     if (input.sessionId !== undefined && !validSessionId(input.sessionId)) {
       throw new SupportApiError('invalid_session', 400)
     }
-    const result = await chatViaApi(request, { message, sessionId: input.sessionId, locale: input.locale })
+    const args: { message: string; sessionId?: string; locale: 'zh' | 'en' } = { message, sessionId: input.sessionId, locale: input.locale }
+    if (request.headers.get('accept')?.includes('text/event-stream')) {
+      return await streamChatViaApi(request, args)
+    }
+    const result = await chatViaApi(request, args)
     return Response.json(result, { headers: { 'Cache-Control': 'no-store' } })
   } catch (error) {
     return failure(error)
