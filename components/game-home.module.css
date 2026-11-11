@@ -289,3 +289,7 @@
   .menuItem, .menuItem::before { transition: none; }
   .menuItem:hover, .menuItem:focus-visible { transform: skewX(-9deg); }
 }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .camera, .backdropDepth, .portraitDepth, .copyDepth, .menuDepth { will-change: transform; }
+}

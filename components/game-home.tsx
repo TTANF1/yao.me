@@ -85,9 +85,19 @@ export function GameHome({ locale, hero, nav, footer }: GameHomeProps) {
     let targetY = 0
     let visible = true
 
+    // Update only moving layers rather than inherited variables on the whole scene.
+    const camera = scene.querySelector<HTMLElement>(`.${styles.camera}`)
+    const layers = [
+      { name: styles.backdropDepth, dx: -7, dy: -5 },
+      { name: styles.portraitDepth, dx: 20, dy: 13 },
+      { name: styles.copyDepth, dx: 9, dy: 6 },
+      { name: styles.menuDepth, dx: 12, dy: 8 },
+    ].map(layer => ({ ...layer, element: scene.querySelector<HTMLElement>('.' + layer.name) }))
     const paint = () => {
-      scene.style.setProperty('--camera-x', x.toFixed(4))
-      scene.style.setProperty('--camera-y', y.toFixed(4))
+      if (camera) camera.style.transform = 'rotateX(' + y * -0.55 + 'deg) rotateY(' + x * 0.85 + 'deg)'
+      for (const { element, dx, dy } of layers) {
+        if (element) element.style.transform = 'translate3d(' + x * dx + 'px,' + y * dy + 'px,0)'
+      }
     }
     const tick = (time: number) => {
       const delta = lastTime ? Math.min(time - lastTime, 50) : 16.67
@@ -114,7 +124,8 @@ export function GameHome({ locale, hero, nav, footer }: GameHomeProps) {
       window.cancelAnimationFrame(frame)
       frame = 0
       x = y = targetX = targetY = 0
-      paint()
+      camera?.style.removeProperty('transform')
+      for (const { element } of layers) element?.style.removeProperty('transform')
     }
     const visibility = () => { if (document.hidden) stop() }
     const preference = () => { if (!media.matches) stop() }

@@ -21,6 +21,31 @@ export function GameTransitionOverlay() {
   const busy = useRef(false)
 
   useEffect(() => {
+    let cancelled = false
+    let idle: number | undefined
+    const warm = () => {
+      if (cancelled) return
+      const image = new window.Image()
+      image.src = '/games/main/whistle-walk-source.png'
+      void image.decode().catch(() => {})
+    }
+    const schedule = () => {
+      if ('requestIdleCallback' in window) idle = window.requestIdleCallback(warm)
+      else idle = Number(globalThis.setTimeout(warm, 1000))
+    }
+    if (document.readyState === 'complete') schedule()
+    else window.addEventListener('load', schedule, { once: true })
+    return () => {
+      cancelled = true
+      window.removeEventListener('load', schedule)
+      if (idle !== undefined) {
+        if ('cancelIdleCallback' in window) window.cancelIdleCallback(idle)
+        else clearTimeout(idle)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
     const navigate = (event: Event) => {
       const { href } = (event as CustomEvent<GameNavigateDetail>).detail
       if (!href || busy.current) return
@@ -99,7 +124,7 @@ export function GameTransitionOverlay() {
   )
 
   return (
-    <div ref={root} className="game-transition" aria-hidden="true">
+    <div ref={root} className="game-transition" data-active={active} aria-hidden="true">
       <div className="game-transition-slice game-transition-black" data-game-slice="black" />
       <div className="game-transition-slice game-transition-red" data-game-slice="red" />
       <div className="game-transition-speedlines" />

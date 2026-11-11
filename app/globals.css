@@ -1175,3 +1175,8 @@ body:has([data-home-scene]) .game-header-tools > button:focus-visible { outline:
   .classified-sheet-slot, .classified-file-list, .classified-file-summary, .classified-file-arrow,
   .post-toc-bar, .post-toc-title, .post-toc-selector, .post-toc-caption { transition: none; }
 }
+
+/* Keep the sprite idle between navigations; promote only active transition layers. */
+.game-whistle-sprite { animation-play-state: paused; }
+.game-transition[data-active="true"] .game-whistle-sprite { animation-play-state: running; }
+.game-transition[data-active="true"] :is(.game-transition-slice, .game-transition-walker, .game-transition-label) { will-change: transform, opacity; }
