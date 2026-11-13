@@ -64,6 +64,9 @@ export default function MermaidRenderer({ html }: MermaidRendererProps) {
         if (svgEl) {
           // 融入页面背景：清除 mermaid 主题自带背景色
           svgEl.style.background = 'transparent'
+          // Mermaid 默认 width=100%；按 viewBox 原始尺寸封顶，避免窄图被放大。
+          const intrinsicWidth = svgEl.viewBox.baseVal.width
+          if (intrinsicWidth > 0) svgEl.style.width = `${intrinsicWidth}px`
           svgEl.style.maxWidth = '100%'
           svgEl.style.height = 'auto'
         }

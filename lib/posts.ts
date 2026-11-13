@@ -8,6 +8,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeSlug from 'rehype-slug'
 import rehypeStringify from 'rehype-stringify'
 import { rehypeShiki } from './rehype-shiki'
+import { remarkPreserveLineBreaks } from './remark-preserve-line-breaks'
 import type { Locale } from './locale'
 
 function normalizeDate(value: unknown): string {
@@ -40,7 +41,7 @@ export interface Post extends PostMeta {
 /**
  * 内容管线：从 content/posts/<locale>/ 下的 Markdown 文件构建文章。
  * 添加文章 = 在对应语言目录放一个 .md 文件即可，frontmatter 约定：
- *   title / date / summary / draft
+ *   title / date / summary / draft / preserveLineBreaks（可选，单次回车即换行）
  * 之后可扩展为从 Obsidian 知识库（D:\obsidian\YaosKnowledge）同步。
  */
 export type ContentKind = 'posts' | 'notes'
@@ -125,6 +126,7 @@ async function getContent(kind: ContentKind, locale: Locale, slug: string): Prom
   const html = await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkPreserveLineBreaks, { enabled: data.preserveLineBreaks === true })
     .use(remarkRehype)
     .use(rehypeSlug)
     .use(rehypeShiki)

@@ -172,8 +172,10 @@ Yao（前端工程师 + 内容创作者）的个人网站：简约克制风格�
 ## 内容结构约定
 - frontmatter 字段：`title` / `date` / `summary` / `aiUsed`（是否使用 AI，标注在文中）等；双语同名成对
 - 日期显示：中文全日期、英文缩写月份
+- 可选 frontmatter：`preserveLineBreaks: true` 将正文单次回车转为换行，空行继续分段，代码块与行内代码保持原样。默认关闭；当前仅 architecture-grows-from-business 中文稿开启，由 lib/remark-preserve-line-breaks.ts 在 Markdown AST 层处理。
 
 ## 当前状态
+- **文章与图表（2026-11-13，未提交）**：新增 architecture-grows-from-business 双语文章；中文保留 Obsidian 手写正文、ai=false，英文译版 ai=true，日期采用导入日，新增中英文摘要。Mermaid 按 SVG viewBox 原始宽度封顶、窄屏等比缩小；animation-scheduler-framework 双语第六节移除互不干扰虚线，改为三个独立 Scheduler 并列。TypeScript、渲染器 ESLint、diff 检查通过；Webpack 本地浏览器确认桌面/手机图表与新稿双语页面、摘要，Turbopack 仍遇本机子进程连接异常。未 commit/push。
 - **提交 / 容器发布批次（2026-10-27）**：用户已授权前后端 commit、仅前端 push，并追加授权后端容器部署。本提交收录本次客服 UI、逐字动画/淡底来源列表、SSE代理与测试；前端通过 main 推送沿用 Vercel 自动部署。后端容器已构建重建且 healthy，保留持久卷；公开索引20篇、check-public violations=[]，真实容器问答3段delta + message + done（7来源，首段3.88s/总4.89s），Docker结构化stdout成功日志生效。后端61项测试、前端11项测试及Webpack生产构建通过；14题真实模型评测状态全部符合预期，引用范围/关键词各有q09未完全命中（0.8889），报告保留且不改基线。以下“未提交/未发布/未更新Docker”描述是阶段历史，以本条为准；公网Vercel/Cloudflare流式链路尚待上线后验收。
 - **来源列表 / 文字展开（2026-10-27，未提交）**：按用户要求取消来源逐条卡片，改为一块淡底色紧凑列表（浏览器实测每行21px），有 GitHub 公开来源身份的显示仓库链接与简介，其余显示标题：简述；新增 lib/support/source.ts。回答加入独立于网络片段的逐字队列与新换行淡入，最终来源/追问/复制等待正文显示完成；停止、清空、卸载、后台标签页与动态 reduced-motion 均处理队列收尾。TypeScript、涉及文件 ESLint、11项 SSE/来源回归通过；本地3000无头 Edge 验证整批 SSE 渐进显示、仅 message 无 delta、来源链接/21px无边框列表、桌面/手机深色、停止/清空显示尾段、模拟后台 visibility 与静态/动态 reduced-motion、中断草稿清理，无 pageerror。截图位于忽略的 node_modules/.cache/support-screenshots。前后端继续仅本地运行，未 commit/push/deploy，Docker未更新。
 - **本地联调修复（2026-10-27，未提交）**：用户要求先本地测试、不发布。独立 Python 127.0.0.1:8788 + Next localhost:3000，临时启动器 node_modules/.cache/start-local-support.mjs 在进程内注入独立 token，不改 .env.local；本地会话库位于 Python .state/local-preview，原 Docker 8787 保持运行。真实“yao最近做了哪些项目”请求复现模型结尾提供 citations 却漏写正文 [n] 导致 invalid_stream；Python 现校验合法来源编号后补齐遗漏标记，继续拒绝空/伪造引用，不重试、不保存半条。业务日志追加白名单单行 stdout 的 request/session/trace、阶段耗时、首段时间、片段数/字符数、成功/失败/取消及具体 detail_code，删除原问答片段日志，具体以 Python docs/deployment.md 为准。61 项后端测试通过，更新并重启本地服务后同题 HTTP 验收 6 段 delta + message + done（首段约3.25s、总4.89s，6来源），日志 event=success。

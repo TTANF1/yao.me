@@ -237,12 +237,10 @@ On one IP main stage, I ended up maintaining three independent Scheduler instanc
 ```mermaid
 flowchart TB
     M[Main stage component]
-    M --> S1[newUserEnter Scheduler<br/>new-user entry storyline]
-    M --> S2[specialLetter Scheduler<br/>special intel storyline]
-    M --> S3[normalLetter Scheduler<br/>normal intel storyline]
+    M --> S1[newUserEnter<br/>Scheduler<br/>new-user entry]
+    M --> S2[specialLetter<br/>Scheduler<br/>special intel]
+    M --> S3[normalLetter<br/>Scheduler<br/>normal intel]
 
-    S1 -.mutually independent.-> S2
-    S2 -.mutually independent.-> S3
 ```
 
 **They never interfere with each other** — each Scheduler has its own node queue, playback state, and hooks. This design meant that when I adjusted the special-intel animation, I never worried about affecting new-user entry; when doing the newbie guide, I only locked one Scheduler, not all of them.

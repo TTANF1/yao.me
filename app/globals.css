@@ -411,7 +411,7 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
   display: none;
 }
 
-/* Mermaid 流程图渲染容器：居中展示，宽图允许横向滚动，SVG 自适应容器宽度 */
+/* Mermaid 流程图渲染容器：居中展示，SVG 保持原始比例，仅在窄容器中缩小 */
 .mermaid-render {
   margin: 1.5rem 0;
   overflow-x: auto;
@@ -419,6 +419,7 @@ html:active-view-transition-type(nav-back)::view-transition-group(detail-title) 
   -webkit-overflow-scrolling: touch;
 }
 .mermaid-render svg {
+  display: block;
   max-width: 100%;
   height: auto;
   margin: 0 auto;

@@ -237,12 +237,10 @@ scheduler.reset();      // 所有元素回到初始状态
 ```mermaid
 flowchart TB
     M[主舞台组件]
-    M --> S1[newUserEnter Scheduler<br/>新人入场剧情]
-    M --> S2[specialLetter Scheduler<br/>特殊情报剧情]
-    M --> S3[normalLetter Scheduler<br/>普通情报剧情]
+    M --> S1[newUserEnter<br/>Scheduler<br/>新人入场剧情]
+    M --> S2[specialLetter<br/>Scheduler<br/>特殊情报剧情]
+    M --> S3[normalLetter<br/>Scheduler<br/>普通情报剧情]
 
-    S1 -.互不干扰.-> S2
-    S2 -.互不干扰.-> S3
 ```
 
 **它们互不干扰**，每个 Scheduler 都是自己的节点队列、自己的播放状态、自己的钩子。这个设计让我在做特殊情报动画的调整时，完全不用担心影响到新人入场；做新手指引的时候，只需要锁住一个 Scheduler，不用锁全部。
